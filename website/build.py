@@ -90,6 +90,8 @@ for file in os.listdir(settings.rules_path):
         rule = file[:-3]
         print(f"{rule}.html", end="", flush=True)
         q = load_rule(rule)
+        rpath = os.path.join(settings.html_path, rule)
+        os.mkdir(rpath)
 
         content = ""
         content += heading("h1", f"{q.code}: {q.html_name}")
@@ -102,8 +104,9 @@ for file in os.listdir(settings.rules_path):
 
         for r in q.rules:
             content += heading_with_self_ref("h2", r.title("HTML"))
+            content += r.image(os.path.join(rpath, f"{r.title('filename')}.svg"))
 
-        write_html_page(os.path.join(settings.html_path, f"{rule}.html"),
+        write_html_page(os.path.join(rpath, "index.html"),
                         f"{rule}: {q.html_name}", content)
         end = datetime.now()
         print(f" (completed in {(end - start).total_seconds():.2f}s)")

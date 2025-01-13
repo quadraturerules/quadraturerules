@@ -5,6 +5,29 @@ import typing
 import yaml
 
 from webbuilder import settings
+from webbuilder.tools import html_local
+
+Number = typing.Union[int, float]
+PointND = typing.Tuple[Number, ...]
+Point2D = typing.Tuple[Number, Number]
+
+
+def to_2d(point: PointND, origin: Point2D, axes: typing.List[Point2D]) -> Point2D:
+    """Map a point on a domain to a 2D point in an SVG."""
+    return tuple(
+        o + sum(a[i] * p for a, p in zip(axes, point))
+        for i, o in enumerate(origin)
+    )
+
+
+def from_barycentric(point: PointND, domain: typing.List[PointND]) -> PointND:
+    """Map from barycentric coordinates to a point on a domain."""
+    print(point, domain)
+    return tuple(
+        sum(p * d[i] for p, d in zip(point, domain))
+        for i in range(len(domain[0]))
+    )
+
 
 class QRule:
     """A quadrature rule."""
@@ -38,8 +61,47 @@ class QRule:
                             out += "n"
                         out += f" {self.domain}"
                 return out
+            case "filename":
+                out = ""
+                if self.domain is not None:
+                    out += self.domain.replace(" ", "-")
+                if self.order is not None:
+                    if out == "":
+                        out += "-"
+                    out += f"{self.order}"
+                return out
             case _:
                 raise ValueError(f"Unsupported format: {format}")
+
+    def image(self, filename: str) -> str:
+        match filename.split(".")[-1]:
+            case "svg":
+                with open(filename, "w") as f:
+                    match self.domain:
+                        case "interval":
+                            size = (220, 20)
+                            domain = [(-1,), (1,)]
+                            domain_lines = [[(-1,), (1,)]]
+                            origin = (110, 10)
+                            axes = [(100, 0)]
+                        case _:
+                            raise ValueError(f"Unsupported domain: {self.domain}")
+                    f.write(f"<svg width='{size[0]}' height='{size[1]}' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
+                    for lines in domain_lines:
+                        for a, b in zip(lines[:-1], lines[1:]):
+                            a = to_2d(a, origin, axes)
+                            b = to_2d(b, origin, axes)
+                            f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' stroke='#000000' stroke-width='1.5' stroke-linecap='round' />\n")
+                        for p, w in zip(self.points, self.weights):
+                            p = to_2d(from_barycentric(p, domain), origin, axes)
+                            if w > 0:
+                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' fill='red' />")
+                            else:
+                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' fill='blue' />")
+                    f.write("</svg>")
+            case _:
+                raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
+        return f"<img src='{html_local(filename)}'>"
 
 
 class QRuleFamily:
