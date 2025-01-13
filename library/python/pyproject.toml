@@ -1,0 +1,33 @@
+[project]
+name = "quadraturerules"
+version = "{{VERSION}}"
+description = "quadrature rules library"
+readme = "README.md"
+requires-python = ">=3.10.0"
+license = { file = "../../LICENSE" }
+authors = [
+    { name = "Matthew Scroggs", email = "quadraturerules@mscroggs.co.uk" }
+]
+packages = ["quadraturerules"]
+dependencies = ["numpy"]
+
+[project.urls]
+homepage = "https://quadraturerules.org"
+repository = "https://github.com/mscroggs/quadraturerules"
+
+[project.optional-dependencies]
+style = ["ruff", "mypy"]
+test = ["pytest", "quadraturerules[optional]"]
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+ignore_missing_imports = true

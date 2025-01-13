@@ -1,0 +1,14 @@
+[package]
+name = "quadraturerules"
+version = "{{VERSION}}"
+edition = "2021"
+authors = ["Matthew Scroggs <quadraturerules@mscroggs.co.uk>"]
+description = "quadrature rules library"
+license = "MIT"
+homepage = "https://quadraturerules.org"
+repository = "https://github.com/mscroggs/quadraturerules"
+readme = "README.md"
+keywords = ["numerics"]
+categories = ["mathematics", "science"]
+
+[dependencies]
