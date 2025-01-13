@@ -2,4 +2,4 @@ name: Gauss--Legendre
 integral-type: single
 integrand: f(x)
 notes:
-  - If f(x) is a degree 2n-1 polynomial, then an order n Gaussian rule will integrate it exactly.
+  - If \(f(x)\) is a degree \(2n-1\) polynomial, then an order \(n\) Gauss--Legendre rule will integrate it exactly.
