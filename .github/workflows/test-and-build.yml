@@ -117,5 +117,7 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - run: python3 -m pytest test
+      - run: |
+          python3 -m pip install pytest
+          python3 -m pytest test
         name: Run tests with pytest
