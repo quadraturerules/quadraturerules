@@ -6,8 +6,8 @@ import sys
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(os.path.join(path, ".."), "website"))
-from webbuilder.rules import load_rule
-from webbuilder import settings
+from webbuilder.rules import load_rule  # noqa: E402
+from webbuilder import settings  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
 parser.add_argument('library', metavar='library', nargs=1,
@@ -42,6 +42,7 @@ def replace(content, variable, rule):
     content = content.replace(f"{{{{{variable}.camelCaseName}}}}", rule.name("camelCase"))
     content = content.replace(f"{{{{{variable}.snake_case_name}}}}", rule.name("snake_case"))
     return content
+
 
 def sub(content):
     content = content.replace("{{VERSION}}", version)
