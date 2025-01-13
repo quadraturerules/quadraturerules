@@ -50,8 +50,6 @@ jobs:
     name: Build quadraturerules.org
     runs-on: ubuntu-22.04
     if: github.ref != 'refs/heads/main'
-    needs:
-      - run-tests
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
