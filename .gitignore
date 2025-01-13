@@ -1,3 +1,4 @@
 *.pyc
-library/rust/target/*
+library/rust/target
 website/_html
+library/*.build

@@ -2,7 +2,8 @@
 
 from enum import Enum as _Enum
 
+
 class QuadratureRules(_Enum):
     {{for Q in rules}}
-    {{Q.PascalCaseName}} = {{Q.id}}
+    {{Q.PascalCaseName}} = {{Q.index}}
     {{end for}}

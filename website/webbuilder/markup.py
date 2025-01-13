@@ -61,7 +61,7 @@ def preprocess(content: str) -> str:
                 with open(os.path.join(settings.dir_path, file)) as f:
                     content = content.replace(
                         f"{{{{{file}}}}}",
-                        f.read().replace("](https://defelement.org", "]("))
+                        f.read().replace("](https://quadraturerules.org", "]("))
     return content
 
 

@@ -12,7 +12,7 @@ from webbuilder.tools import html_local, parse_metadata
 
 start_all = datetime.now()
 
-parser = argparse.ArgumentParser(description="Build defelement.org")
+parser = argparse.ArgumentParser(description="Build quadraturerules.org")
 parser.add_argument('destination', metavar='destination', nargs="?",
                     default=None, help="Destination of HTML files.")
 parser.add_argument('--github-token', metavar="github_token", default=None,
