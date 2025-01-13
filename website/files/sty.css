@@ -1,0 +1,55 @@
+:root {
+  --gray: #5D707F;
+  --blue: #0E0E52;
+  --blue2: #29A4EC;
+  --color4: #555500;
+}
+
+body {padding:0px;margin:0px; margin-bottom:100px}
+
+.head {background-image:url("/mesh-blue.png")}
+.footer {background-image:url("/mesh-blue.png")}
+.head, .body, .footer {width:100%;}
+
+.footer {position:fixed;bottom:0;font-size:14px;text-align:center}
+
+a, a:link, a:active, a:visited {color:var(--blue)}
+
+.content {max-width:740px;margin:auto;padding:35px 10px;background-color:rgba(255,255,255,0.9)}
+.footer .content {padding:10px}
+.footer .content a {margin-right:10px;margin-left:10px}
+
+.head, .footer {font-family: 'Convergence', sans-serif;font-weight:400}
+
+.title {text-align:center;font-size:20px}
+.title .qrules {text-align:center;font-size:45px;display:block}
+.head a {color:black;text-decoration:none}
+
+h2 {margin-top:50px}
+h1, h2, h3, h4, h5, h6 {font-family: 'Convergence', sans-serif;font-weight:400;color:var(--blue)}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {text-decoration:none}
+body, p {font-family:sans}
+p {text-align:justify}
+
+
+li {margin-bottom:10px;margin-top:10px}
+
+table.bordered, table.bordered tr, table.bordered td
+    {border:1px solid #AAAAAA;border-collapse:collapse}
+table.bordered td {padding:2px 6px;text-align:center}
+table.bordered thead {font-weight:bold;font-size:80%}
+
+table.bordered.align-left td {padding:2px 6px;text-align:left}
+table.bordered.align-right td {padding:2px 6px;text-align:right}
+
+.footer a:hover,
+.head a:hover,
+a:hover {color:var(--blue2)}
+
+table.rule {width:100%}
+table.rule, table.rule tr, table.rule td, table.rule tr td
+    {border-collapse:collapsed}
+table.rule tr td {border-bottom:2px dashed #AAAAAA}
+table.rule tr:last-of-type td {border-bottom:none}
+table.rule td {padding:8px 0px}
+table.rule tr td:first-of-type {padding-right:10px;font-variant:all-small-caps; width:1px}
