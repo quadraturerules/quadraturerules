@@ -73,7 +73,7 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.fork }}
 
   build-and-push-website:
-    name: Build and deploy defelement.com
+    name: Build and deploy quadraturerules.org
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/main'
 
