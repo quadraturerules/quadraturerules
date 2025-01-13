@@ -1,16 +1,14 @@
 """Build quadraturerules.org."""
 
 import argparse
-import json
 import os
-import typing
 from datetime import datetime
 
+from webbuilder import settings
 from webbuilder.html import make_html_page
 from webbuilder.markup import heading, heading_with_self_ref, markup
 from webbuilder.rules import load_rule
 from webbuilder.tools import html_local, parse_metadata
-from webbuilder import settings
 
 start_all = datetime.now()
 
@@ -66,9 +64,6 @@ for file in os.listdir(settings.pages_path):
         with open(os.path.join(settings.pages_path, file)) as f:
             metadata, content = parse_metadata(f.read())
 
-        if "authors" in metadata:
-            content = insert_author_info(content, metadata["authors"], f"{fname}.html")
-
         content = markup(content)
 
         write_html_page(os.path.join(settings.html_path, f"{fname}.html"),
@@ -78,10 +73,12 @@ for file in os.listdir(settings.pages_path):
 
 
 def row(name, content):
+    """Make a row of information."""
     if content == "":
         return ""
     else:
         return f"<tr><td>{name}</td><td>{content}</td>"
+
 
 # Make rule pages
 for file in os.listdir(settings.rules_path):

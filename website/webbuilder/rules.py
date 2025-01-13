@@ -2,27 +2,31 @@
 import os
 import re
 import typing
-import yaml
 
+import yaml
 from webbuilder import settings
 from webbuilder.tools import html_local
 
-Number = typing.Union[int, float]
-PointND = typing.Tuple[Number, ...]
-Point2D = typing.Tuple[Number, Number]
+PointND = typing.Tuple[float, ...]
+Point2D = typing.Tuple[float, float]
+
+
+def to_html(content: str) -> str:
+    """Convert to HTML."""
+    content = content.replace("--", "&ndash;")
+    return content
 
 
 def to_2d(point: PointND, origin: Point2D, axes: typing.List[Point2D]) -> Point2D:
     """Map a point on a domain to a 2D point in an SVG."""
-    return tuple(
-        o + sum(a[i] * p for a, p in zip(axes, point))
-        for i, o in enumerate(origin)
+    return (
+        origin[0] + sum(a[0] * p for a, p in zip(axes, point)),
+        origin[1] + sum(a[1] * p for a, p in zip(axes, point)),
     )
 
 
 def from_barycentric(point: PointND, domain: typing.List[PointND]) -> PointND:
     """Map from barycentric coordinates to a point on a domain."""
-    print(point, domain)
     return tuple(
         sum(p * d[i] for p, d in zip(point, domain))
         for i in range(len(domain[0]))
@@ -39,12 +43,14 @@ class QRule:
         points: typing.List[typing.List[float]],
         weights: typing.List[float]
     ):
+        """Create."""
         self.domain = domain
         self.order = order
         self.points = points
         self.weights = weights
 
     def title(self, format: str = "default") -> str:
+        """Get title."""
         match format:
             case "default":
                 return f"{self.domain} {self.order}"
@@ -74,30 +80,37 @@ class QRule:
                 raise ValueError(f"Unsupported format: {format}")
 
     def image(self, filename: str) -> str:
+        """Make image of rule."""
         match filename.split(".")[-1]:
             case "svg":
                 with open(filename, "w") as f:
                     match self.domain:
                         case "interval":
                             size = (220, 20)
-                            domain = [(-1,), (1,)]
-                            domain_lines = [[(-1,), (1,)]]
-                            origin = (110, 10)
-                            axes = [(100, 0)]
+                            domain: typing.List[PointND] = [(-1.0,), (1.0,)]
+                            domain_lines = [[(-1.0,), (1.0,)]]
+                            origin = (110.0, 10.0)
+                            axes = [(100.0, 0.0)]
                         case _:
                             raise ValueError(f"Unsupported domain: {self.domain}")
-                    f.write(f"<svg width='{size[0]}' height='{size[1]}' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
+                    f.write(f"<svg width='{size[0]}' height='{size[1]}' "
+                            "xmlns='http://www.w3.org/2000/svg' "
+                            "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
                     for lines in domain_lines:
-                        for a, b in zip(lines[:-1], lines[1:]):
-                            a = to_2d(a, origin, axes)
-                            b = to_2d(b, origin, axes)
-                            f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' stroke='#000000' stroke-width='1.5' stroke-linecap='round' />\n")
-                        for p, w in zip(self.points, self.weights):
-                            p = to_2d(from_barycentric(p, domain), origin, axes)
+                        for a_, b_ in zip(lines[:-1], lines[1:]):
+                            a = to_2d(a_, origin, axes)
+                            b = to_2d(b_, origin, axes)
+                            f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
+                                    "stroke='#000000' stroke-width='1.5' "
+                                    "stroke-linecap='round' />\n")
+                        for p_, w in zip(self.points, self.weights):
+                            p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
                             if w > 0:
-                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' fill='red' />")
+                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' "
+                                        "fill='red' />")
                             else:
-                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' fill='blue' />")
+                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
+                                        "fill='blue' />")
                     f.write("</svg>")
             case _:
                 raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
@@ -117,6 +130,7 @@ class QRuleFamily:
         notes: typing.List[str],
         rules: typing.List[QRule]
     ):
+        """Create."""
         assert re.match(r"Q[0-9]{6}", code)
         self.code = code
         self.index = int(code[1:])
@@ -128,6 +142,7 @@ class QRuleFamily:
         self.rules = rules
 
     def name(self, format: str = "default") -> str:
+        """Get name."""
         parts = self._name.split("--")
         match format:
             case "default":
@@ -138,6 +153,7 @@ class QRuleFamily:
                 raise ValueError(f"Unsupported format: {format}")
 
     def alt_names(self, format: str = "default") -> str:
+        """Get alternative names."""
         match format:
             case "default":
                 return "\n".join(self._alt_names)
@@ -147,6 +163,7 @@ class QRuleFamily:
                 raise ValueError(f"Unsupported format: {format}")
 
     def integral(self, format: str = "LaTeX"):
+        """Get integral."""
         match format:
             case "LaTeX":
                 i = "\\(\\displaystyle "
@@ -161,6 +178,7 @@ class QRuleFamily:
                 raise ValueError(f"Unsupported format: {format}")
 
     def notes(self, format: str = "HTML"):
+        """Get notes."""
         match format:
             case "HTML":
                 return to_html("<br />".join(self._notes))
@@ -169,10 +187,12 @@ class QRuleFamily:
 
     @property
     def html_name(self) -> str:
+        """HTML name."""
         return self.name("HTML")
 
 
 def load_rule(code: str) -> QRuleFamily:
+    """Load a rule from a file and folder."""
     with open(os.path.join(settings.rules_path, f"{code}.qr")) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -183,8 +203,8 @@ def load_rule(code: str) -> QRuleFamily:
             with open(os.path.join(pt_dir, pt_file)) as f:
                 content = f.read()
                 if content.startswith("--\n"):
-                    _, metadata, content = content.split("--", 3)
-                    metadata = yaml.safe_load(metadata)
+                    _, metadata_, content = content.split("--", 3)
+                    metadata = yaml.safe_load(metadata_)
                 else:
                     metadata = {}
                 points = []
@@ -212,8 +232,3 @@ def load_rule(code: str) -> QRuleFamily:
         rules,
     )
     return r
-
-
-def to_html(content: str) -> str:
-    content = content.replace("--", "&ndash;")
-    return content

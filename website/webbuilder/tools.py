@@ -3,7 +3,6 @@
 import typing
 
 import yaml
-
 from webbuilder import settings
 
 if typing.TYPE_CHECKING:

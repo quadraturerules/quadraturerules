@@ -2,15 +2,9 @@
 
 import os
 import re
-import shlex
 import typing
-import warnings
 from datetime import datetime
 from urllib.parse import quote_plus
-
-import symfem
-import yaml
-from github import Github
 
 from webbuilder import settings
 
@@ -27,7 +21,6 @@ def heading(hx: str, content: str, style: typing.Optional[str] = None) -> str:
     Returns:
         Heading with self reference
     """
-    id = quote_plus(content)
     out = f"<{hx}"
     if style is not None:
         out += f" style=\"{style}\""
