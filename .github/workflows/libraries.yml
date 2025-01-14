@@ -27,7 +27,7 @@ jobs:
           cd library
           python build.py python
           cd python.build
-          python3 -m pip install .[ci]
+          python3 -m pip install -e .[ci]
         name: Build and install Python library
       - run: |
           cd library/python.build
