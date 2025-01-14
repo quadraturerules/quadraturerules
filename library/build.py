@@ -30,6 +30,8 @@ with open(os.path.join(os.path.join(path, ".."), "VERSION")) as f:
     version = f.read().strip()
 with open(os.path.join(os.path.join(path, ".."), "LICENSE")) as f:
     license = "\n".join(f.read().split("\n")[2:])
+with open(os.path.join(os.path.join(path, ".."), "README.md")) as f:
+    readme = f.read()
 
 rules = []
 for file in os.listdir(settings.rules_path):
@@ -109,6 +111,7 @@ def sub(content, vars={}):
     """Make substitutions in a file."""
     content = content.replace("{{VERSION}}", version)
     content = content.replace("{{LICENSE}}", license)
+    content = content.replace("{{README}}", readme)
     while "{{end for}}" in content:
         temp, after = content.split("{{end for}}", 1)
         if after.startswith("\n"):
