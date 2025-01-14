@@ -12,3 +12,6 @@ keywords = ["numerics"]
 categories = ["mathematics", "science"]
 
 [dependencies]
+
+[dev-dependencies]
+approx = "0.5"

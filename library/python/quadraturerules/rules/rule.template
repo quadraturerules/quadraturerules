@@ -22,7 +22,7 @@ def {{Q.snake_case_name}}(
                 {{for R in Q.rules}}
                 {{if R.domain == D.name}}
                 case {{R.order}}:
-                    return np.array({{R.points_as_list}}), np.array({{R.weights_as_list}})  # noqa: E501
+                    return np.array({{R.points_as_list}}), np.array({{R.weights_as_list}})
                 {{end if}}{{end for}}
                 case _:
                     raise ValueError(f"Invalid order: {order}")

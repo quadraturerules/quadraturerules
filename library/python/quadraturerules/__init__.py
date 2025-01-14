@@ -25,8 +25,10 @@ def single_integral_quadrature(
     """Get a quadrature rule for a single integral."""
     match rtype:
         {{for Q in rules}}
+        {{if Q.itype == single}}
         case QuadratureRule.{{Q.PascalCaseName}}:
             return rules.{{Q.snake_case_name}}(domain, order)
+        {{end if}}
         {{end for}}
         case _:
             raise ValueError(f"Unsupported rule for single integral: {rtype}")

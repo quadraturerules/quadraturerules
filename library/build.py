@@ -204,4 +204,4 @@ sub_and_copy_files("")
 if lib == "python":
     os.system(f"cd {target_dir} && ruff format .")
 if lib == "rust":
-    os.system(f"cd {target_dir} && cargo fmt .")
+    os.system(f"cd {target_dir} && cargo fmt")
