@@ -108,14 +108,19 @@ for file in os.listdir(settings.rules_path):
             r.save_html_table(os.path.join(rpath, f"{r.title('filename')}.html"))
             content += (
                 "<div>"
-                f"<a class='toggler' id='show-{i}' href=\"javascript:show_points('/{rule}/{r.title('filename')}.html', {i})\">"
+                f"<a class='toggler' id='show-{i}' "
+                f"href=\"javascript:show_points('/{rule}/{r.title('filename')}.html', {i})\">"
                 "&darr; show points and weights &darr;</a>"
-                f"<a class='toggler' id='hide-{i}' href=\"javascript:hide_points({i})\" style='display:none'>"
-                    "&uarr; hide points and weights &uarr;</a>"
+                f"<a class='toggler' id='hide-{i}' "
+                f"href=\"javascript:hide_points({i})\" style='display:none'>"
+                "&uarr; hide points and weights &uarr;</a>"
                 "</div>"
                 f"<div class='point-detail' id='point-detail-{i}'></div>"
             )
-        content += "<div id='point-detail-dummy' style='visibility:hidden;position:absolute;top:0;left:0;z-index:-10'></div>"
+        content += (
+            "<div id='point-detail-dummy' "
+            "style='visibility:hidden;position:absolute;top:0;left:0;z-index:-10'></div>"
+        )
 
         write_html_page(os.path.join(rpath, "index.html"),
                         f"{rule}: {q.html_name}", content)
