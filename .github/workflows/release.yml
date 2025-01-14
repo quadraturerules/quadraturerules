@@ -8,6 +8,8 @@ jobs:
   python-library:
     name: Release Python library
     runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
