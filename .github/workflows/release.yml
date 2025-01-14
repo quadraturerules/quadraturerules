@@ -2,7 +2,7 @@ name: Make new releases
 
 on:
   push:
-    tags: ["v*"]
+#    tags: ["v*"]
 
 jobs:
   python-library:
@@ -30,5 +30,8 @@ jobs:
           python3 -m pip install build
           python3 -m build .
         name: Build Python wheels
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: library/python.build
