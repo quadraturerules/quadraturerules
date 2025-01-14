@@ -7,8 +7,6 @@
 
 body {padding:0px;margin:0px; margin-bottom:100px}
 
-.head {background-image:url("/mesh-blue.png")}
-.footer {background-image:url("/mesh-blue.png")}
 .head, .body, .footer {width:100%;}
 
 .footer {position:fixed;bottom:0;font-size:14px;text-align:center}

@@ -8,4 +8,4 @@ To make a new release of the quadraturerules library, follow these steps:
 
 3. Create a [new tag](https://github.com/mscroggs/quadraturerules/releases/new) on GitHub. The title and tag should be `v{VERSION}`.
 
-4. A Python release should be created automaticaly by the [release](https://github.com/mscroggs/quadraturerules/actions/workflows/release.yml) CI workflow.
+4. Python and Rust releases should be created automaticaly by the [release](https://github.com/mscroggs/quadraturerules/actions/workflows/release.yml) CI workflow.
