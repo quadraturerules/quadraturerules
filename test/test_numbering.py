@@ -42,4 +42,4 @@ def test_version():
         "..",
         "VERSION",
     )) as f:
-        assert int(f.read().split(".")[0]) == v
+        assert int(f.read().split(".")[1]) == v
