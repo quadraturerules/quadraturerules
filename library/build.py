@@ -39,6 +39,7 @@ domains = ["interval", "triangle", "quadrilateral", "tetrahedron", "hexahedron"]
 
 
 def replace(content, subs):
+    """Replace templated code."""
     for a, b in subs:
         content = content.replace(f"{{{{{a}}}}}", b)
     parts = content.split("{{if ")
@@ -53,6 +54,7 @@ def replace(content, subs):
 
 
 def family_replace(content, variable, family):
+    """Replace templated code for a rule family."""
     return replace(content, [
         [f"{variable}.code", f"{family.code}"],
         [f"{variable}.index", f"{family.index}"],
@@ -65,6 +67,7 @@ def family_replace(content, variable, family):
 
 
 def rule_replace(content, variable, rule):
+    """Replace templated code for a rule."""
     return replace(content, [
         [f"{variable}.order", f"{rule.order}"],
         [f"{variable}.domain", rule.domain],
@@ -77,6 +80,7 @@ def rule_replace(content, variable, rule):
 
 
 def domain_replace(content, variable, domain):
+    """Replace templated code for a domain."""
     return replace(content, [
         [f"{variable}.index", f"{domains.index(domain)}"],
         [f"{variable}.PascalCaseName", domain[0].upper() + domain[1:].lower()],
@@ -87,6 +91,7 @@ def domain_replace(content, variable, domain):
 
 
 def is_true(condition):
+    """Check if a condition is true."""
     a, op, b = condition.split(" ")
     match op:
         case "==":
@@ -98,6 +103,7 @@ def is_true(condition):
 
 
 def sub(content, vars={}):
+    """Make substitutions in a file."""
     content = content.replace("{{VERSION}}", version)
     while "{{end for}}" in content:
         temp, after = content.split("{{end for}}", 1)
@@ -151,6 +157,7 @@ def sub(content, vars={}):
 
 
 def sub_and_copy_files(folder):
+    """Make substitutions and copy all files recursively in a directory."""
     for file_ in os.listdir(os.path.join(source_dir, folder)):
         file = os.path.join(folder, file_)
         if file_.startswith("."):
