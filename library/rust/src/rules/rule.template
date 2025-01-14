@@ -1,0 +1,27 @@
+--
+template: Q in rule
+filename: {{Q.snake_case_name}}.rs
+--
+//! {{Q.name}} quadrature rule.
+
+use crate::Domain;
+
+{{if Q.itype == single}}
+/// Get a {{Q.name}} quadrature rule.
+pub fn {{Q.snake_case_name}}(
+    domain: Domain,
+    order: usize,
+) -> Result<(Vec<f64>, Vec<f64>), &'static str> {
+    match domain {
+        {{for D in domains}}
+        Domain::{{D.PascalCaseName}} => match order {
+            {{for R in Q.rules}}
+            {{if R.domain == D.name}}
+            {{R.order}} => Ok((vec!{{R.points_as_flat_list}}, vec!{{R.weights_as_list}})),
+            {{end if}}{{end for}}
+            _ => Err("Invalid order: {order}"),
+        }
+        {{end for}}
+    }
+}
+{{end if}}

@@ -1,3 +1,8 @@
+[features]
+strict = []
+serde = ["dep:serde"]
+
+
 [package]
 name = "quadraturerules"
 version = "{{VERSION}}"
@@ -12,3 +17,10 @@ keywords = ["numerics"]
 categories = ["mathematics", "science"]
 
 [dependencies]
+serde = { version = "1", features = ["derive"], optional = true }
+
+[dev-dependencies]
+approx = "0.5"
+
+[lints.clippy]
+wildcard_imports = "forbid"
