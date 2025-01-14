@@ -168,7 +168,7 @@ def markup(content: str) -> str:
     out = re.sub(r"\*\*([^\n]+)\*\*", r"<strong>\1</strong>", out)
     out = re.sub(r"\*([^\n]+)\*", r"<em>\1</em>", out)
 
-    out = out.replace("{{tick}}", "<i class='fa-solid fa-check' style='color:#55ff00'></i>")
+    out = out.replace("{{tick}}", "<span style='color:#008800'>&#10004;</span>")
 
     if len(page_references) > 0:
         out += heading_with_self_ref("h2", "References")

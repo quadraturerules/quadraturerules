@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import re
 from datetime import datetime
 
 from webbuilder import settings
@@ -38,6 +39,12 @@ def write_html_page(path: str, title: str, content: str):
         f.write(make_html_page(content, title))
 
 
+def load_md_file(matches):
+    """Read the content of a markdown file."""
+    with open(os.path.join(settings.root_path, matches[1])) as f:
+        return f.read()
+
+
 args = parser.parse_args()
 if args.destination is not None:
     settings.html_path = args.destination
@@ -64,6 +71,8 @@ for file in os.listdir(settings.pages_path):
         with open(os.path.join(settings.pages_path, file)) as f:
             metadata, content = parse_metadata(f.read())
 
+        content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
+        content = content.replace("](website/pages", "](")
         content = markup(content)
 
         write_html_page(os.path.join(settings.html_path, f"{fname}.html"),
