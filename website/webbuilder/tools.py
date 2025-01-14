@@ -45,3 +45,12 @@ def html_local(path: str) -> str:
     """
     assert path.startswith(settings.html_path)
     return path[len(settings.html_path):]
+
+
+def comma_and_join(ls: typing.List[str], oxford_comma: bool = True) -> str:
+    """Join a list with commas and an and between the last two items."""
+    if len(ls) == 1:
+        return ls[0]
+    if len(ls) == 2:
+        return f"{ls[0]} and {ls[1]}"
+    return ", ".join(ls[:-1]) + ("," if oxford_comma else "") + " and " + ls[-1]

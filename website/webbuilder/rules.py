@@ -1,14 +1,36 @@
 """Quadrature rules."""
+
+import math
 import os
 import re
 import typing
 
 import yaml
 from webbuilder import settings
+from webbuilder.citations import markup_citation
 from webbuilder.tools import html_local
 
 PointND = typing.Tuple[float, ...]
 Point2D = typing.Tuple[float, float]
+
+
+def dim(domain: str | None) -> int:
+    """Get the dimension of a domain."""
+    if domain is None:
+        return -1
+    if domain == "point":
+        return 0
+    if domain == "interval":
+        return 1
+    if domain in ["triangle", "quadrilateral", "circle"]:
+        return 2
+    if "agon" in domain:
+        return 2
+    if domain in ["prism", "pyramid", "wedge"]:
+        return 3
+    if "ahedron" in domain:
+        return 3
+    return 10
 
 
 def to_html(content: str) -> str:
@@ -88,9 +110,23 @@ class QRule:
                         case "interval":
                             size = (220, 20)
                             domain: typing.List[PointND] = [(-1.0,), (1.0,)]
-                            domain_lines = [[(-1.0,), (1.0,)]]
+                            domain_lines = [[0, 1]]
                             origin = (110.0, 10.0)
                             axes = [(100.0, 0.0)]
+                        case "triangle":
+                            size = (220, 184)
+                            domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            domain_lines = [[0, 1, 2, 0]]
+                            origin = (10.0, 174.0)
+                            axes = [(200.0, 0.0), (100.0, -100*math.sqrt(3))]
+                        case "tetrahedron":
+                            size = (220, 184)
+                            domain = [
+                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)
+                            ]
+                            domain_lines = [[0, 1, 2, 0], [0, 3, 1], [3, 2]]
+                            origin = (20.0, 174.0)
+                            axes = [(200.0, 10.0), (100.0, -30.0), (100.0, -150.0)]
                         case _:
                             raise ValueError(f"Unsupported domain: {self.domain}")
                     f.write(f"<svg width='{size[0]}' height='{size[1]}' "
@@ -98,8 +134,8 @@ class QRule:
                             "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
                     for lines in domain_lines:
                         for a_, b_ in zip(lines[:-1], lines[1:]):
-                            a = to_2d(a_, origin, axes)
-                            b = to_2d(b_, origin, axes)
+                            a = to_2d(domain[a_], origin, axes)
+                            b = to_2d(domain[b_], origin, axes)
                             f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
                                     "stroke='#000000' stroke-width='1.5' "
                                     "stroke-linecap='round' />\n")
@@ -144,6 +180,7 @@ class QRuleFamily:
         itype: str,
         integrand: str,
         notes: typing.List[str],
+        references: typing.List[typing.Dict[str, typing.Any]],
         rules: typing.List[QRule]
     ):
         """Create."""
@@ -155,6 +192,7 @@ class QRuleFamily:
         self.itype = itype
         self.integrand = integrand
         self._notes = notes
+        self._references = references
         self.rules = rules
 
     def name(self, format: str = "default") -> str:
@@ -207,6 +245,17 @@ class QRuleFamily:
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
+    def references(self, format: str = "HTML"):
+        """Get references."""
+        match format:
+            case "HTML":
+                return "<br />".join(
+                    f"<div class='citation'>{to_html(markup_citation(r))}</div>"
+                    for r in self._references
+                )
+            case _:
+                raise ValueError(f"Unsupported format: {format}")
+
     @property
     def html_name(self) -> str:
         """HTML name."""
@@ -242,7 +291,7 @@ def load_rule(code: str) -> QRuleFamily:
                     points,
                     weights,
                 ))
-    rules.sort(key=lambda r: r.title())
+    rules.sort(key=lambda r: (dim(r.domain), r.domain, r.order))
 
     r = QRuleFamily(
         code,
@@ -251,6 +300,7 @@ def load_rule(code: str) -> QRuleFamily:
         data["integral-type"] if "integral-type" in data else "single",
         data["integrand"],
         data["notes"] if "notes" in data else [],
+        data["references"] if "references" in data else [],
         rules,
     )
     return r

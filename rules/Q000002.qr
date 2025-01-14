@@ -1,0 +1,17 @@
+name: Xiao--Gimbutas
+integral-type: single
+integrand: f(x)
+notes:
+  - If \(f(x)\) is a degree \(n\) polynomial, then an order \(n\) Gauss--Legendre rule will integrate it exactly.
+references:
+  - title: A numerical algorithm for the construction of efficient quadrature rules in two and higher dimensions
+    author:
+      - Xiao, Hong
+      - Gimbutas, Zydrunas
+    year: 2010
+    journal: Computers & Mathematics with Applications
+    volume: 59
+    issue: 2
+    pagestart: 663
+    pageend: 676
+    doi: 10.1016/j.camwa.2009.10.027

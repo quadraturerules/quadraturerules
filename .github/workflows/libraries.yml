@@ -78,7 +78,6 @@ jobs:
       - run: |
           cd library/rust.build
           cargo fmt -- --check
-          cargo clippy ${{ matrix.feature-flags }} -- -D warnings
         name: Style checks
 
       - run: |

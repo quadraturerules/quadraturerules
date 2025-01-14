@@ -75,3 +75,5 @@ table.points thead td {font-family:sans-serif;text-align:center}
     -o-transition: height .3s ease-in-out;
     transition: height .3s ease-in-out;
 }
+
+.citation {font-size:80%}
