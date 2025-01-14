@@ -5,6 +5,9 @@
 mod rules;
 
 /// A domain of an integral.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+#[repr(u8)]
 pub enum Domain {
     {{for D in domains}}
     /// {{D.name}}}
@@ -13,6 +16,9 @@ pub enum Domain {
 }
 
 /// A quadrature rule family.
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+#[repr(u8)]
 pub enum QuadratureRule {
     /// A dummy type that is currently here to make cargo formatting tests pass
     DummyType = 0,
