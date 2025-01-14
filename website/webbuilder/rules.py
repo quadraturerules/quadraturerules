@@ -116,6 +116,20 @@ class QRule:
                 raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
         return f"<img src='{html_local(filename)}'>"
 
+    def save_html_table(self, filename):
+        """Save HTML table of points and weights to a file."""
+        with open(filename, "w") as f:
+            f.write("<table class='points'>\n")
+            f.write("<thead>")
+            f.write(f"<tr><td colspan='{len(self.points[0])}'>Point</td><td>Weight</td></tr>")
+            f.write("</thead>\n")
+            for p, w in zip(self.points, self.weights):
+                f.write("<tr>")
+                for i in p:
+                    f.write(f"<td>{i}</td>")
+                f.write(f"<td>{w}</td></tr>\n")
+            f.write("</table>\n")
+
 
 class QRuleFamily:
     """A family of quadrature rules."""

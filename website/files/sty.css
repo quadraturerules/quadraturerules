@@ -22,6 +22,7 @@ a, a:link, a:active, a:visited {color:var(--blue)}
 .title {text-align:center;font-size:20px}
 .title .qrules {text-align:center;font-size:45px;display:block}
 .head a {color:black;text-decoration:none}
+a.toggler {font-size:80%}
 
 h2 {margin-top:50px}
 h1, h2, h3, h4, h5, h6 {font-family: 'Convergence', sans-serif;font-weight:400;color:var(--blue)}
@@ -51,3 +52,26 @@ table.rule tr td {border-bottom:2px dashed #AAAAAA}
 table.rule tr:last-of-type td {border-bottom:none}
 table.rule td {padding:8px 0px}
 table.rule tr td:first-of-type {padding-right:10px;font-variant:all-small-caps; width:1px}
+
+table.points {font-size:80%}
+table.points, table.points tr, table.points td
+    {border-collapse:collapse}
+table.points, table.points tr
+    {border:1px solid #AAAAAA}
+table.points tr td:last-of-type
+    {border-left:1px solid #AAAAAA}
+table.points td {padding:2px 6px;text-align:center}
+table.points thead {font-weight:bold;font-size:80%}
+table.points td {font-family:monospace;text-align:left}
+table.points thead td {font-family:sans-serif;text-align:center}
+
+
+.point-detail {
+    margin:10px;   
+    overflow: hidden;
+    -webkit-transition: height .3s ease-in-out;
+    -moz-transition: height .3s ease-in-out;
+    -ms-transition: height .3s ease-in-out;
+    -o-transition: height .3s ease-in-out;
+    transition: height .3s ease-in-out;
+}
