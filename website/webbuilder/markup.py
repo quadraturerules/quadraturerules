@@ -77,6 +77,7 @@ def markup(content: str) -> str:
     global page_references
 
     content = preprocess(content)
+    content = content.replace("\\vec", "\\mathbf")
 
     out = ""
     popen = False

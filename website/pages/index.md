@@ -4,10 +4,12 @@ Each quadrature rule is indexed using Q followed by a six-digit number, for exam
 You can view the [full list of quadrature rules included in this encyclopedia](/rules.html) or view the [list of all pages in the encyclopedia](sitemap.md).
 
 ## What is a quadrature rule?
-Quadrature rules are sets of points and weights that are used to approximate integrals. If \(\{p_0,\dots,p_{n-1}\}\subset\mathbb{R}^d\) and \(\{w_0,\dots,w_{n-1}\}\subset\mathbb{R}\)
+Quadrature rules are sets of points and weights that are used to approximate integrals. If \(\{\vec{p}_0,\dots,\vec{p}_{n-1}\}\subset\mathbb{R}^d\) and \(\{w_0,\dots,w_{n-1}\}\subset\mathbb{R}\)
 are the points and weights (repectively) of the quadrature rule for a single integral, then:
 
-$$\int f(x)\,\mathrm{d}x \approx \sum_{i=0}^{n-1}f(p_i)w_i$$
+$$\int f(x)\,\mathrm{d}x \approx \sum_{i=0}^{n-1}f(\vec{p}_i)w_i$$
+
+The points that make up the quadrature rules in this encyclopedia are represented using [barycentric coordinates](barycentric.md).
 
 ## Libraries
 
