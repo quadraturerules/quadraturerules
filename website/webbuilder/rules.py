@@ -149,6 +149,12 @@ class QRuleFamily:
                 return self._name
             case "HTML":
                 return to_html("&ndash;".join(parts))
+            case "PascalCase":
+                return "".join([i[0].upper() + i[1:].lower() for i in parts])
+            case "camelCase":
+                return parts[0].lower() + "".join([i[0].upper() + i[1:].lower() for i in parts[1:]])
+            case "snake_case":
+                return "_".join([i.lower() for i in parts])
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 

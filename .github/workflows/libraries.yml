@@ -1,0 +1,45 @@
+name: Test and build libraries
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  python-library:
+    name: Build and test Python library
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v3
+
+      - run: |
+          python3 -m pip install -r library/requirements.txt
+        name: Install requirements
+
+      - run: |
+          cd library
+          python build.py python
+          cd python.build
+          python3 -m pip install -e .[ci]
+        name: Build and install Python library
+      - run: |
+          cd library/python.build
+          python3 -m ruff check .
+          python3 -m ruff format --check .
+        name: Ruff checks
+      - run: |
+          cd library/python.build
+          python3 -m mypy .
+        name: mypy checks
+
+      - run: |
+          cd library/python.build
+          python3 -m pytest test
+        name: Run Python tests

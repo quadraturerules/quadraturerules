@@ -4,11 +4,10 @@ version = "{{VERSION}}"
 description = "quadrature rules library"
 readme = "README.md"
 requires-python = ">=3.10.0"
-license = { file = "../../LICENSE" }
+license = { file = "LICENSE" }
 authors = [
     { name = "Matthew Scroggs", email = "quadraturerules@mscroggs.co.uk" }
 ]
-packages = ["quadraturerules"]
 dependencies = ["numpy"]
 
 [project.urls]
@@ -17,7 +16,8 @@ repository = "https://github.com/mscroggs/quadraturerules"
 
 [project.optional-dependencies]
 style = ["ruff", "mypy"]
-test = ["pytest", "quadraturerules[optional]"]
+test = ["pytest"]
+ci = ["quadraturerules[test]", "quadraturerules[style]"]
 
 [tool.ruff]
 line-length = 100

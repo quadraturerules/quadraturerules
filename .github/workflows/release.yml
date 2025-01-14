@@ -1,0 +1,34 @@
+name: Make new releases
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  python-library:
+    name: Release Python library
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v3
+
+      - run: |
+          python3 -m pip install -r library/requirements.txt
+        name: Install requirements
+
+      - run: |
+          cd library
+          python build.py python
+        name: Build Python library
+      - run: |
+          cd library/python.build
+          python3 -m pip install build
+          python3 -m build .
+        name: Build Python wheels
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
