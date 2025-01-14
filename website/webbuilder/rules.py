@@ -180,7 +180,7 @@ class QRuleFamily:
         itype: str,
         integrand: str,
         notes: typing.List[str],
-        references: typing.List[str],
+        references: typing.List[typing.Dict[str, typing.Any]],
         rules: typing.List[QRule]
     ):
         """Create."""
