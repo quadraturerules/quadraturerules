@@ -72,7 +72,7 @@ for file in os.listdir(settings.pages_path):
             metadata, content = parse_metadata(f.read())
 
         content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
-        content = content.replace("](website/pages", "](")
+        content = content.replace("](website/pages/", "](")
         content = markup(content)
 
         write_html_page(os.path.join(settings.html_path, f"{fname}.html"),
