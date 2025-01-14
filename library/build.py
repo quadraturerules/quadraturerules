@@ -28,6 +28,8 @@ os.mkdir(target_dir)
 
 with open(os.path.join(os.path.join(path, ".."), "VERSION")) as f:
     version = f.read().strip()
+with open(os.path.join(os.path.join(path, ".."), "LICENSE")) as f:
+    license = "\n".join(f.read().split("\n")[2:])
 
 rules = []
 for file in os.listdir(settings.rules_path):
@@ -105,6 +107,7 @@ def is_true(condition):
 def sub(content, vars={}):
     """Make substitutions in a file."""
     content = content.replace("{{VERSION}}", version)
+    content = content.replace("{{LICENSE}}", license)
     while "{{end for}}" in content:
         temp, after = content.split("{{end for}}", 1)
         if after.startswith("\n"):
