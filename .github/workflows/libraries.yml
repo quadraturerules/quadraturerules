@@ -12,11 +12,14 @@ jobs:
   python-library:
     name: Build and test Python library
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - uses: actions/checkout@v3
 
       - run: |
@@ -43,3 +46,42 @@ jobs:
           cd library/python.build
           python3 -m pytest test
         name: Run Python tests
+
+  rust-library:
+    name: Build and test Rust library
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        rust-version: ["stable"]
+        feature-flags: ['--features "strict"', '', '--features "serde,strict"']
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust-version }}
+      - uses: actions/checkout@v3
+
+      - run: |
+          python3 -m pip install -r library/requirements.txt
+        name: Install requirements
+
+      - run: |
+          cd library
+          python build.py rust
+          cd rust.build
+          cargo build
+        name: Build Rust library
+      - run: |
+          cd library/rust.build
+          cargo fmt -- --check
+          cargo clippy ${{ matrix.feature-flags }} -- -D warnings
+        name: Style checks
+
+      - run: |
+          cd library/rust.build
+          cargo test ${{ matrix.feature-flags }}
+        name: Run Rust tests

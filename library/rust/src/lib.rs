@@ -1,17 +1,23 @@
 //! Quadrature rules
+#![cfg_attr(feature = "strict", deny(warnings), deny(unused_crate_dependencies))]
+#![warn(missing_docs)]
+
 mod rules;
 
 /// A domain of an integral.
 pub enum Domain {
     {{for D in domains}}
+    /// {{D.name}}}
     {{D.PascalCaseName}} = {{D.index}},
     {{end for}}
 }
 
 /// A quadrature rule family.
 pub enum QuadratureRule {
+    /// A dummy type that is currently here to make cargo formatting tests pass
     DummyType = 0,
     {{for Q in rules}}
+    /// {{Q.name}}
     {{Q.PascalCaseName}} = {{Q.index}},
     {{end for}}
 }

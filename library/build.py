@@ -39,8 +39,7 @@ for file in os.listdir(settings.rules_path):
         rules.append(load_rule(file[:-3]))
 rules.sort(key=lambda r: r.name())
 
-# TODO: load these from rule files
-domains = ["interval", "triangle", "quadrilateral", "tetrahedron", "hexahedron"]
+domains = list(set(i.domain for r in rules for i in r.rules))
 
 
 def replace(content, subs):
