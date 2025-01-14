@@ -20,6 +20,8 @@ pub enum Domain {
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 #[repr(u8)]
 pub enum QuadratureRule {
+    /// A dummy type that is currently here to make cargo formatting tests pass
+    DummyType = 0,
     {{for Q in rules}}
     /// {{Q.name}}
     {{Q.PascalCaseName}} = {{Q.index}},
