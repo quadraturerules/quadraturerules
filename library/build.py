@@ -2,9 +2,7 @@
 
 import argparse
 import os
-import re
 import sys
-import yaml
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(os.path.join(path, ".."), "website"))
@@ -70,7 +68,10 @@ def rule_replace(content, variable, rule):
     return replace(content, [
         [f"{variable}.order", f"{rule.order}"],
         [f"{variable}.domain", rule.domain],
-        [f"{variable}.points_as_list", "[" + ", ".join(["[" + ", ".join([f"{c}" for c in p]) + "]" for p in rule.points]) + "]"],
+        [f"{variable}.points_as_list", "[" + ", ".join(
+            ["[" + ", ".join([f"{c}" for c in p]) + "]" for p in rule.points]) + "]"],
+        [f"{variable}.points_as_flat_list", "[" + ", ".join([
+            f"{c}" for p in rule.points for c in p]) + "]"],
         [f"{variable}.weights_as_list", "[" + ", ".join([f"{w}" for w in rule.weights]) + "]"],
     ])
 
@@ -169,7 +170,10 @@ def sub_and_copy_files(folder):
             match loop_over:
                 case "in rule":
                     for rule in rules:
-                        with open(os.path.join(os.path.join(target_dir, folder), family_replace(metadata["filename"], var, rule)), "w") as f:
+                        with open(os.path.join(
+                            os.path.join(target_dir, folder),
+                            family_replace(metadata["filename"], var, rule),
+                        ), "w") as f:
                             f.write(sub(family_replace(content, var, rule), {var: rule}))
                 case _:
                     raise ValueError(f"Unsupported loop: {loop_over}")
