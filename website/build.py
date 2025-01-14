@@ -79,6 +79,7 @@ def row(name, content):
     else:
         return f"<tr><td>{name}</td><td>{content}</td>"
 
+rules = []
 
 # Make rule pages
 for file in os.listdir(settings.rules_path):
@@ -90,8 +91,9 @@ for file in os.listdir(settings.rules_path):
         rpath = os.path.join(settings.html_path, rule)
         os.mkdir(rpath)
 
-        content = ""
-        content += heading("h1", f"{q.code}: {q.html_name}")
+        rules.append((q.code, q.html_name, f"/{rule}"))
+
+        content = heading("h1", f"{q.code}: {q.html_name}")
 
         content += "<table class='rule'>"
         content += row("Alternative names", q.alt_names("HTML"))
@@ -107,6 +109,17 @@ for file in os.listdir(settings.rules_path):
                         f"{rule}: {q.html_name}", content)
         end = datetime.now()
         print(f" (completed in {(end - start).total_seconds():.2f}s)")
+
+rules.sort(key=lambda i: i[0])
+
+# List of rules page
+content = heading("h1", "List of quadrature rules")
+content += "<ul>"
+for code, name, url in rules:
+    content += f"<li><a href='{url}'>{code}: {name}</a></li>"
+content += "</ul>"
+
+write_html_page(os.path.join(settings.html_path, "rules.html"), "List of quadrature rules", content)
 
 # Site map
 sitemap[html_local(os.path.join(settings.html_path, "sitemap.html"))] = "List of all pages"
