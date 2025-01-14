@@ -35,6 +35,7 @@ rules = []
 for file in os.listdir(settings.rules_path):
     if file.endswith(".qr"):
         rules.append(load_rule(file[:-3]))
+rules.sort(key=lambda r: r.name())
 
 # TODO: load these from rule files
 domains = ["interval", "triangle", "quadrilateral", "tetrahedron", "hexahedron"]
@@ -195,3 +196,7 @@ def sub_and_copy_files(folder):
 
 
 sub_and_copy_files("")
+
+# Linting
+if lib == "python":
+    os.system(f"cd {target_dir} && ruff format .")

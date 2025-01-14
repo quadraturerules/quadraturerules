@@ -11,6 +11,7 @@ from quadraturerules.domain import Domain
 
 class QuadratureRule(_Enum):
     """A quadrature rule family."""
+
     {{for Q in rules}}
     {{Q.PascalCaseName}} = {{Q.index}}
     {{end for}}
