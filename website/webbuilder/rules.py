@@ -7,14 +7,17 @@ import typing
 
 import yaml
 from webbuilder import settings
+from webbuilder.citations import markup_citation
 from webbuilder.tools import html_local
 
 PointND = typing.Tuple[float, ...]
 Point2D = typing.Tuple[float, float]
 
 
-def dim(domain: str) -> int:
+def dim(domain: str | None) -> int:
     """Get the dimension of a domain."""
+    if domain is None:
+        return -1
     if domain == "point":
         return 0
     if domain == "interval":
@@ -177,6 +180,7 @@ class QRuleFamily:
         itype: str,
         integrand: str,
         notes: typing.List[str],
+        references: typing.List[str],
         rules: typing.List[QRule]
     ):
         """Create."""
@@ -188,6 +192,7 @@ class QRuleFamily:
         self.itype = itype
         self.integrand = integrand
         self._notes = notes
+        self._references = references
         self.rules = rules
 
     def name(self, format: str = "default") -> str:
@@ -240,6 +245,17 @@ class QRuleFamily:
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
+    def references(self, format: str = "HTML"):
+        """Get references."""
+        match format:
+            case "HTML":
+                return "<br />".join(
+                    f"<div class='citation'>{to_html(markup_citation(r))}</div>"
+                    for r in self._references
+                )
+            case _:
+                raise ValueError(f"Unsupported format: {format}")
+
     @property
     def html_name(self) -> str:
         """HTML name."""
@@ -284,6 +300,7 @@ def load_rule(code: str) -> QRuleFamily:
         data["integral-type"] if "integral-type" in data else "single",
         data["integrand"],
         data["notes"] if "notes" in data else [],
+        data["references"] if "references" in data else [],
         rules,
     )
     return r
