@@ -1,4 +1,4 @@
-name: Test and build quadraturerules.org
+name: Test and build libraries
 
 on:
   push:

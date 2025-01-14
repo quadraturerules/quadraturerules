@@ -8,7 +8,6 @@ license = { file = "../../LICENSE" }
 authors = [
     { name = "Matthew Scroggs", email = "quadraturerules@mscroggs.co.uk" }
 ]
-packages = ["quadraturerules", "quadraturerules.rules"]
 dependencies = ["numpy"]
 
 [project.urls]
