@@ -79,6 +79,7 @@ def row(name, content):
     else:
         return f"<tr><td>{name}</td><td>{content}</td>"
 
+
 rules = []
 
 # Make rule pages
