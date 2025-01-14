@@ -129,7 +129,7 @@ class QRule:
                     f.write(f"<td>{i}</td>")
                 f.write(f"<td>{w}</td></tr>\n")
             f.write("</table>\n")
-            f.write("<div class='small-note'>The points given above are given using "
+            f.write("<div class='small-note'>The points given above are represented using "
                     "<a href='/barycentric.html'>barycentric coordinates</a></div>\n")
 
 
