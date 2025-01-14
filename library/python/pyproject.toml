@@ -17,7 +17,7 @@ repository = "https://github.com/mscroggs/quadraturerules"
 [project.optional-dependencies]
 style = ["ruff", "mypy"]
 test = ["pytest"]
-ci = ["quadraturetules[test]", "quadraturerules[style]"]
+ci = ["quadraturerules[test]", "quadraturerules[style]"]
 
 [tool.ruff]
 line-length = 100
