@@ -17,24 +17,22 @@ github_token: _typing.Optional[str] = None
 
 processes = 1
 
-owners = ["mscroggs"]
-editors: _typing.List[str] = []
-url = "https://quadraturerules.org"
-website_name = [
+settings.owners = ["mscroggs"]
+settings.editors = ["mscroggs"]
+settings.url = "https://quadraturerules.org"
+settings.website_name = [
     "The online encyclopedia of quadrature rules",
     "the online encyclopedia of quadrature rules",
 ]
-repo = "mscroggs/quadraturerules"
+settings.repo = "mscroggs/quadraturerules"
 
 settings.dir_path = dir_path
 settings.html_path = html_path
 settings.template_path = template_path
 settings.github_token = github_token
-settings.owners = owners
-settings.editors = editors
-settings.url = url
-settings.website_name = website_name
-settings.repo = repo
+settings.str_extras = [
+    ("{{tick}}", "<span style='color:#008800'>&#10004;</span>"),
+]
 
 
 def set_html_path(path):
