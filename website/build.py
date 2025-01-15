@@ -83,7 +83,7 @@ def row(name, content):
     if content == "":
         return ""
     else:
-        return f"<tr><td>{name}</td><td>{content}</td>"
+        return f"<tr><td>{name.replace(' ', '&nbsp;')}</td><td>{content}</td>"
 
 
 rules = []

@@ -2,7 +2,6 @@
   --gray: #5D707F;
   --blue: #0E0E52;
   --blue2: #29A4EC;
-  --color4: #555500;
 }
 
 body {padding:0px;margin:0px; margin-bottom:100px}
@@ -17,7 +16,7 @@ a, a:link, a:active, a:visited {color:var(--blue)}
 .footer .content {padding:10px}
 .footer .content a {margin-right:10px;margin-left:10px}
 
-.head, .footer {font-family: 'Convergence', sans-serif;font-weight:400}
+.head, .footer {font-family: 'Convergence', sans-serif;font-weight:400;background-color:var(--gray);}
 
 .title {text-align:center;font-size:20px}
 .title .qrules {text-align:center;font-size:45px;display:block}
