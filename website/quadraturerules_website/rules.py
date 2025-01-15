@@ -226,6 +226,7 @@ class QRuleFamily:
 
     @property
     def rules_by_domain(self) -> typing.Dict[str, typing.List[QRule]]:
+        """Get the rules sorted by domain."""
         rules = {}
         for r in self.rules:
             if r.domain not in rules:
