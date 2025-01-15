@@ -16,6 +16,8 @@ start_all = datetime.now()
 parser = argparse.ArgumentParser(description="Build quadraturerules.org")
 parser.add_argument('destination', metavar='destination', nargs="?",
                     default=None, help="Destination of HTML files.")
+parser.add_argument('--github-token', metavar="github_token", default=None,
+                    help="Provide a GitHub token to get update timestamps.")
 
 sitemap = {}
 
@@ -44,6 +46,8 @@ def load_md_file(matches):
 args = parser.parse_args()
 if args.destination is not None:
     settings.set_html_path(args.destination)
+if args.github_token is not None:
+    settings.set_github_token(args.github_token)
 
 # Prepare paths
 if os.path.isdir(settings.html_path):

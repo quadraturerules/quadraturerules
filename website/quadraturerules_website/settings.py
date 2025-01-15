@@ -26,3 +26,10 @@ def set_html_path(path):
     global html_path
     html_path = path
     settings.html_path = path
+
+
+def set_github_token(token):
+    """Set GitHub token."""
+    global github_token
+    github_token = token
+    settings.github_token = token
