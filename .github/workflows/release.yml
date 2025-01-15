@@ -2,14 +2,38 @@ name: Make new releases
 
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
 
 jobs:
+  check-version:
+    name: Make tag if version number has increased
+    runs-on: ubuntu-latest
+    outputs:
+      release: ${{ steps.release.output.release }}
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
+    - name: Install PyGitHub
+      run: python3 -m pip install PyGitHub
+    - name: Check version number and make release if necessary
+      run: python .github/scripts/version.py ${{ secrets.GITHUB_TOKEN }} >> $GITHUB_OUTPUT
+      id: release
+
   python-library:
     name: Release Python library
     runs-on: ubuntu-22.04
     permissions:
       id-token: write
+    needs:
+      - check-version
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,12 +60,15 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: library/python.build/dist
+        if: needs.check-version.outputs.release == 'yes'
 
   rust-library:
     name: Release Rust library
     runs-on: ubuntu-22.04
     permissions:
       id-token: write
+    needs:
+      - check-version
     steps:
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -62,3 +89,4 @@ jobs:
         with:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           path: './library/rust.build'
+        if: needs.check-version.outputs.release == 'yes'
