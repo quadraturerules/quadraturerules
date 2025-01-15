@@ -6,8 +6,8 @@ import sys
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(os.path.join(path, ".."), "website"))
-from webbuilder import settings  # noqa: E402
-from webbuilder.rules import load_rule  # noqa: E402
+from quadraturerules_website import settings  # noqa: E402
+from quadraturerules_website.rules import load_rule  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
 parser.add_argument('library', metavar='library', nargs=1,
