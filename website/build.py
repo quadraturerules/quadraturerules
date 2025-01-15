@@ -5,21 +5,17 @@ import os
 import re
 from datetime import datetime
 
-from webbuilder import settings
-from webbuilder.html import make_html_page
-from webbuilder.markup import heading, heading_with_self_ref, markup
-from webbuilder.rules import load_rule
-from webbuilder.tools import html_local, parse_metadata
+from quadraturerules_website import settings
+from webtools.html import make_html_page
+from webtools.markup import heading, heading_with_self_ref, markup
+from quadraturerules_website.rules import load_rule
+from webtools.tools import html_local, parse_metadata
 
 start_all = datetime.now()
 
 parser = argparse.ArgumentParser(description="Build quadraturerules.org")
 parser.add_argument('destination', metavar='destination', nargs="?",
                     default=None, help="Destination of HTML files.")
-parser.add_argument('--github-token', metavar="github_token", default=None,
-                    help="Provide a GitHub token to get update timestamps.")
-parser.add_argument('--processes', metavar="processes", default=None,
-                    help="The number of processes to run the building of examples on.")
 
 sitemap = {}
 
@@ -47,10 +43,7 @@ def load_md_file(matches):
 
 args = parser.parse_args()
 if args.destination is not None:
-    settings.html_path = args.destination
-
-if args.processes is not None:
-    settings.processes = int(args.processes)
+    settings.set_html_path(args.destination)
 
 # Prepare paths
 if os.path.isdir(settings.html_path):

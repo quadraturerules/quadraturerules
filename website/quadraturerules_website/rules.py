@@ -6,9 +6,9 @@ import re
 import typing
 
 import yaml
-from webbuilder import settings
-from webbuilder.citations import markup_citation
-from webbuilder.tools import html_local
+from quadraturerules_website import settings
+from webtools.citations import markup_citation
+from webtools.tools import html_local
 
 PointND = typing.Tuple[float, ...]
 Point2D = typing.Tuple[float, float]
