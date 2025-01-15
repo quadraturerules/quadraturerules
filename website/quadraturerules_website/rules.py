@@ -63,13 +63,17 @@ class QRule:
         domain: typing.Optional[str],
         order: typing.Optional[int],
         points: typing.List[typing.List[float]],
-        weights: typing.List[float]
+        weights: typing.List[float],
+        itype: str,
+        rule: str,
     ):
         """Create."""
         self.domain = domain
         self.order = order
         self.points = points
         self.weights = weights
+        self.itype = itype
+        self._rule = rule
 
     def title(self, format: str = "default") -> str:
         """Get title."""
@@ -154,7 +158,32 @@ class QRule:
 
     def save_html_table(self, filename):
         """Save HTML table of points and weights to a file."""
+        assert filename.endswith(".html")
+        filename_root = filename[:-5]
+        filename_root_local = html_local(filename_root)
+        with open(f"{filename_root}.rule", "w") as f:
+            f.write(self._rule)
         with open(filename, "w") as f:
+            f.write("<div class='small-note'>"
+                    f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>")
+            if self.itype == "single":
+                with open(f"{filename_root}.csv", "w") as f2:
+                    f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
+                    f2.write(",weight\n")
+                    for p, w in zip(self.points, self.weights):
+                        f2.write(",".join(f"{i}" for i in p) + f",{w}")
+                f.write("<div class='small-note'>"
+                        f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>")
+                with open(f"{filename_root}.json", "w") as f2:
+                    f2.write('{"points": [')
+                    f2.write(", ".join("[" + ", ".join(
+                        f"{i}" for i in p) + "]" for p in self.points))
+                    f2.write('], "weights": [')
+                    f2.write(", ".join(f"{w}" for w in self.weights))
+                    f2.write(']}')
+                f.write("<div class='small-note'>"
+                        f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>")
+            f.write("<br />\n")
             f.write("<table class='points'>\n")
             f.write("<thead>")
             f.write(f"<tr><td colspan='{len(self.points[0])}'>Point</td><td>Weight</td></tr>")
@@ -267,6 +296,8 @@ def load_rule(code: str) -> QRuleFamily:
     with open(os.path.join(settings.rules_path, f"{code}.qr")) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
 
+    itype = data["integral-type"] if "integral-type" in data else "single"
+
     rules = []
     pt_dir = os.path.join(settings.rules_path, f"{code}")
     for pt_file in os.listdir(pt_dir):
@@ -274,13 +305,13 @@ def load_rule(code: str) -> QRuleFamily:
             with open(os.path.join(pt_dir, pt_file)) as f:
                 content = f.read()
                 if content.startswith("--\n"):
-                    _, metadata_, content = content.split("--", 3)
+                    _, metadata_, rule_content = content.split("--", 3)
                     metadata = yaml.safe_load(metadata_)
                 else:
                     metadata = {}
                 points = []
                 weights = []
-                for line in content.strip().split("\n"):
+                for line in rule_content.strip().split("\n"):
                     p, w = line.split("|")
                     points.append([float(i) for i in p.strip().split()])
                     weights.append(float(w))
@@ -290,6 +321,8 @@ def load_rule(code: str) -> QRuleFamily:
                     metadata.get("order"),
                     points,
                     weights,
+                    itype,
+                    content,
                 ))
     rules.sort(key=lambda r: (dim(r.domain), r.domain, r.order))
 
@@ -297,7 +330,7 @@ def load_rule(code: str) -> QRuleFamily:
         code,
         data["name"],
         data["alt-names"] if "alt-names" in data else [],
-        data["integral-type"] if "integral-type" in data else "single",
+        itype,
         data["integrand"],
         data["notes"] if "notes" in data else [],
         data["references"] if "references" in data else [],
