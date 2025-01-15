@@ -2,7 +2,7 @@ name: Xiao--Gimbutas
 integral-type: single
 integrand: f(x)
 notes:
-  - If \(f(x)\) is a degree \(n\) polynomial, then an order \(n\) Gauss--Legendre rule will integrate it exactly.
+  - If \(f(x)\) is a degree \(n\) polynomial, then an order \(n\) Xiao--Gimbutas rule will integrate it exactly.
 references:
   - title: A numerical algorithm for the construction of efficient quadrature rules in two and higher dimensions
     author:
