@@ -109,21 +109,40 @@ for file in os.listdir(settings.rules_path):
         content += row("References", q.references("HTML"))
         content += "</table>"
 
-        for i, r in enumerate(q.rules):
-            content += heading_with_self_ref("h2", r.title("HTML"))
-            content += r.image(os.path.join(rpath, f"{r.title('filename')}.svg"))
-            r.save_html_table(os.path.join(rpath, f"{r.title('filename')}.html"))
-            content += (
-                "<div>"
-                f"<a class='toggler' id='show-{i}' "
-                f"href=\"javascript:show_points('/{rule}/{r.title('filename')}.html', {i})\">"
-                "&darr; show points and weights &darr;</a>"
-                f"<a class='toggler' id='hide-{i}' "
-                f"href=\"javascript:hide_points({i})\" style='display:none'>"
-                "&uarr; hide points and weights &uarr;</a>"
-                "</div>"
-                f"<div class='point-detail' id='point-detail-{i}'></div>"
-            )
+        for domain, rulelist in q.rules_by_domain.items():
+            content += heading_with_self_ref("h2", domain[0].upper() + domain[1:])
+            domain_content = heading(
+                "h1",
+                f"{q.html_name} on {'an' if domain[0] in 'aeiou' else 'a'} {domain}")
+            domain_content += f"<a class='more' href='/{q.code}'>&larr; Back to {q.html_name}</a>"
+            for i, r in enumerate(rulelist):
+                r.save_html_table(os.path.join(rpath, f"{r.title('filename')}.html"))
+                rule_content = ""
+                if r.order is not None:
+                    rule_content += heading_with_self_ref("h3", f"Order {r.order}")
+                rule_content += r.image(os.path.join(rpath, f"{r.title('filename')}.svg"))
+                rule_content += (
+                    "<div>"
+                    f"<a class='toggler' id='show-{i}' "
+                    f"href=\"javascript:show_points('/{rule}/{r.title('filename')}.html', {i})\">"
+                    "&darr; show points and weights &darr;</a>"
+                    f"<a class='toggler' id='hide-{i}' "
+                    f"href=\"javascript:hide_points({i})\" style='display:none'>"
+                    "&uarr; hide points and weights &uarr;</a>"
+                    "</div>"
+                    f"<div class='point-detail' id='point-detail-{i}'></div>"
+                )
+                if i < 5:
+                    content += rule_content
+                domain_content += rule_content
+            if len(rulelist) > 5:
+                content += (
+                    f"<a class='more' href='/{q.code}/{domain}.html'>"
+                    "View higher order rules</a>")
+            write_html_page(
+                os.path.join(rpath, f"{domain}.html"),
+                f"{rule}: {q.html_name} on {'an' if domain[0] in 'aeiou' else 'a'} {domain}",
+                domain_content)
         content += (
             "<div id='point-detail-dummy' "
             "style='visibility:hidden;position:absolute;top:0;left:0;z-index:-10'></div>"
