@@ -1,4 +1,6 @@
 name: Gauss--Legendre
+alt-names:
+  - Gauss
 integral-type: single
 integrand: f(x)
 notes:

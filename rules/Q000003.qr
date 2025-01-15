@@ -1,6 +1,7 @@
 name: Gauss--Lobatto--Legendre
 alt-names:
   - GLL
+  - Lobatto
 integral-type: single
 integrand: f(x)
 notes:
