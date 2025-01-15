@@ -18,6 +18,7 @@ version = vfile1.decoded_content.decode("utf8").strip()
 
 for release in repo.get_releases():
     if release.tag_name == f"v{version}":
+        print("release=no")
         break
 else:
     repo.create_git_tag_and_release(
@@ -28,3 +29,4 @@ else:
         branch.commit.sha,
         "commit",
     )
+    print("release=yes")
