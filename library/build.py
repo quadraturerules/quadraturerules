@@ -72,15 +72,22 @@ def family_replace(content, variable, family):
 
 def rule_replace(content, variable, rule):
     """Replace templated code for a rule."""
-    return replace(content, [
+    subs = [
         [f"{variable}.order", f"{rule.order}"],
         [f"{variable}.domain", rule.domain],
-        [f"{variable}.points_as_list", "[" + ", ".join(
-            ["[" + ", ".join([f"{c}" for c in p]) + "]" for p in rule.points]) + "]"],
-        [f"{variable}.points_as_flat_list", "[" + ", ".join([
-            f"{c}" for p in rule.points for c in p]) + "]"],
-        [f"{variable}.weights_as_list", "[" + ", ".join([f"{w}" for w in rule.weights]) + "]"],
-    ])
+    ]
+    for open, close, name in [
+        ("[", "]", "list"),
+        ("{", "}", "curly_list"),
+    ]:
+        subs += [
+            [f"{variable}.points_as_{name}", open + ", ".join(
+                [open + ", ".join([f"{c}" for c in p]) + close for p in rule.points]) + close],
+            [f"{variable}.points_as_flat_{name}", open + ", ".join([
+                f"{c}" for p in rule.points for c in p]) + close],
+            [f"{variable}.weights_as_{name}", open + ", ".join([f"{w}" for w in rule.weights]) + close],
+        ]
+    return replace(content, subs)
 
 
 def domain_replace(content, variable, domain):

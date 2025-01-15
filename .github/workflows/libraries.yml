@@ -86,3 +86,35 @@ jobs:
           cd library/rust.build
           cargo test ${{ matrix.feature-flags }}
         name: Run Rust tests
+
+  cpp-library:
+    name: Build and test C++ library
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v3
+
+      - run: |
+          python3 -m pip install -r website/requirements.txt
+          python3 -m pip install -r library/requirements.txt
+        name: Install requirements
+
+      - run: |
+          cd library
+          python build.py cpp
+          mkdir cpp.build/build
+          cd cpp.build/build
+          cmake ..
+          make
+          make install
+        name: Build C++ library
+
+      - run: |
+          cd library/cpp.build/test/test_sum_weights
+          cmake .
+          make
+          ./demo_create_and_tabulate
+        name: Run c++ tests
