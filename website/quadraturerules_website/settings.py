@@ -12,7 +12,7 @@ pages_path = _os.path.join(dir_path, "pages")
 rules_path = _os.path.join(root_path, "rules")
 html_path = _os.path.join(dir_path, "_html")
 
-github_token = None
+github_token: _typing.Optional[str] = None
 
 processes = 1
 
