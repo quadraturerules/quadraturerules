@@ -2,6 +2,7 @@
 
 import os as _os
 import typing as _typing
+
 from webtools import settings
 
 dir_path = _os.path.join(_os.path.dirname(_os.path.realpath(__file__)), "..")
