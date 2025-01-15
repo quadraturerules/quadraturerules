@@ -30,6 +30,7 @@ jobs:
   python-library:
     name: Release Python library
     runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
     permissions:
       id-token: write
     needs:
@@ -60,11 +61,11 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: library/python.build/dist
-        if: needs.check-version.outputs.release == 'yes'
 
   rust-library:
     name: Release Rust library
     runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
     permissions:
       id-token: write
     needs:
@@ -89,4 +90,3 @@ jobs:
         with:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           path: './library/rust.build'
-        if: needs.check-version.outputs.release == 'yes'
