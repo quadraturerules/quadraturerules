@@ -224,6 +224,15 @@ class QRuleFamily:
         self._references = references
         self.rules = rules
 
+    @property
+    def rules_by_domain(self) -> typing.Dict[str, typing.List[QRule]]:
+        rules = {}
+        for r in self.rules:
+            if r.domain not in rules:
+                rules[r.domain] = []
+            rules[r.domain].append(r)
+        return rules
+
     def name(self, format: str = "default") -> str:
         """Get name."""
         parts = self._name.split("--")
