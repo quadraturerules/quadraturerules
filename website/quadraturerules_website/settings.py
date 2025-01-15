@@ -1,6 +1,7 @@
 """Settings."""
 
 import os as _os
+import typing as _typing
 from webtools import settings
 
 dir_path = _os.path.join(_os.path.dirname(_os.path.realpath(__file__)), "..")
@@ -16,7 +17,7 @@ github_token = None
 processes = 1
 
 owners = ["mscroggs"]
-editors = []
+editors: _typing.List[str] = []
 url = "https://quadraturerules.org"
 website_name = [
     "The online encyclopedia of quadrature rules",
