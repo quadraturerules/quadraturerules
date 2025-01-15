@@ -15,10 +15,24 @@ github_token = None
 
 processes = 1
 
+owners = ["mscroggs"]
+editors = []
+url = "https://quadraturerules.org"
+website_name = [
+    "The online encyclopedia of quadrature rules",
+    "the online encyclopedia of quadrature rules",
+]
+repo = "mscroggs/quadraturerules"
+
 settings.dir_path = dir_path
 settings.html_path = html_path
 settings.template_path = template_path
 settings.github_token = github_token
+settings.owners = owners
+settings.editors = editors
+settings.url = url
+settings.website_name = website_name
+settings.repo = repo
 
 
 def set_html_path(path):
