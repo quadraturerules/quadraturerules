@@ -6,10 +6,9 @@ import re
 from datetime import datetime
 
 from quadraturerules_website import settings
-from quadraturerules_website.markup import markup
 from quadraturerules_website.rules import load_rule
 from webtools.html import make_html_page
-from webtools.markup import heading, heading_with_self_ref
+from webtools.markup import heading, heading_with_self_ref, markup
 from webtools.tools import html_local, parse_metadata
 
 start_all = datetime.now()
