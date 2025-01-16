@@ -33,9 +33,9 @@ jobs:
     - name: Compare version numbers
       run: |
         if [ "${{ steps.release_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
-           echo "release=no" >> $GITHUb_OUTPUT
+           echo "release=no" >> $GITHUB_OUTPUT
         else
-           echo "release=yes" >> $GITHUb_OUTPUT
+           echo "release=yes" >> $GITHUB_OUTPUT
         fi
       id: release
     - name: Make new release tag
