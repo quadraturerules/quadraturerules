@@ -1,0 +1,3 @@
+name: centroid quadrature
+integral-type: single
+integrand: f(x)
