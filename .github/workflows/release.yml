@@ -165,14 +165,14 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.version_tag.outputs.tag }}',
+              ref: 'refs/tags/${{ needs.check-version.outputs.tag }}',
               sha: context.sha
             })
       - name: Make GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.version_tag.outputs.tag }}
-          tag_name: ${{ steps.version_tag.outputs.tag }}
+          name: ${{ needs.check-version.outputs.tag }}
+          tag_name: ${{ needs.check-version.outputs.tag }}
           files: |
             cpp_source.tar.gz
           body: |
