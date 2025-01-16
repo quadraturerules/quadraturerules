@@ -107,24 +107,25 @@ for file in os.listdir(settings.rules_path):
                 rule_content += r.image(join(rpath, f"{r.title('filename')}.svg"))
                 rule_content += (
                     "<div>"
-                    f"<a class='toggler' id='show-{i}' "
-                    f"href=\"javascript:show_points('/{rule}/{r.title('filename')}.html', {i})\">"
+                    f"<a class='toggler' id='show-{domain}-{i}' "
+                    f"href=\"javascript:show_points('/{rule}/{r.title('filename')}.html',"
+                    f"'{domain}-{i}')\">"
                     "&darr; show points and weights &darr;</a>"
-                    f"<a class='toggler' id='hide-{i}' "
-                    f"href=\"javascript:hide_points({i})\" style='display:none'>"
+                    f"<a class='toggler' id='hide-{domain}-{i}' "
+                    f"href=\"javascript:hide_points('{domain}-{i}')\" style='display:none'>"
                     "&uarr; hide points and weights &uarr;</a>"
                     "</div>"
-                    f"<div class='point-detail' id='point-detail-{i}'></div>"
+                    f"<div class='point-detail' id='point-detail-{domain}-{i}'></div>"
                 )
                 if i < 5:
                     content += rule_content
                 domain_content += rule_content
             if len(rulelist) > 5:
                 content += (
-                    f"<a class='more' href='/{q.code}/{domain}.html'>"
+                    f"<a class='more' href='/{q.code}/more-{domain}.html'>"
                     "View higher order rules</a>")
             write_html_page(
-                join(rpath, f"{domain}.html"),
+                join(rpath, f"more-{domain}.html"),
                 f"{rule}: {q.html_name} on {'an' if domain[0] in 'aeiou' else 'a'} {domain}",
                 domain_content)
         content += (
