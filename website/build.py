@@ -84,6 +84,7 @@ def make_pages(sub_dir=""):
             end = datetime.now()
             print(f" (completed in {(end - start).total_seconds():.2f}s)")
 
+
 make_pages()
 
 
