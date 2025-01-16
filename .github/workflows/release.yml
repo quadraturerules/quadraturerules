@@ -39,10 +39,6 @@ jobs:
            echo "release=yes" >> $GITHUB_OUTPUT
         fi
       id: release
-    - run: |
-        VERSION=${{ steps.version_tag.outputs.tag }}
-        echo "VERSION=${VERSION:1}" >> $GITHUB_ENV
-    - run: echo "${VERSION}"
 
   python-library:
     name: Release Python library
