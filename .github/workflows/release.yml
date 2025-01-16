@@ -142,6 +142,7 @@ jobs:
   make-release:
     name: Make release on GitHub
     runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
     needs:
       - check-version
       - python-library
@@ -152,10 +153,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: cpp_source
-
+      - run: ls
       - name: Make GitHub release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: ${{ steps.version_tag.outputs.tag }}
           tag_name: ${{ steps.version_tag.outputs.tag }}
