@@ -114,8 +114,5 @@ jobs:
 
       - run: |
           export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$(pwd)/library/cpp.build/build"
-          cd library/cpp.build/test/test_sum_weights
-          cmake .
-          make
-          ./demo_create_and_tabulate
+          python library/cpp.build/test/run_tests.py
         name: Run c++ tests
