@@ -25,7 +25,7 @@ jobs:
 
     - name: Get latest tag
       id: release_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      run: echo -n "$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
     - name: Get version
       id: version_tag
       run: echo -n "tag=v$(cat VERSION)" >> $GITHUB_OUTPUT
@@ -36,14 +36,14 @@ jobs:
 
     - name: Compare version numbers
       run: |
-        if [ "${{ steps.release_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
+        if [ "${{ steps.version_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
            echo "release=no" >> $GITHUB_OUTPUT
         else
            echo "release=yes" >> $GITHUB_OUTPUT
         fi
       id: release
     - run: |
-        VERSION=${{ steps.release_tag.outputs.tag }}
+        VERSION=${{ steps.version_tag.outputs.tag }}
         echo "VERSION=${VERSION:1}" >> $GITHUB_ENV
     - run: echo "${VERSION}"
 
