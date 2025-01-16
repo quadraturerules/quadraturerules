@@ -113,6 +113,7 @@ jobs:
         name: Build C++ library
 
       - run: |
+          export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$(pwd)/library/cpp.build/build"
           cd library/cpp.build/test/test_sum_weights
           cmake .
           make
