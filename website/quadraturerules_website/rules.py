@@ -271,12 +271,12 @@ class QRuleFamily:
 
     def name(self, format: str = "default") -> str:
         """Get name."""
-        parts = self._name.split("--")
+        parts = re.split(r"--|\s|-", self._name)
         match format:
             case "default":
                 return self._name
             case "HTML":
-                return to_html("&ndash;".join(parts))
+                return to_html(self._name)
             case "PascalCase":
                 return "".join([i[0].upper() + i[1:].lower() for i in parts])
             case "camelCase":

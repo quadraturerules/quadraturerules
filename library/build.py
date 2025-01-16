@@ -100,25 +100,30 @@ def rule_replace(content, variable, rule):
 
 def domain_replace(content, variable, domain):
     """Replace templated code for a domain."""
+    parts = re.split(r"--|\s|-", domain)
     return replace(content, [
         [f"{variable}.index", f"{domains.index(domain)}"],
-        [f"{variable}.PascalCaseName", domain[0].upper() + domain[1:].lower()],
-        [f"{variable}.camelCaseName", domain.lower()],
-        [f"{variable}.snake_case_name", domain.lower()],
+        [f"{variable}.PascalCaseName", "".join(i[0].upper() + i[1:].lower() for i in parts)],
+        [f"{variable}.camelCaseName", parts[0].lower() + "".join(
+            i[0].upper() + i[1:].lower() for i in parts[1:])],
+        [f"{variable}.snake_case_name", "_".join(i.lower() for i in parts)],
         [f"{variable}.name", domain],
     ])
 
 
 def is_true(condition):
     """Check if a condition is true."""
-    a, op, b = condition.split(" ")
-    match op:
-        case "==":
-            return a == b
-        case "!=":
-            return a != b
-        case _:
-            raise ValueError(f"Unsupported operator: {op}")
+    if "==" in condition:
+        a, b = condition.split("==")
+        a = a.strip()
+        b = b.strip()
+        return a == b
+    if "!=" in condition:
+        a, b = condition.split("!=")
+        a = a.strip()
+        b = b.strip()
+        return a != b
+    raise ValueError(f"Unsupported condition: {condition}")
 
 
 def load_library_file(m):
