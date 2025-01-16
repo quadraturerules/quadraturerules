@@ -1,0 +1,7 @@
+images:
+  - rule: Q000002
+    domain: triangle
+    order: 10
+  - rule: Q000001
+    domain: interval
+    order: 5
