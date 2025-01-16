@@ -113,24 +113,58 @@ class QRule:
                     match self.domain:
                         case "interval":
                             size = (220, 20)
-                            domain: typing.List[PointND] = [(-1.0,), (1.0,)]
+                            domain: typing.List[PointND] = [(0.0,), (1.0,)]
                             domain_lines = [[0, 1]]
-                            origin = (110.0, 10.0)
-                            axes = [(100.0, 0.0)]
+                            origin = (10.0, 10.0)
+                            axes = [(200.0, 0.0)]
                         case "triangle":
-                            size = (220, 184)
+                            size = (220, 194)
                             domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
                             domain_lines = [[0, 1, 2, 0]]
-                            origin = (10.0, 174.0)
+                            origin = (10.0, 184.0)
                             axes = [(200.0, 0.0), (100.0, -100*math.sqrt(3))]
+                        case "quadrilateral":
+                            size = (220, 220)
+                            domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            domain_lines = [[0, 1, 3, 2, 0]]
+                            origin = (10.0, 210.0)
+                            axes = [(200.0, 0.0), (0.0, -200.0)]
                         case "tetrahedron":
-                            size = (220, 184)
+                            size = (231, 178)
                             domain = [
                                 (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)
                             ]
                             domain_lines = [[0, 1, 2, 0], [0, 3, 1], [3, 2]]
-                            origin = (20.0, 174.0)
-                            axes = [(200.0, 10.0), (100.0, -30.0), (100.0, -150.0)]
+                            origin = (10.0, 168.0)
+                            axes = [(211.0, -9.0), (110.0, -70.0), (107.0, -158.0)]
+                        case "hexahedron":
+                            size = (223, 223)
+                            domain = [
+                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
+                                (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0), (1.0, 1.0, 1.0),
+                            ]
+                            domain_lines = [[0, 1, 3, 2, 0], [4, 5, 7, 6, 4],
+                                            [0, 4], [1, 5], [2, 6], [3, 7]]
+                            origin = (10.0, 192.0)
+                            axes = [(126.0, 21.0), (77.0, -49.0), (0.0, -133.0)]
+                        case "triangular prism":
+                            size = (167, 209)
+                            domain = [
+                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0),
+                                (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0),
+                            ]
+                            domain_lines = [[0, 1, 2, 0], [3, 4, 5, 3], [0, 3], [1, 4], [2, 5]]
+                            origin = (10.0, 199.0)
+                            axes = [(147.7, -6.3), (77.0, -49.0), (0.0, -140.0)]
+                        case "square-based pyramid":
+                            size = (223, 164)
+                            domain = [
+                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
+                                (0.0, 0.0, 1.0),
+                            ]
+                            domain_lines = [[0, 1, 3, 2, 0], [0, 4, 1], [2, 4, 3]]
+                            origin = (10.0, 133.0)
+                            axes = [(126.0, 21.0), (77.0, -49.0), (101.5, -123.0)]
                         case _:
                             raise ValueError(f"Unsupported domain: {self.domain}")
                     f.write(f"<svg width='{size[0]}' height='{size[1]}' "
@@ -237,12 +271,12 @@ class QRuleFamily:
 
     def name(self, format: str = "default") -> str:
         """Get name."""
-        parts = self._name.split("--")
+        parts = re.split(r"--|\s|-", self._name)
         match format:
             case "default":
                 return self._name
             case "HTML":
-                return to_html("&ndash;".join(parts))
+                return to_html(self._name)
             case "PascalCase":
                 return "".join([i[0].upper() + i[1:].lower() for i in parts])
             case "camelCase":
