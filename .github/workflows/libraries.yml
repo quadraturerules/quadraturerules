@@ -113,6 +113,6 @@ jobs:
         name: Build C++ library
 
       - run: |
-          export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$(pwd)/library/cpp.build/build"
+          export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$(pwd)/library/cpp.build/build/lib/cmake"
           python library/cpp.build/test/run_tests.py
         name: Run c++ tests
