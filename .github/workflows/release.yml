@@ -2,7 +2,7 @@ name: Make new releases
 
 on:
   push:
-#    branches: [main]
+    branches: [main]
 
 jobs:
   check-version:
@@ -38,6 +38,8 @@ jobs:
            echo "release=yes" >> $GITHUB_OUTPUT
         fi
       id: release
+    - run: echo "${{ steps.release_tag.outputs.tag:1 }}"
+    - run: echo "${{ steps.version_tag.outputs.tag:1 }}"
 
   python-library:
     name: Release Python library
@@ -149,8 +151,8 @@ jobs:
 
     needs:
       - check-version
-#      - python-library
-#      - rust-library
+      - python-library
+      - rust-library
       - cpp-library
     steps:
       - name: Download C++ source
@@ -176,6 +178,6 @@ jobs:
           files: |
             cpp_source.tar.gz
           body: |
-            - [C++ source]()
+            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ needs.check-version.outputs.tag }}/cpp_source.tar.gz)
             - [Python package](https://pypi.org/project/quadraturerules/${{ needs.check-version.outputs.tag }}/)
-            - [Rust crate](https://crates.io/crates/quadraturerules/${{ needs.check-version.outputs.tag }})
+            - [Rust crate](https://crates.io/crates/quadraturerules/${{ needs.check-version.outputs.tag:1 }})
