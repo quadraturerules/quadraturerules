@@ -63,7 +63,6 @@ with open(join(settings.html_path, "CNAME"), "w") as f:
 # Make pages
 def make_pages(sub_dir=""):
     """Make pages recursively."""
-
     for file in os.listdir(join(settings.pages_path, sub_dir)):
         if os.path.isdir(join(settings.pages_path, sub_dir, file)):
             os.mkdir(join(settings.html_path, sub_dir, file))
