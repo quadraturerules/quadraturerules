@@ -2,10 +2,13 @@
 
 import argparse
 import os
+import re
 import sys
 
+from webtools.tools import join
+
 path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(os.path.join(path, ".."), "website"))
+sys.path.append(join(path, "..", "website"))
 from quadraturerules_website import settings  # noqa: E402
 from quadraturerules_website.rules import load_rule  # noqa: E402
 
@@ -18,20 +21,24 @@ lib = args.library[0]
 
 assert lib in os.listdir(path)
 
-source_dir = os.path.join(path, lib)
+source_dir = join(path, lib)
 assert os.path.isdir(source_dir)
-target_dir = os.path.join(path, f"{lib}.build")
+target_dir = join(path, f"{lib}.build")
 if os.path.isdir(target_dir):
     os.system(f"rm -r {target_dir}")
 
 os.mkdir(target_dir)
 
-with open(os.path.join(os.path.join(path, ".."), "VERSION")) as f:
+with open(join(path, "..", "VERSION")) as f:
     version = f.read().strip()
-with open(os.path.join(os.path.join(path, ".."), "LICENSE")) as f:
+with open(join(path, "..", "LICENSE")) as f:
     license = "\n".join(f.read().split("\n")[2:])
-with open(os.path.join(os.path.join(path, ".."), "README.md")) as f:
+with open(join(path, "..", "README.md")) as f:
     readme = f.read()
+readme = re.sub(
+    r"\(website/pages/([^\)]+)\.md\)",
+    r"(https://quadraturerules.org/\1.html)",
+    readme)
 
 rules = []
 for file in os.listdir(settings.rules_path):
@@ -114,11 +121,18 @@ def is_true(condition):
             raise ValueError(f"Unsupported operator: {op}")
 
 
+def load_library_file(m):
+    """Load the content of a files in website/pages/libraries/."""
+    with open(join(path, "..", "website", "pages", "libraries", f"{m[1]}.md")) as f:
+        return "#" + f.read()
+
+
 def sub(content, vars={}):
     """Make substitutions in a file."""
     content = content.replace("{{VERSION}}", version)
     content = content.replace("{{LICENSE}}", license)
     content = content.replace("{{README}}", readme)
+    content = re.sub(r"{{website/pages/libraries/([^}]+)}}", load_library_file, content)
     while "{{end for}}" in content:
         temp, after = content.split("{{end for}}", 1)
         if after.startswith("\n"):
@@ -172,15 +186,15 @@ def sub(content, vars={}):
 
 def sub_and_copy_files(folder):
     """Make substitutions and copy all files recursively in a directory."""
-    for file_ in os.listdir(os.path.join(source_dir, folder)):
-        file = os.path.join(folder, file_)
+    for file_ in os.listdir(join(source_dir, folder)):
+        file = join(folder, file_)
         if file_.startswith("."):
             continue
-        if os.path.isdir(os.path.join(source_dir, file)):
-            os.mkdir(os.path.join(target_dir, file))
+        if os.path.isdir(join(source_dir, file)):
+            os.mkdir(join(target_dir, file))
             sub_and_copy_files(file)
         elif file.endswith(".template"):
-            with open(os.path.join(source_dir, file)) as f:
+            with open(join(source_dir, file)) as f:
                 content = f.read()
             _, metadata_, content = content.split("--\n", 2)
             metadata = {}
@@ -191,17 +205,18 @@ def sub_and_copy_files(folder):
             match loop_over:
                 case "in rule":
                     for rule in rules:
-                        with open(os.path.join(
-                            os.path.join(target_dir, folder),
+                        with open(join(
+                            target_dir,
+                            folder,
                             family_replace(metadata["filename"], var, rule),
                         ), "w") as f:
                             f.write(sub(family_replace(content, var, rule), {var: rule}))
                 case _:
                     raise ValueError(f"Unsupported loop: {loop_over}")
         else:
-            with open(os.path.join(source_dir, file)) as f:
+            with open(join(source_dir, file)) as f:
                 content = f.read()
-            with open(os.path.join(target_dir, file), "w") as f:
+            with open(join(target_dir, file), "w") as f:
                 f.write(sub(content))
 
 
