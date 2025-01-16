@@ -149,7 +149,7 @@ jobs:
 
     needs:
       - check-version
-      - python-library
+#      - python-library
 #      - rust-library
       - cpp-library
     steps:
