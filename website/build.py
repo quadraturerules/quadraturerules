@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 from quadraturerules_website import settings
-from quadraturerules_website.rules import load_rule
+from quadraturerules_website.rules import dim, load_rule
 from webtools.html import make_html_page
 from webtools.markup import heading, heading_with_self_ref, markup
 from webtools.tools import html_local, join, parse_metadata
@@ -186,8 +186,20 @@ def make_pages(sub_dir=""):
 
 make_pages()
 
+rules.sort(key=lambda q: q.code)
 
 # List of rules pages
+# Alphabetical
+rules_for_index.sort(key=lambda i: i[1].lower())
+content = heading("h1", "List of quadrature rules (alphabetical)")
+content += "<ul>"
+for code, name, url in rules_for_index:
+    content += f"<li><a href='{url}'>{name} ({code})</a></li>"
+content += "</ul>"
+write_html_page(
+    join(settings.html_path, "rules-alpha.html"), "List of quadrature rules (alphabetical)", content)
+
+# Rules by index
 rules_for_index.sort(key=lambda i: i[0])
 content = heading("h1", "List of quadrature rules (by index)")
 content += "<ul>"
@@ -197,14 +209,50 @@ content += "</ul>"
 write_html_page(
     join(settings.html_path, "rules.html"), "List of quadrature rules (by index)", content)
 
-rules_for_index.sort(key=lambda i: i[1].lower())
-content = heading("h1", "List of quadrature rules (alphabetical)")
-content += "<ul>"
-for code, name, url in rules_for_index:
-    content += f"<li><a href='{url}'>{name} ({code})</a></li>"
-content += "</ul>"
+# Lists per domain
+domains = list(set(domain for q in rules for domain in q.rules_by_domain))
+domains.sort(key=lambda r: (dim(r), r))
+content = heading("h1", "List of quadrature rules (by domain)")
+for domain in domains:
+    content += heading("h2", f"<a href='/rules-{domain}.html'>{domain[0].upper()}{domain[1:]}</a>")
+    sub_content = heading("h1", f"List of quadrature rules on {'an' if domain[0] in 'aeiou' else 'a'} {domain}")
+    sub_content += "<a class='more' href='/rules-domain.html'>&larr; Back to all domains</a>"
+    content += "<ul>"
+    sub_content += "<ul>"
+    for q in rules:
+        if domain in q.rules_by_domain:
+            content += f"<li><a href='/{q.code}'>{q.html_name} ({q.code})</a></li>"
+            sub_content += f"<li><a href='/{q.code}'>{q.html_name} ({q.code})</a></li>"
+    content += "</ul>"
+    sub_content += "</ul>"
+    write_html_page(
+        join(settings.html_path, f"rules-{domain}.html"),
+        "List of quadrature rules ({domain})",
+        sub_content)
 write_html_page(
-    join(settings.html_path, "rules-alpha.html"), "List of quadrature rules (alphabetical)", content)
+    join(settings.html_path, "rules-domain.html"), "List of quadrature rules (by domain)", content)
+
+# Lists per integral
+integrals = list(set(q.integral() for q in rules))
+content = heading("h1", "List of quadrature rules (by integral)")
+for n, i in enumerate(integrals):
+    content += heading("h2", f"<a href='/rules-integral{n}.html'>{i}</a>")
+    sub_content = heading("h1", f"List of quadrature rules for {i}")
+    sub_content += "<a class='more' href='/rules-integral.html'>&larr; Back to all integrals</a>"
+    content += "<ul>"
+    sub_content += "<ul>"
+    for q in rules:
+        if q.integral() == i:
+            content += f"<li><a href='/{q.code}'>{q.html_name} ({q.code})</a></li>"
+            sub_content += f"<li><a href='/{q.code}'>{q.html_name} ({q.code})</a></li>"
+    content += "</ul>"
+    sub_content += "</ul>"
+    write_html_page(
+        join(settings.html_path, f"rules-integral{n}.html"),
+        "List of quadrature rules for {i}",
+        sub_content)
+write_html_page(
+    join(settings.html_path, "rules-integral.html"), "List of quadrature rules (by domain)", content)
 
 # Site map
 sitemap[html_local(join(settings.html_path, "sitemap.html"))] = "List of all pages"
