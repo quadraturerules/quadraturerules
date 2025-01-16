@@ -13,7 +13,8 @@ The points that make up the quadrature rules in this encyclopedia are represente
 
 ## Libraries
 
-All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages
+All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages:
 
-* [Python](https://pypi.org/project/quadraturerules/)
-* [Rust](https://crates.io/crates/quadraturerules)
+* [C++](libraries/cpp.md)
+* [Python](libraries/python.md)
+* [Rust](libraries/rust.md)

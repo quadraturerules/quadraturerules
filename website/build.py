@@ -9,7 +9,7 @@ from quadraturerules_website import settings
 from quadraturerules_website.rules import load_rule
 from webtools.html import make_html_page
 from webtools.markup import heading, heading_with_self_ref, markup
-from webtools.tools import html_local, parse_metadata
+from webtools.tools import html_local, join, parse_metadata
 
 start_all = datetime.now()
 
@@ -39,7 +39,7 @@ def write_html_page(path: str, title: str, content: str):
 
 def load_md_file(matches):
     """Read the content of a markdown file."""
-    with open(os.path.join(settings.root_path, matches[1])) as f:
+    with open(join(settings.root_path, matches[1])) as f:
         return f.read()
 
 
@@ -56,26 +56,35 @@ os.mkdir(settings.html_path)
 
 os.system(f"cp -r {settings.files_path}/* {settings.html_path}")
 
-with open(os.path.join(settings.html_path, "CNAME"), "w") as f:
+with open(join(settings.html_path, "CNAME"), "w") as f:
     f.write("quadraturerules.org")
 
+
 # Make pages
-for file in os.listdir(settings.pages_path):
-    if file.endswith(".md"):
-        start = datetime.now()
-        fname = file[:-3]
-        print(f"{fname}.html", end="", flush=True)
-        with open(os.path.join(settings.pages_path, file)) as f:
-            metadata, content = parse_metadata(f.read())
+def make_pages(sub_dir=""):
+    """Make pages recursively."""
 
-        content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
-        content = content.replace("](website/pages/", "](")
-        content = markup(content)
+    for file in os.listdir(join(settings.pages_path, sub_dir)):
+        if os.path.isdir(join(settings.pages_path, sub_dir, file)):
+            os.mkdir(join(settings.html_path, sub_dir, file))
+            make_pages(join(sub_dir, file))
+        elif file.endswith(".md"):
+            start = datetime.now()
+            fname = file[:-3]
+            print(f"{sub_dir}/{fname}.html", end="", flush=True)
+            with open(join(settings.pages_path, sub_dir, file)) as f:
+                metadata, content = parse_metadata(f.read())
 
-        write_html_page(os.path.join(settings.html_path, f"{fname}.html"),
-                        metadata["title"], content)
-        end = datetime.now()
-        print(f" (completed in {(end - start).total_seconds():.2f}s)")
+            content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
+            content = content.replace("](website/pages/", "](")
+            content = markup(content, sub_dir)
+
+            write_html_page(join(settings.html_path, sub_dir, f"{fname}.html"),
+                            metadata["title"], content)
+            end = datetime.now()
+            print(f" (completed in {(end - start).total_seconds():.2f}s)")
+
+make_pages()
 
 
 def row(name, content):
@@ -95,7 +104,7 @@ for file in os.listdir(settings.rules_path):
         rule = file[:-3]
         print(f"{rule}.html", end="", flush=True)
         q = load_rule(rule)
-        rpath = os.path.join(settings.html_path, rule)
+        rpath = join(settings.html_path, rule)
         os.mkdir(rpath)
 
         rules.append((q.code, q.html_name, f"/{rule}"))
@@ -116,11 +125,11 @@ for file in os.listdir(settings.rules_path):
                 f"{q.html_name} on {'an' if domain[0] in 'aeiou' else 'a'} {domain}")
             domain_content += f"<a class='more' href='/{q.code}'>&larr; Back to {q.html_name}</a>"
             for i, r in enumerate(rulelist):
-                r.save_html_table(os.path.join(rpath, f"{r.title('filename')}.html"))
+                r.save_html_table(join(rpath, f"{r.title('filename')}.html"))
                 rule_content = ""
                 if r.order is not None:
                     rule_content += heading_with_self_ref("h3", f"Order {r.order}")
-                rule_content += r.image(os.path.join(rpath, f"{r.title('filename')}.svg"))
+                rule_content += r.image(join(rpath, f"{r.title('filename')}.svg"))
                 rule_content += (
                     "<div>"
                     f"<a class='toggler' id='show-{i}' "
@@ -140,7 +149,7 @@ for file in os.listdir(settings.rules_path):
                     f"<a class='more' href='/{q.code}/{domain}.html'>"
                     "View higher order rules</a>")
             write_html_page(
-                os.path.join(rpath, f"{domain}.html"),
+                join(rpath, f"{domain}.html"),
                 f"{rule}: {q.html_name} on {'an' if domain[0] in 'aeiou' else 'a'} {domain}",
                 domain_content)
         content += (
@@ -148,7 +157,7 @@ for file in os.listdir(settings.rules_path):
             "style='visibility:hidden;position:absolute;top:0;left:0;z-index:-10'></div>"
         )
 
-        write_html_page(os.path.join(rpath, "index.html"),
+        write_html_page(join(rpath, "index.html"),
                         f"{rule}: {q.html_name}", content)
         end = datetime.now()
         print(f" (completed in {(end - start).total_seconds():.2f}s)")
@@ -162,10 +171,10 @@ for code, name, url in rules:
     content += f"<li><a href='{url}'>{code}: {name}</a></li>"
 content += "</ul>"
 
-write_html_page(os.path.join(settings.html_path, "rules.html"), "List of quadrature rules", content)
+write_html_page(join(settings.html_path, "rules.html"), "List of quadrature rules", content)
 
 # Site map
-sitemap[html_local(os.path.join(settings.html_path, "sitemap.html"))] = "List of all pages"
+sitemap[html_local(join(settings.html_path, "sitemap.html"))] = "List of all pages"
 
 
 def list_pages(folder: str) -> str:
@@ -201,7 +210,7 @@ def list_pages(folder: str) -> str:
 
 
 content = heading("h1", "List of all pages") + list_pages("")
-with open(os.path.join(settings.html_path, "sitemap.html"), "w") as f:
+with open(join(settings.html_path, "sitemap.html"), "w") as f:
     f.write(make_html_page(content))
 
 end_all = datetime.now()

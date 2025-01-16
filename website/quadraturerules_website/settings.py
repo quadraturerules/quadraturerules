@@ -26,12 +26,16 @@ settings.website_name = [
 ]
 settings.repo = "mscroggs/quadraturerules"
 
+with open(_os.path.join(root_path, "VERSION")) as f:
+    version = f.read().strip()
+
 settings.dir_path = dir_path
 settings.html_path = html_path
 settings.template_path = template_path
 settings.github_token = github_token
 settings.str_extras = [
     ("{{tick}}", "<span style='color:#008800'>&#10004;</span>"),
+    ("{{VERSION}}", version),
 ]
 
 

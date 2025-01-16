@@ -4,7 +4,6 @@ import os
 def join(*folders):
     if len(folders) == 1:
         return folders[0]
-
     return join(os.path.join(*folders[:2]), *folders[2:])
 
 
