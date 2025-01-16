@@ -1,0 +1,20 @@
+--
+template: Q in rule
+filename: {{Q.snake_case_name}}.h
+--
+#include <utility>
+#include <vector>
+#include "quadraturerules.h"
+
+namespace quadraturerules {
+
+{{if Q.itype == single}}
+/// Get a {{Q.name}} quadrature rule.
+std::pair<std::vector<double>, std::vector<double>>
+{{Q.snake_case_name}}(
+    Domain domain,
+    std::size_t order
+);
+{{end if}}
+
+} // namespace quadraturerules
