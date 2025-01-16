@@ -40,7 +40,7 @@ in included in yaml format between two lines containing only `&#8209;&#8209;`. T
 <tr><td>Name</td><td>Required</td><td>Description</td></tr>
 </thead>
 <tr><td>`domain`</td><td>{{tick}}</td><td>The domain of the integral.</td></tr>
-<tr><td>`order`</td><td></td><td>The order (or degree) of the rule.</td></tr>
+<tr><td>`order`</td><td>{{tick}}</td><td>The order (or degree) of the rule.</td></tr>
 </table>
 
 After the metadata, the points and weights are given in format `point_0 point_1 ... | weight`
