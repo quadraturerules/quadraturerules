@@ -134,9 +134,10 @@ jobs:
           tar -cvf cpp_source.tar.gz *
         name: Make tar.gz of source
       - uses: actions/upload-artifact@v4
-        name: cpp_source
-        path: library/cpp.build/cpp_source.tar.gz
-        retention-days: 1
+        with:
+          name: cpp_source
+          path: library/cpp.build/cpp_source.tar.gz
+          retention-days: 1
 
   make-release:
     name: Make release on GitHub
