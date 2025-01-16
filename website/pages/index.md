@@ -1,7 +1,11 @@
 Welcome to the online encyclopedia of quadrature rules, a reference website that lists a number of quadrature rules.
 Each quadrature rule is indexed using Q followed by a six-digit number, for example [Q000001](/Q000001).
 
-You can view the [full list of quadrature rules included in this encyclopedia](/rules.html) or view the [list of all pages in the encyclopedia](sitemap.md).
+You can:
+
+* [view the full list of quadrature rules sorted by index](/rules.html)
+* [view the full list of quadrature rules sorted alphabetically](/rules-alpha.html)
+* [view the list of all pages in the encyclopedia](sitemap.md)
 
 ## What is a quadrature rule?
 Quadrature rules are sets of points and weights that are used to approximate integrals. If \(\{\vec{p}_0,\dots,\vec{p}_{n-1}\}\subset\mathbb{R}^d\) and \(\{w_0,\dots,w_{n-1}\}\subset\mathbb{R}\)

@@ -2,16 +2,18 @@
 
 import os as _os
 import typing as _typing
+import yaml as _yaml
 
 from webtools import settings
+from webtools.tools import join as _join
 
-dir_path = _os.path.join(_os.path.dirname(_os.path.realpath(__file__)), "..")
-root_path = _os.path.join(dir_path, "..")
-template_path = _os.path.join(dir_path, "template")
-files_path = _os.path.join(dir_path, "files")
-pages_path = _os.path.join(dir_path, "pages")
-rules_path = _os.path.join(root_path, "rules")
-html_path = _os.path.join(dir_path, "_html")
+dir_path = _join(_os.path.dirname(_os.path.realpath(__file__)), "..")
+root_path = _join(dir_path, "..")
+template_path = _join(dir_path, "template")
+files_path = _join(dir_path, "files")
+pages_path = _join(dir_path, "pages")
+rules_path = _join(root_path, "rules")
+html_path = _join(dir_path, "_html")
 
 github_token: _typing.Optional[str] = None
 
@@ -26,8 +28,14 @@ settings.website_name = [
 ]
 settings.repo = "mscroggs/quadraturerules"
 
-with open(_os.path.join(root_path, "VERSION")) as f:
+with open(_join(root_path, "VERSION")) as f:
     version = f.read().strip()
+
+site_data = {}
+for file in _os.listdir(_join(dir_path, "data")):
+    if not file.startswith("."):
+        with open(_join(dir_path, "data", file)) as f:
+            site_data[file] = _yaml.load(f, Loader=_yaml.FullLoader)
 
 settings.dir_path = dir_path
 settings.html_path = html_path

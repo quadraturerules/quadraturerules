@@ -21,7 +21,6 @@ parser.add_argument('--github-token', metavar="github_token", default=None,
 
 sitemap = {}
 
-
 def write_html_page(path: str, title: str, content: str):
     """Write a HTML page.
 
@@ -60,33 +59,6 @@ with open(join(settings.html_path, "CNAME"), "w") as f:
     f.write("quadraturerules.org")
 
 
-# Make pages
-def make_pages(sub_dir=""):
-    """Make pages recursively."""
-    for file in os.listdir(join(settings.pages_path, sub_dir)):
-        if os.path.isdir(join(settings.pages_path, sub_dir, file)):
-            os.mkdir(join(settings.html_path, sub_dir, file))
-            make_pages(join(sub_dir, file))
-        elif file.endswith(".md"):
-            start = datetime.now()
-            fname = file[:-3]
-            print(f"{sub_dir}/{fname}.html", end="", flush=True)
-            with open(join(settings.pages_path, sub_dir, file)) as f:
-                metadata, content = parse_metadata(f.read())
-
-            content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
-            content = content.replace("](website/pages/", "](")
-            content = markup(content, sub_dir)
-
-            write_html_page(join(settings.html_path, sub_dir, f"{fname}.html"),
-                            metadata["title"], content)
-            end = datetime.now()
-            print(f" (completed in {(end - start).total_seconds():.2f}s)")
-
-
-make_pages()
-
-
 def row(name, content):
     """Make a row of information."""
     if content == "":
@@ -96,6 +68,7 @@ def row(name, content):
 
 
 rules = []
+rules_for_index = []
 
 # Make rule pages
 for file in os.listdir(settings.rules_path):
@@ -107,7 +80,8 @@ for file in os.listdir(settings.rules_path):
         rpath = join(settings.html_path, rule)
         os.mkdir(rpath)
 
-        rules.append((q.code, q.html_name, f"/{rule}"))
+        rules_for_index.append((q.code, q.html_name, f"/{rule}"))
+        rules.append(q)
 
         content = heading("h1", f"{q.code}: {q.html_name}")
 
@@ -162,16 +136,75 @@ for file in os.listdir(settings.rules_path):
         end = datetime.now()
         print(f" (completed in {(end - start).total_seconds():.2f}s)")
 
-rules.sort(key=lambda i: i[0])
+# Make pages
+def make_pages(sub_dir=""):
+    """Make pages recursively."""
+    for file in os.listdir(join(settings.pages_path, sub_dir)):
+        if os.path.isdir(join(settings.pages_path, sub_dir, file)):
+            os.mkdir(join(settings.html_path, sub_dir, file))
+            make_pages(join(sub_dir, file))
+        elif file.endswith(".md"):
+            start = datetime.now()
+            fname = file[:-3]
+            print(f"{sub_dir}/{fname}.html", end="", flush=True)
+            with open(join(settings.pages_path, sub_dir, file)) as f:
+                metadata, content = parse_metadata(f.read())
 
-# List of rules page
-content = heading("h1", "List of quadrature rules")
+            content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
+            content = content.replace("](website/pages/", "](")
+            content = markup(content, sub_dir)
+
+            if sub_dir == "" and file == "index.md":
+                img = "<div id='sideplots'>"
+                for i in settings.site_data["front-page"]["images"]:
+                    for q in rules:
+                        if q.code == i["rule"]:
+                            break
+                    else:
+                        raise ValueError(f"Invalid rule: {i['rule']}")
+                    img += "<div>"
+                    for r in q.rules:
+                        if r.domain == i['domain'] and r.order == i['order']:
+                            img += f"<img src='/{i['rule']}/{r.title('filename')}.svg'>"
+                            break
+                    else:
+                        raise ValueError(f"Invalid domain or order: {i['domain']}, {i['order']}")
+                    img += (
+                        "<div>"
+                        f"An order {i['order']} <a href='/{i['rule']}'>{q.html_name}</a>"
+                        f" rule on {'an' if i['domain'][0] in 'aeiou' else 'a'} {i['domain']}."
+                        "</div></div>"
+                    )
+                img += "</div>"
+                content = img + content
+
+            write_html_page(join(settings.html_path, sub_dir, f"{fname}.html"),
+                            metadata["title"], content)
+            end = datetime.now()
+            print(f" (completed in {(end - start).total_seconds():.2f}s)")
+
+
+make_pages()
+
+
+# List of rules pages
+rules_for_index.sort(key=lambda i: i[0])
+content = heading("h1", "List of quadrature rules (by index)")
 content += "<ul>"
-for code, name, url in rules:
+for code, name, url in rules_for_index:
     content += f"<li><a href='{url}'>{code}: {name}</a></li>"
 content += "</ul>"
+write_html_page(
+    join(settings.html_path, "rules.html"), "List of quadrature rules (by index)", content)
 
-write_html_page(join(settings.html_path, "rules.html"), "List of quadrature rules", content)
+rules_for_index.sort(key=lambda i: i[1].lower())
+content = heading("h1", "List of quadrature rules (alphabetical)")
+content += "<ul>"
+for code, name, url in rules_for_index:
+    content += f"<li><a href='{url}'>{name} ({code})</a></li>"
+content += "</ul>"
+write_html_page(
+    join(settings.html_path, "rules-alpha.html"), "List of quadrature rules (alphabetical)", content)
 
 # Site map
 sitemap[html_local(join(settings.html_path, "sitemap.html"))] = "List of all pages"
