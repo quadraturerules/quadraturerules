@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-version:
-    name: Make tag if version number has increased
+    name: Check version number for changes
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.version_tag.outputs.tag }}
@@ -38,21 +38,6 @@ jobs:
            echo "release=yes" >> $GITHUB_OUTPUT
         fi
       id: release
-    - name: Make new release tag
-      uses: actions/create-release@latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.version_tag.outputs.tag }}
-        release_name: ${{ steps.version_tag.outputs.tag }}
-        body: |
-          - [C++ source]()
-          - [Python package](https://pypi.org/project/quadraturerules/${{ steps.version_tag.outputs.tag }}/)
-          - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.version_tag.outputs.tag }})
-        draft: false
-        prerelease: false
-      id: create_release
-      if: steps.release.outputs.release == 'yes'
 
   python-library:
     name: Release Python library
@@ -148,14 +133,34 @@ jobs:
           cd library/cpp.build
           tar -cvf cpp_source.tar.gz *
         name: Make tar.gz of source
-      - name: Upload tar.gz to release
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.check-version.outputs.upload_url }}
-          asset_path: library/cpp.build/cpp_source.tar.gz
-          asset_name: cpp_source.tar.gz
-          asset_content_type: application/gzip
+      - uses: actions/upload-artifact@v4
+        name: cpp_source
+        path: library/cpp.build/cpp_source.tar.gz
+        retention-days: 1
 
+  make-release:
+    name: Make release on GitHub
+    runs-on: ubuntu-22.04
+    needs:
+      - check-version
+      - python-library
+      - rust-library
+      - cpp-library
+    steps:
+      - name: Download C++ source
+        uses: actions/download-artifact@v4
+        with:
+          name: cpp_source
+
+      - name: Make GitHub release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: ${{ steps.version_tag.outputs.tag }}
+          tag_name: ${{ steps.version_tag.outputs.tag }}
+          files: |
+            cpp_source.tar.gz
+          body: |
+            - [C++ source]()
+            - [Python package](https://pypi.org/project/quadraturerules/${{ needs.check-version.outputs.tag }}/)
+            - [Rust crate](https://crates.io/crates/quadraturerules/${{ needs.check-version.outputs.tag }})
