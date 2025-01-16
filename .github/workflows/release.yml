@@ -25,7 +25,7 @@ jobs:
 
     - name: Get latest tag
       id: release_tag
-      run: echo -n "$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
+      run: echo -n "tag=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
     - name: Get version
       id: version_tag
       run: echo -n "tag=v$(cat VERSION)" >> $GITHUB_OUTPUT
