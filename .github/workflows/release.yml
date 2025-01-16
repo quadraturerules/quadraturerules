@@ -38,8 +38,10 @@ jobs:
            echo "release=yes" >> $GITHUB_OUTPUT
         fi
       id: release
-    - run: echo "${{ steps.release_tag.outputs.tag:1 }}"
-    - run: echo "${{ steps.version_tag.outputs.tag:1 }}"
+    - run: |
+        VERSION=${{ steps.release_tag.outputs.tag }}
+        echo "VERSION=${VERSION:1}" >> $GITHUB_ENV
+    - run: echo "${VERSION}"
 
   python-library:
     name: Release Python library
@@ -160,6 +162,11 @@ jobs:
         with:
           name: cpp_source
 
+      - name: Write version number into GITHUB_ENV
+        run: |
+          VERSION=${{ needs.check-version.outputs.tag }}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "ERSION=${VERSION:1}" >> $GITHUB_ENV
       - name: Make GitHub tag
         uses: actions/github-script@v5
         with:
@@ -167,17 +174,19 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ needs.check-version.outputs.tag }}',
+              ref: 'refs/tags/${VERSION}',
               sha: context.sha
             })
+    - run: echo "${VERSION}"
+
       - name: Make GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ needs.check-version.outputs.tag }}
-          tag_name: ${{ needs.check-version.outputs.tag }}
+          name: ${VERSION}
+          tag_name: ${VERSION}
           files: |
             cpp_source.tar.gz
           body: |
-            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ needs.check-version.outputs.tag }}/cpp_source.tar.gz)
-            - [Python package](https://pypi.org/project/quadraturerules/${{ needs.check-version.outputs.tag }}/)
-            - [Rust crate](https://crates.io/crates/quadraturerules/${{ needs.check-version.outputs.tag:1 }})
+            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${VERSION}/cpp_source.tar.gz)
+            - [Python package](https://pypi.org/project/quadraturerules/${VERSION}/)
+            - [Rust crate](https://crates.io/crates/quadraturerules/${ERSION})
