@@ -74,39 +74,30 @@ jobs:
         name: Build website HTML
         if: ${{ github.event.pull_request.head.repo.fork }}
 
-  build-and-push-website:
-    name: Build and deploy quadraturerules.org
-    runs-on: ubuntu-22.04
-    if: github.ref == 'refs/heads/main'
-
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - uses: actions/checkout@v4
-
-      - run: python3 -m pip install -r website/requirements.txt
-        name: Install requirements
-      - run: |
-          cd website
-          python3 build.py ../_html --github-token ${{ secrets.GITHUB_TOKEN }}
-        name: Build website HTML
-
-      # Push to GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v3
+        if: github.ref == 'refs/heads/main'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '_html'
+        if: github.ref == 'refs/heads/main'
+
+  push-website:
+    name: Build and Deploy quadraturerules.org
+    runs-on: ubuntu-22.04
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - build-website
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
 
   run-tests:
     name: Run tests
