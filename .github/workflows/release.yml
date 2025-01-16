@@ -37,7 +37,7 @@ jobs:
 
     - name: Compare version numbers
       run: |
-        if [ "${{ steps.version_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
+        if [ "${{ steps.release_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
            echo "release=no" >> $GITHUB_OUTPUT
         else
            echo "release=yes" >> $GITHUB_OUTPUT
