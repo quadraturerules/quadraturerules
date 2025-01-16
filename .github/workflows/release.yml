@@ -9,7 +9,9 @@ jobs:
     name: Make tag if version number has increased
     runs-on: ubuntu-latest
     outputs:
-      release: ${{ steps.release.output.release }}
+      tag: ${{ steps.version_tag.outputs.tag }}
+      release: ${{ steps.release.outputs.release }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     permissions:
       id-token: write
       contents: write
@@ -21,11 +23,36 @@ jobs:
       with:
         python-version: "3.12"
 
-    - name: Install PyGitHub
-      run: python3 -m pip install PyGitHub
-    - name: Check version number and make release if necessary
-      run: python .github/scripts/version.py ${{ secrets.GITHUB_TOKEN }} >> $GITHUB_OUTPUT
+    - name: Get latest tag
+      id: release_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+    - name: Get version
+      id: version_tag
+      run: echo -n "tag=v$(cat VERSION)" >> $GITHUB_OUTPUT
+
+    - name: Compare version numbers
+      run: |
+        if [ "${{ steps.release_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
+           echo "release=no" >> $GITHUb_OUTPUT
+        else
+           echo "release=yes" >> $GITHUb_OUTPUT
+        fi
       id: release
+    - name: Make new release tag
+      uses: actions/create-release@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version_tag.outputs.tag }}
+        release_name: ${{ steps.version_tag.outputs.tag }}
+        body: |
+          - [C++ source]()
+          - [Python package](https://pypi.org/project/quadraturerules/${{ steps.version_tag.outputs.tag }}/)
+          - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.version_tag.outputs.tag }})
+        draft: false
+        prerelease: false
+      id: create_release
+      if: steps.release.outputs.release == 'yes'
 
   python-library:
     name: Release Python library
@@ -92,3 +119,43 @@ jobs:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           path: './library/rust.build'
         if: needs.check-version.outputs.release == 'yes'
+
+  cpp-library:
+    name: Release C++ library
+    runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v3
+
+      - run: |
+          python3 -m pip install -r website/requirements.txt
+          python3 -m pip install -r library/requirements.txt
+        name: Install requirements
+
+      - run: |
+          cd library
+          python build.py cpp
+        name: Build C++ library
+      - run: |
+          cd library/cpp.build
+          tar -cvf cpp_source.tar.gz *
+        name: Make tar.gz of source
+      - name: Upload tar.gz to release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.check-version.outputs.upload_url }}
+          asset_path: library/cpp.build/cpp_source.tar.gz
+          asset_name: cpp_source.tar.gz
+          asset_content_type: application/gzip
+
