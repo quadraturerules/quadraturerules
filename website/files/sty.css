@@ -4,6 +4,13 @@
   --blue2: #29A4EC;
 }
 
+@media (min-width:500px){
+  #sideplots {display:block}
+}
+@media (max-width:500px){
+  #sideplots {display:none}
+}
+
 body {padding:0px;margin:0px; margin-bottom:100px}
 
 .head, .body, .footer {width:100%;}
