@@ -31,10 +31,6 @@ jobs:
       id: version_tag
       run: echo -n "tag=v$(cat VERSION)" >> $GITHUB_OUTPUT
 
-    - run:
-        echo "${{ steps.release_tag.outputs.tag }}"
-        echo "${{ steps.version_tag.outputs.tag }}"
-
     - name: Compare version numbers
       run: |
         if [ "${{ steps.release_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
