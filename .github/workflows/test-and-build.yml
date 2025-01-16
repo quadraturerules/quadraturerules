@@ -106,7 +106,7 @@ jobs:
           path: '_html'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v3
 
   run-tests:
     name: Run tests
