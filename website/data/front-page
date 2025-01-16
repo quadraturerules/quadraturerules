@@ -5,3 +5,6 @@ images:
   - rule: Q000001
     domain: interval
     order: 5
+  - rule: Q000006
+    domain: triangle
+    order: 4

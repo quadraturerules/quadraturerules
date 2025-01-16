@@ -74,6 +74,7 @@ class QRule:
         self.weights = weights
         self.itype = itype
         self._rule = rule
+        self.family: typing.Optional[QRuleFamily] = None
 
     def title(self, format: str = "default") -> str:
         """Get title."""
@@ -195,8 +196,12 @@ class QRule:
         assert filename.endswith(".html")
         filename_root = filename[:-5]
         filename_root_local = html_local(filename_root)
+
+        assert self._rule.startswith("--\n")
+        assert self.family._qr.endswith("\n")
         with open(f"{filename_root}.rule", "w") as f:
-            f.write(self._rule)
+            f.write(f"--\n{self.family._qr}{self._rule[3:]}")
+
         with open(filename, "w") as f:
             f.write("<div class='small-note'>"
                     f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>")
@@ -244,7 +249,8 @@ class QRuleFamily:
         integrand: str,
         notes: typing.List[str],
         references: typing.List[typing.Dict[str, typing.Any]],
-        rules: typing.List[QRule]
+        rules: typing.List[QRule],
+        qr: str,
     ):
         """Create."""
         assert re.match(r"Q[0-9]{6}", code)
@@ -256,7 +262,10 @@ class QRuleFamily:
         self.integrand = integrand
         self._notes = notes
         self._references = references
+        for r in rules:
+            r.family = self
         self.rules = rules
+        self._qr = qr
 
     @property
     def rules_by_domain(self) -> typing.Dict[str, typing.List[QRule]]:
@@ -345,7 +354,8 @@ class QRuleFamily:
 def load_rule(code: str) -> QRuleFamily:
     """Load a rule from a file and folder."""
     with open(os.path.join(settings.rules_path, f"{code}.qr")) as f:
-        data = yaml.load(f, Loader=yaml.FullLoader)
+        qr = f.read()
+    data = yaml.safe_load(qr)
 
     itype = data["integral-type"] if "integral-type" in data else "single"
 
@@ -386,5 +396,6 @@ def load_rule(code: str) -> QRuleFamily:
         data["notes"] if "notes" in data else [],
         data["references"] if "references" in data else [],
         rules,
+        qr,
     )
     return r

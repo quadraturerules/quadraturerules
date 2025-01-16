@@ -1,0 +1,16 @@
+name: Hammer--Marlowe--Stroud
+integral-type: single
+integrand: f(x)
+references:
+  - title: Numerical integration over simplexes and cones
+    author:
+      - Hammer, Preston C.
+      - Marlowe, O. J.
+      - Stroud, A. H.
+    year: 1956
+    journal: Mathematical Tables and Other Aids to Computation
+    volume: 10
+    issue: 55
+    pagestart: 130
+    pageend: 137
+    doi: 10.2307/2002483
