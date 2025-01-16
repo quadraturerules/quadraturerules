@@ -107,7 +107,7 @@ jobs:
           python build.py cpp
           mkdir cpp.build/build
           cd cpp.build/build
-          cmake ..
+          cmake -DCMAKE_INSTALL_PREFIX:PATH=. ..
           make
           make install
         name: Build C++ library
