@@ -153,7 +153,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: cpp_source
-      - run: ls
+
+      - name: Make GitHub tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ steps.version_tag.outputs.tag }}',
+              sha: context.sha
+            })
       - name: Make GitHub release
         uses: softprops/action-gh-release@v2
         with:
