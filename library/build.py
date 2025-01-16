@@ -85,7 +85,8 @@ def rule_replace(content, variable, rule):
                 [open + ", ".join([f"{c}" for c in p]) + close for p in rule.points]) + close],
             [f"{variable}.points_as_flat_{name}", open + ", ".join([
                 f"{c}" for p in rule.points for c in p]) + close],
-            [f"{variable}.weights_as_{name}", open + ", ".join([f"{w}" for w in rule.weights]) + close],
+            [f"{variable}.weights_as_{name}", open + ", ".join([
+                f"{w}" for w in rule.weights]) + close],
         ]
     return replace(content, subs)
 
