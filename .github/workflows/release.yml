@@ -177,7 +177,6 @@ jobs:
               ref: 'refs/tags/${VERSION}',
               sha: context.sha
             })
-    - run: echo "${VERSION}"
 
       - name: Make GitHub release
         uses: softprops/action-gh-release@v2
