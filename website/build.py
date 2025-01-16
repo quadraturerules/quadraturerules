@@ -21,6 +21,7 @@ parser.add_argument('--github-token', metavar="github_token", default=None,
 
 sitemap = {}
 
+
 def write_html_page(path: str, title: str, content: str):
     """Write a HTML page.
 
@@ -136,6 +137,7 @@ for file in os.listdir(settings.rules_path):
         end = datetime.now()
         print(f" (completed in {(end - start).total_seconds():.2f}s)")
 
+
 # Make pages
 def make_pages(sub_dir=""):
     """Make pages recursively."""
@@ -197,7 +199,9 @@ for code, name, url in rules_for_index:
     content += f"<li><a href='{url}'>{name} ({code})</a></li>"
 content += "</ul>"
 write_html_page(
-    join(settings.html_path, "rules-alpha.html"), "List of quadrature rules (alphabetical)", content)
+    join(settings.html_path, "rules-alpha.html"),
+    "List of quadrature rules (alphabetical)",
+    content)
 
 # Rules by index
 rules_for_index.sort(key=lambda i: i[0])
@@ -215,7 +219,8 @@ domains.sort(key=lambda r: (dim(r), r))
 content = heading("h1", "List of quadrature rules (by domain)")
 for domain in domains:
     content += heading("h2", f"<a href='/rules-{domain}.html'>{domain[0].upper()}{domain[1:]}</a>")
-    sub_content = heading("h1", f"List of quadrature rules on {'an' if domain[0] in 'aeiou' else 'a'} {domain}")
+    sub_content = heading(
+        "h1", f"List of quadrature rules on {'an' if domain[0] in 'aeiou' else 'a'} {domain}")
     sub_content += "<a class='more' href='/rules-domain.html'>&larr; Back to all domains</a>"
     content += "<ul>"
     sub_content += "<ul>"
@@ -252,7 +257,9 @@ for n, i in enumerate(integrals):
         "List of quadrature rules for {i}",
         sub_content)
 write_html_page(
-    join(settings.html_path, "rules-integral.html"), "List of quadrature rules (by domain)", content)
+    join(settings.html_path, "rules-integral.html"),
+    "List of quadrature rules (by domain)",
+    content)
 
 # Site map
 sitemap[html_local(join(settings.html_path, "sitemap.html"))] = "List of all pages"
