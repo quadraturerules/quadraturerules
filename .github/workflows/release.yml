@@ -106,7 +106,7 @@ jobs:
         if: needs.check-version.outputs.release == 'yes'
 
   cpp-library:
-    name: Release C++ library
+    name: Build C++ source for release
     runs-on: ubuntu-22.04
     if: needs.check-version.outputs.release == 'yes'
     permissions:
@@ -143,10 +143,14 @@ jobs:
     name: Make release on GitHub
     runs-on: ubuntu-22.04
     if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+      contents: write
+
     needs:
       - check-version
       - python-library
-      - rust-library
+#      - rust-library
       - cpp-library
     steps:
       - name: Download C++ source
