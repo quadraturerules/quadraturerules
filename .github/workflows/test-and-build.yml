@@ -82,8 +82,8 @@ jobs:
           path: 'website/_html'
         if: github.ref == 'refs/heads/main'
 
-  push-website:
-    name: Build and Deploy quadraturerules.org
+  deploy-website:
+    name: Deploy quadraturerules.org
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/main'
     needs:
