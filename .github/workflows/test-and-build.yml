@@ -21,6 +21,7 @@ jobs:
 
       - run: |
           python3 -m pip install -r website/requirements.txt
+          python3 -m pip install -r library/requirements.txt
           python3 -m pip install numpy
         name: Install requirements
       - run: python3 -m pip install flake8 mypy pydocstyle isort
@@ -117,7 +118,9 @@ jobs:
           python-version: "3.12"
 
       - uses: actions/checkout@v3
-      - run: python3 -m pip install -r website/requirements.txt
+      - run: |
+          python3 -m pip install -r website/requirements.txt
+          python3 -m pip install -r library/requirements.txt
         name: Install requirements
 
       - run: |
