@@ -90,13 +90,13 @@ for file in os.listdir(settings.rules_path):
         content += row("Alternative names", q.alt_names("HTML"))
         content += row("Integral", q.integral('LaTeX'))
         content += row("Notes", q.notes("HTML"))
-        content += row(
-            "References",
-            f"{q.references('HTML')}<br /><div class='citation'>"
-            f"<a href='/{q.code}/references.bib'>Download references as BibTe&Chi;</a></div>"
-        )
         bib = q.references("BibTeX")
         if bib != "":
+            content += row(
+                "References",
+                f"{q.references('HTML')}<br /><div class='citation'>"
+                f"<a href='/{q.code}/references.bib'>Download references as BibTe&Chi;</a></div>"
+            )
             with open(join(settings.html_path, q.code, "references.bib"), "w") as f:
                 f.write(bib)
         content += "</table>"
