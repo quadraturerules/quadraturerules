@@ -1,4 +1,4 @@
-CC-BY-4.0 (rules, website/files, website/pages, website/template)
+CC-BY-4.0 (rules/, website/files/ [excluding website/files/fontawesome/], website/pages/, website/template/)
 
 Attribution 4.0 International
 Attribution: Matthew Scroggs & other contributors to quadraturerules.org

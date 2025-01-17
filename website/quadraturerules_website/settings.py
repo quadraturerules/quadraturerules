@@ -19,15 +19,6 @@ github_token: _typing.Optional[str] = None
 
 processes = 1
 
-settings.owners = ["mscroggs"]
-settings.editors = ["mscroggs"]
-settings.url = "https://quadraturerules.org"
-settings.website_name = [
-    "The online encyclopedia of quadrature rules",
-    "the online encyclopedia of quadrature rules",
-]
-settings.repo = "mscroggs/quadraturerules"
-
 with open(_join(root_path, "VERSION")) as f:
     version = f.read().strip()
 
@@ -36,6 +27,16 @@ for file in _os.listdir(_join(dir_path, "data")):
     if not file.startswith("."):
         with open(_join(dir_path, "data", file)) as f:
             site_data[file] = _yaml.load(f, Loader=_yaml.FullLoader)
+
+settings.owners = ["mscroggs"]
+settings.editors = site_data["editors"]
+settings.contributors = site_data["contributors"]
+settings.url = "https://quadraturerules.org"
+settings.website_name = [
+    "The online encyclopedia of quadrature rules",
+    "the online encyclopedia of quadrature rules",
+]
+settings.repo = "mscroggs/quadraturerules"
 
 settings.dir_path = dir_path
 settings.html_path = html_path
