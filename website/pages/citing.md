@@ -20,7 +20,7 @@ website itself, you can use the following BibTeX:
 
 ```
 @misc{quadraturerules.org,
-       AUTHOR = {Scroggs, Matthew W. and {other contributors}},
+       AUTHOR = {{{list contributors|bibtex}}},
         TITLE = {The online encyclopedia of quadrature rules},
          YEAR = {{{{date:Y}}}},
  HOWPUBLISHED = {\url{https://quadraturerules.org}},
@@ -31,5 +31,5 @@ website itself, you can use the following BibTeX:
 This will create a reference along the lines of:
 
 <ul class='citations'>
-<li>M. W. Scroggs and other contributors. <i>The online encyclopedia of quadrature rules</i>, {{date:Y}}, <a href='https://quadraturerules.org'>https://quadraturerules.org</a> [Online; accessed: {{date:D-M-Y}}].</li>
+<li>{{list contributors|citation}}. <i>The online encyclopedia of quadrature rules</i>, {{date:Y}}, <a href='https://quadraturerules.org'>https://quadraturerules.org</a> [Online; accessed: {{date:D-M-Y}}].</li>
 </ul>
