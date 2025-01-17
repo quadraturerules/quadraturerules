@@ -1,10 +1,10 @@
 Welcome to the online encyclopedia of quadrature rules, a reference website that lists a number of quadrature rules.
-Each quadrature rule is indexed using Q followed by a six-digit number, for example [Q000001](/Q000001).
+Each quadrature rule is indexed using Q-index, for example [Q000001](/Q000001).
 
 You can:
 
-* [view the full list of quadrature rules sorted by index](/rules.html)
-* [view the full list of quadrature rules sorted alphabetically](/rules-alpha.html)
+* [view the full list of quadrature rules by Q-index](/rules.html)
+* [view the full alphabetical list of quadrature rules](/rules-alpha.html)
 * [view the quadrature rules by domain](/rules-domain.html)
 * [view the quadrature rules by integral](/rules-integral.html)
 * [view the list of all pages in the encyclopedia](sitemap.md)
