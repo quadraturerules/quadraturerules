@@ -343,10 +343,10 @@ class QRuleFamily:
                     for r in self._references
                 )
             case "BibTeX":
-                return "\n\n".join(
-                    make_bibtex(f"{self.code}-{n + 1}", r)
+                return "\n".join(
+                    make_bibtex(f"{self.code}-{n + 1}", r) + "\n"
                     for n, r in enumerate(self._references)
-                ) + "\n"
+                )
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
