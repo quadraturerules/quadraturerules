@@ -210,7 +210,7 @@ class QRule:
                     f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
                     f2.write(",weight\n")
                     for p, w in zip(self.points, self.weights):
-                        f2.write(",".join(f"{i}" for i in p) + f",{w}")
+                        f2.write(",".join(f"{i}" for i in p) + f",{w}\n")
                 f.write("<div class='small-note'>"
                         f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>")
                 with open(f"{filename_root}.json", "w") as f2:
