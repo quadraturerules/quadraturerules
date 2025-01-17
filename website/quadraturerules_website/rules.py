@@ -318,7 +318,7 @@ class QRuleFamily:
                 i += f" {self.integrand}"
                 match self.itype:
                     case "single":
-                        i += "\,\mathrm{d}x"
+                        i += "\\,\\mathrm{d}x"
                     case _:
                         raise ValueError(f"Unsupported integral type: {self.itype}")
                 i += "\\)"
