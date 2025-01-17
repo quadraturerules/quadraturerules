@@ -7,7 +7,7 @@ import typing
 
 import yaml
 from quadraturerules_website import settings
-from webtools.citations import markup_citation
+from webtools.citations import markup_citation, make_bibtex
 from webtools.tools import html_local
 
 PointND = typing.Tuple[float, ...]
@@ -342,6 +342,11 @@ class QRuleFamily:
                     f"<div class='citation'>{to_html(markup_citation(r))}</div>"
                     for r in self._references
                 )
+            case "BibTeX":
+                return "\n\n".join(
+                    make_bibtex(f"{self.code}-{n + 1}", r)
+                    for n, r in enumerate(self._references)
+                ) + "\n"
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
