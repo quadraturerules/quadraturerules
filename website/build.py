@@ -206,7 +206,7 @@ write_html_page(
 
 # Rules by index
 rules_for_index.sort(key=lambda i: i[0])
-content = heading("h1", "List of quadrature rules (by index)")
+content = heading("h1", "List of quadrature rules (by Q-index)")
 content += "<ul>"
 for code, name, url in rules_for_index:
     content += f"<li><a href='{url}'>{code}: {name}</a></li>"
