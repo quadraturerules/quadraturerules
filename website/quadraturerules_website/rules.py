@@ -7,7 +7,7 @@ import typing
 
 import yaml
 from quadraturerules_website import settings
-from webtools.citations import markup_citation, make_bibtex
+from webtools.citations import make_bibtex, markup_citation
 from webtools.tools import html_local
 
 PointND = typing.Tuple[float, ...]
