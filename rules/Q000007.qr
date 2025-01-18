@@ -1,0 +1,15 @@
+name: Sauter--Schwab
+integral-type: double
+integrand: f(x,y)
+notes:
+  - This quadrature rule is designed for functions \(f(x,y)\) that have a singularity at \(x=y\)
+references:
+  - title: Generating the matrix coefficients
+    author:
+      - Sauter, Stefan A.
+      - Schwab, Christoph
+    booktitle: Boundary Element Methods
+    year: 2010
+    pagestart: 289
+    pageend: 352
+    doi: 10.1007/978-3-540-68093-2_5
