@@ -321,7 +321,7 @@ class QRuleDouble(QRule):
                     match self.domain:
                         case "triangle":
                             size = (220, 194)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            domain1: typing.List[PointND] = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
                             origin1 = (10.0, 184.0)
                             axes1 = [(200.0, 0.0), (100.0, -100*math.sqrt(3))]
                             domain2 = domain1
@@ -588,7 +588,7 @@ def load_rule(code: str) -> QRuleFamily:
 
     itype = data["integral-type"] if "integral-type" in data else "single"
 
-    rules = []
+    rules: typing.List[QRule] = []
     pt_dir = os.path.join(settings.rules_path, f"{code}")
     for pt_file in os.listdir(pt_dir):
         if pt_file.endswith(".rule"):
