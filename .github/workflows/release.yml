@@ -184,6 +184,6 @@ jobs:
           files: |
             quadraturerules-${{ steps.v.outputs.version }}.tar.gz
           body: |
-            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ steps.v.outputs.version }}/cpp_source.tar.gz)
+            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-${{ steps.v.outputs.version }}.tar.gz)
             - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
             - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})
