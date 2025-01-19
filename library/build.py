@@ -105,6 +105,10 @@ def rule_replace(content, variable, rule):
                 [f"{variable}.points_as_flat_{name}", "<<ERROR>>"],
                 [f"{variable}.first_points_as_{name}", open + ", ".join(
                     [open + ", ".join([f"{c}" for c in p]) + close for p in rule.first_points]) + close],
+                [f"{variable}.first_points_as_flat_{name}", open + ", ".join([
+                    f"{c}" for p in rule.first_points for c in p]) + close],
+                [f"{variable}.second_points_as_{name}", open + ", ".join(
+                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.second_points]) + close],
                 [f"{variable}.second_points_as_flat_{name}", open + ", ".join([
                     f"{c}" for p in rule.second_points for c in p]) + close],
                 [f"{variable}.weights_as_{name}", open + ", ".join([
