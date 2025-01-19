@@ -32,3 +32,30 @@ quadraturerules::{{Q.snake_case_name}}(
   }
 }
 {{end if}}
+{{if Q.itype == double}}
+std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+quadraturerules::{{Q.snake_case_name}}(
+    quadraturerules::Domain domain,
+    std::size_t order
+) {
+  switch (domain)
+  {
+  {{for D in domains}}
+  case quadraturerules::Domain::{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      return {{{R.first_points_as_flat_curly_list}}, {{R.second_points_as_flat_curly_list}}, {{R.weights_as_curly_list}}};
+    {{end if}}
+    {{end for}}
+    default:
+      throw std::runtime_error("Invalid order");
+    }
+  {{end for}}
+  default:
+    throw std::runtime_error("Invalid domain");
+  }
+}
+{{end if}}

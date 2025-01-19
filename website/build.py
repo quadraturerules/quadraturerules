@@ -112,7 +112,13 @@ for file in os.listdir(settings.rules_path):
                 rule_content = ""
                 if r.order is not None:
                     rule_content += heading_with_self_ref("h3", f"Order {r.order}")
-                rule_content += r.image(join(rpath, f"{r.title('filename')}.svg"))
+                if r.npoints <= 1000:
+                    rule_content += r.image(join(rpath, f"{r.title('filename')}.svg"))
+                else:
+                    rule_content += (
+                        "<div style='color:#ACACAC;margin:5px'>"
+                        "(plot not shown for rule with &gt;1000 points)</div>"
+                    )
                 rule_content += (
                     "<div>"
                     f"<a class='toggler' id='show-{domain}-{i}' "
@@ -132,14 +138,12 @@ for file in os.listdir(settings.rules_path):
                 content += (
                     f"<a class='more' href='/{q.code}/more-{domain}.html'>"
                     "View higher order rules</a>")
+            domain_content += "<div id='point-detail-dummy'></div>"
             write_html_page(
                 join(rpath, f"more-{domain}.html"),
                 f"{rule}: {q.html_name} on {'an' if domain[0] in 'aeiou' else 'a'} {domain}",
                 domain_content)
-        content += (
-            "<div id='point-detail-dummy' "
-            "style='visibility:hidden;position:absolute;top:0;left:0;z-index:-10'></div>"
-        )
+        content += "<div id='point-detail-dummy'></div>"
 
         write_html_page(join(rpath, "index.html"),
                         f"{rule}: {q.html_name}", content)

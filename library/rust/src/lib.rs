@@ -44,6 +44,22 @@ pub fn single_integral_quadrature(
     }
 }
 
+/// Get a quadrature rule for a double integral.
+pub fn double_integral_quadrature(
+    rtype: QuadratureRule,
+    domain: Domain,
+    order: usize,
+) -> Result<(Vec<f64>, Vec<f64>, Vec<f64>), &'static str> {
+    match rtype {
+        {{for Q in rules}}
+        {{if Q.itype == double}}
+        QuadratureRule::{{Q.PascalCaseName}} => rules::{{Q.snake_case_name}}(domain, order),
+        {{end if}}
+        {{end for}}
+        _ => Err("Unsupported rule for single integral: {rtype}"),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

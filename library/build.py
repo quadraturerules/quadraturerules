@@ -9,8 +9,7 @@ from webtools.tools import join
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(join(path, "..", "website"))
-from quadraturerules_website import settings  # noqa: E402
-from quadraturerules_website.rules import load_rule  # noqa: E402
+from quadraturerules_website import rules, settings  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
 parser.add_argument('library', metavar='library', nargs=1,
@@ -40,13 +39,13 @@ readme = re.sub(
     r"(https://quadraturerules.org/\1.html)",
     readme)
 
-rules = []
+all_rules = []
 for file in os.listdir(settings.rules_path):
     if file.endswith(".qr"):
-        rules.append(load_rule(file[:-3]))
-rules.sort(key=lambda r: r.name())
+        all_rules.append(rules.load_rule(file[:-3]))
+all_rules.sort(key=lambda r: r.name())
 
-domains = list(set(i.domain for r in rules for i in r.rules))
+domains = list(set(i.domain for r in all_rules for i in r.rules))
 
 
 def replace(content, subs):
@@ -87,14 +86,36 @@ def rule_replace(content, variable, rule):
         ("[", "]", "list"),
         ("{", "}", "curly_list"),
     ]:
-        subs += [
-            [f"{variable}.points_as_{name}", open + ", ".join(
-                [open + ", ".join([f"{c}" for c in p]) + close for p in rule.points]) + close],
-            [f"{variable}.points_as_flat_{name}", open + ", ".join([
-                f"{c}" for p in rule.points for c in p]) + close],
-            [f"{variable}.weights_as_{name}", open + ", ".join([
-                f"{w}" for w in rule.weights]) + close],
-        ]
+        if isinstance(rule, rules.QRuleSingle):
+            subs += [
+                [f"{variable}.first_points_as_{name}", "<<ERROR>>"],
+                [f"{variable}.first_points_as_flat_{name}", "<<ERROR>>"],
+                [f"{variable}.second_points_as_{name}", "<<ERROR>>"],
+                [f"{variable}.second_points_as_flat_{name}", "<<ERROR>>"],
+                [f"{variable}.points_as_{name}", open + ", ".join(
+                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.points]) + close],
+                [f"{variable}.points_as_flat_{name}", open + ", ".join([
+                    f"{c}" for p in rule.points for c in p]) + close],
+                [f"{variable}.weights_as_{name}", open + ", ".join([
+                    f"{w}" for w in rule.weights]) + close],
+            ]
+        elif isinstance(rule, rules.QRuleDouble):
+            subs += [
+                [f"{variable}.points_as_{name}", "<<ERROR>>"],
+                [f"{variable}.points_as_flat_{name}", "<<ERROR>>"],
+                [f"{variable}.first_points_as_{name}", open + ", ".join(
+                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.first_points]
+                ) + close],
+                [f"{variable}.first_points_as_flat_{name}", open + ", ".join([
+                    f"{c}" for p in rule.first_points for c in p]) + close],
+                [f"{variable}.second_points_as_{name}", open + ", ".join(
+                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.second_points]
+                ) + close],
+                [f"{variable}.second_points_as_flat_{name}", open + ", ".join([
+                    f"{c}" for p in rule.second_points for c in p]) + close],
+                [f"{variable}.weights_as_{name}", open + ", ".join([
+                    f"{w}" for w in rule.weights]) + close],
+            ]
     return replace(content, subs)
 
 
@@ -161,7 +182,7 @@ def sub(content, vars={}):
         else:
             match loop_over:
                 case "in rules":
-                    for rule in rules:
+                    for rule in all_rules:
                         content += family_replace(inside, var, rule)
                 case "in domains":
                     for domain in domains:
@@ -209,7 +230,7 @@ def sub_and_copy_files(folder):
             var, loop_over = metadata["template"].split(" ", 1)
             match loop_over:
                 case "in rule":
-                    for rule in rules:
+                    for rule in all_rules:
                         with open(join(
                             target_dir,
                             folder,
