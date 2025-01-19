@@ -1,6 +1,8 @@
 # C++ library
 
-The latest version of the quadraturerules C++ library can be installed by running:
+The source code of the quadraturerules C++ library can be downloaded from the
+[latest release on GitHub](https://github.com/mscroggs/quadraturerules/releases/latest/).
+It can be installed by running:
 
 ```bash
 wget https://github.com/mscroggs/quadraturerules/releases/download/{{VERSION}}/cpp_source.tar.gz
@@ -27,3 +29,24 @@ cmake .
 make .
 ./{TEST_NAME}
 ```
+
+## Usage
+
+The library's function `single_integral_quadrature` can be used to get the points and weights
+of quadrature rules for a single integral. For example the following snippet will create an
+order 3 Xiao--Gimbutas rule on a triangle:
+
+```cpp
+#include <quadraturerules.h>
+
+using quadraturerules
+
+auto [points, weights] = single_integral_quadrature(
+    QuadratureRule::XiaoGimbutas,
+    Domain::Triangle,
+    3,
+);
+```
+
+Note that the points return by the library are represented using
+[barycentric coordinates](/barycentric.md).

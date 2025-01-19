@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 from quadraturerules_website import settings
-from quadraturerules_website.rules import dim, load_rule
+from quadraturerules_website.rules import dim, load_rule, to_html
 from webtools.html import make_html_page
 from webtools.markup import heading, heading_with_self_ref, markup
 from webtools.tools import html_local, join, parse_metadata
@@ -166,6 +166,7 @@ def make_pages(sub_dir=""):
                 metadata, content = parse_metadata(f.read())
 
             content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
+            content = to_html(content)
             content = content.replace("](website/pages/", "](")
             content = markup(content, sub_dir)
 

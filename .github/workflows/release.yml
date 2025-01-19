@@ -132,12 +132,12 @@ jobs:
         name: Build C++ library
       - run: |
           cd library/cpp.build
-          tar -cvf quadraturerules-${{ needs.check-version.outputs.tag }}.tar.gz *
+          tar -cvf quadraturerules-cpp-${{ needs.check-version.outputs.tag }}.tar.gz *
         name: Make tar.gz of source
       - uses: actions/upload-artifact@v4
         with:
           name: cpp_source
-          path: library/cpp.build/quadraturerules-${{ needs.check-version.outputs.tag }}.tar.gz
+          path: library/cpp.build/quadraturerules-cpp-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
   make-release:
@@ -182,8 +182,8 @@ jobs:
           name: ${{ steps.v.outputs.version }}
           tag_name: ${{ steps.v.outputs.version }}
           files: |
-            quadraturerules-${{ steps.v.outputs.version }}.tar.gz
+            quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz
           body: |
-            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ steps.v.outputs.version }}/cpp_source.tar.gz)
+            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
             - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
             - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})
