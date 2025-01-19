@@ -28,3 +28,22 @@ def {{Q.snake_case_name}}(
                     raise ValueError(f"Invalid order: {order}")
         {{end for}}
 {{end if}}
+{{if Q.itype == double}}
+def {{Q.snake_case_name}}(
+    domain: Domain,
+    order: int,
+) -> typing.Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Get a {{Q.name}} quadrature rule."""
+    match domain:
+        {{for D in domains}}
+        case Domain.{{D.PascalCaseName}}:
+            match order:
+                {{for R in Q.rules}}
+                {{if R.domain == D.name}}
+                case {{R.order}}:
+                    return np.array({{R.first_points_as_list}}), np.array({{R.second_points_as_list}}), np.array({{R.weights_as_list}})
+                {{end if}}{{end for}}
+                case _:
+                    raise ValueError(f"Invalid order: {order}")
+        {{end for}}
+{{end if}}

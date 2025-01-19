@@ -32,3 +32,20 @@ def single_integral_quadrature(
         {{end for}}
         case _:
             raise ValueError(f"Unsupported rule for single integral: {rtype}")
+
+
+def double_integral_quadrature(
+    rtype: QuadratureRule,
+    domain: Domain,
+    order: int,
+) -> _typing.Tuple[_npt.NDArray[_np.float64], _npt.NDArray[_np.float64], _npt.NDArray[_np.float64]]:
+    """Get a quadrature rule for a double integral."""
+    match rtype:
+        {{for Q in rules}}
+        {{if Q.itype == double}}
+        case QuadratureRule.{{Q.PascalCaseName}}:
+            return rules.{{Q.snake_case_name}}(domain, order)
+        {{end if}}
+        {{end for}}
+        case _:
+            raise ValueError(f"Unsupported rule for double integral: {rtype}")
