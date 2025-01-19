@@ -372,7 +372,7 @@ class QRuleDouble(QRule):
                                         "stroke='#000000' stroke-width='1.5' "
                                         "stroke-linecap='round' />\n")
                     for p1_, p2_ in zip(self.first_points, self.second_points):
-                        p1 = to_2d(from_barycentric(tuple(p1_), domain1 ), origin1, axes1)
+                        p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
                         p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
                         f.write(f"<line x1='{p1[0]}' y1='{p1[1]}' x2='{p2[0]}' y2='{p2[1]}' "
                                 "stroke='#ACACAC' stroke-width='0.5' "
