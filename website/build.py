@@ -241,7 +241,7 @@ for domain in domains:
     sub_content += "</ul>"
     write_html_page(
         join(settings.html_path, f"rules-{domain}.html"),
-        "List of quadrature rules ({domain})",
+        f"List of quadrature rules ({domain})",
         sub_content)
 write_html_page(
     join(settings.html_path, "rules-domain.html"), "List of quadrature rules (by domain)", content)
@@ -263,11 +263,11 @@ for n, i in enumerate(integrals):
     sub_content += "</ul>"
     write_html_page(
         join(settings.html_path, f"rules-integral{n}.html"),
-        "List of quadrature rules for {i}",
+        f"List of quadrature rules for {i}",
         sub_content)
 write_html_page(
     join(settings.html_path, "rules-integral.html"),
-    "List of quadrature rules (by domain)",
+    "List of quadrature rules (by integral)",
     content)
 
 # Site map
