@@ -5,6 +5,9 @@ images:
   - rule: Q000001
     domain: interval
     order: 5
+  - rule: Q000007
+    domain: edge-adjacent triangle and quadrilateral
+    order: 1
   - rule: Q000006
     domain: triangle
     order: 4
