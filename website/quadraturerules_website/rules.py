@@ -180,7 +180,7 @@ class QRuleSingle(QRule):
                             domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
                             domain_lines = [[0, 1, 2, 0]]
                             origin = (10.0, 184.0)
-                            axes = [(200.0, 0.0), (100.0, -100*math.sqrt(3))]
+                            axes = [(200.0, 0.0), (100.0, -173.2)]
                         case "quadrilateral":
                             size = (220, 220)
                             domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
@@ -323,11 +323,29 @@ class QRuleDouble(QRule):
                             size = (220, 194)
                             domain1: typing.List[PointND] = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
                             origin1 = (10.0, 184.0)
-                            axes1 = [(200.0, 0.0), (100.0, -100*math.sqrt(3))]
+                            axes1 = [(200.0, 0.0), (100.0, -173.2)]
                             domain2 = domain1
                             origin2 = origin1
                             axes2 = axes1
                             domain_lines = [[[0, 1, 2, 0]], []]
+                        case "edge-adjacent triangles":
+                            size = (368, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 210.0)
+                            axes1 = [(0.0, -200.0), (-173.2, -100.0)]
+                            domain2 = domain1
+                            origin2 = origin1
+                            axes2 = [(173.2, -100.0), (0.0, -200.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2]]]
+                        case "vertex-adjacent triangles":
+                            size = (368, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 110.0)
+                            axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
+                            domain2 = domain1
+                            origin2 = origin1
+                            axes2 = [(173.2, -100.0), (173.2, 100.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2, 0]]]
                         case "quadrilateral":
                             size = (220, 220)
                             domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
@@ -355,6 +373,24 @@ class QRuleDouble(QRule):
                             origin2 = origin1
                             axes2 = [(-100.0, -100.0), (-100.0, 100.0)]
                             domain_lines = [[[0, 1, 3, 2, 0]], [[0, 1, 3, 2, 0]]]
+                        case "edge-adjacent triangle and quadrilateral":
+                            size = (394, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 210.0)
+                            axes1 = [(0.0, -200.0), (-173.2, -100.0)]
+                            domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            origin2 = origin1
+                            axes2 = [(200.0, 0.0), (0.0, -200.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2]]]
+                        case "vertex-adjacent triangle and quadrilateral":
+                            size = (394, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 110.0)
+                            axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
+                            domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            origin2 = origin1
+                            axes2 = [(100.0, 100.0), (100.0, -100.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2, 0]]]
                         case _:
                             raise ValueError(f"Unsupported domain: {self.domain}")
                     f.write(f"<svg width='{size[0]}' height='{size[1]}' "
