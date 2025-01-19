@@ -1,6 +1,8 @@
 # C++ library
 
-The latest version of the quadraturerules C++ library can be installed by running:
+The source code of the quadraturerules C++ library can be downloaded from the
+[latest release on GitHub](https://github.com/mscroggs/quadraturerules/releases/latest/).
+It can be installed by running:
 
 ```bash
 wget https://github.com/mscroggs/quadraturerules/releases/download/{{VERSION}}/cpp_source.tar.gz

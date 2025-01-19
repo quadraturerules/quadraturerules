@@ -1,6 +1,7 @@
 # Python library
 
-The latest version of the quadraturerules Python library can be installed by running:
+The quadraturerules Python library is available on [PyPI](https://pypi.org/project/quadraturerules/).
+It can be installed by running:
 
 ```bash
 python -m pip install quadraturerules
