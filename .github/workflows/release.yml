@@ -132,12 +132,12 @@ jobs:
         name: Build C++ library
       - run: |
           cd library/cpp.build
-          tar -cvf cpp_source.tar.gz *
+          tar -cvf quadraturerules-${{ needs.check-version.outputs.tag }}.tar.gz *
         name: Make tar.gz of source
       - uses: actions/upload-artifact@v4
         with:
           name: cpp_source
-          path: library/cpp.build/cpp_source.tar.gz
+          path: library/cpp.build/quadraturerules-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
   make-release:
@@ -159,11 +159,12 @@ jobs:
         with:
           name: cpp_source
 
-      - name: Write version number into GITHUB_ENV
+      - name: Write version number into GITHUB_OUTPUT
         run: |
           VERSION=${{ needs.check-version.outputs.tag }}
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "ERSION=${VERSION:1}" >> $GITHUB_ENV
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "ersion=${VERSION:1}" >> $GITHUB_OUTPUT
+        id: v
       - name: Make GitHub tag
         uses: actions/github-script@v5
         with:
@@ -171,18 +172,18 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ needs.check-version.outputs.tag }}',
+              ref: 'refs/tags/${{ steps.v.outputs.version }}',
               sha: context.sha
             })
 
       - name: Make GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ needs.check-version.outputs.tag }}
-          tag_name: ${{ needs.check-version.outputs.tag }}
+          name: ${{ steps.v.outputs.version }}
+          tag_name: ${{ steps.v.outputs.version }}
           files: |
-            cpp_source.tar.gz
+            quadraturerules-${{ steps.v.outputs.version }}.tar.gz
           body: |
-            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${VERSION}/cpp_source.tar.gz)
-            - [Python package](https://pypi.org/project/quadraturerules/${VERSION}/)
-            - [Rust crate](https://crates.io/crates/quadraturerules/${ERSION})
+            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ steps.v.outputs.version }}/cpp_source.tar.gz)
+            - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
+            - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})
