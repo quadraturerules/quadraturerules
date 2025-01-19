@@ -1,6 +1,5 @@
 """Quadrature rules."""
 
-import math
 import os
 import re
 import typing
