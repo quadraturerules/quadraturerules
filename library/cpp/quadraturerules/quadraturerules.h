@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -25,6 +26,14 @@ enum class QuadratureRule {
 /// Get a quadrature rule for a single integral.
 std::pair<std::vector<double>, std::vector<double>>
 single_integral_quadrature(
+    QuadratureRule rtype,
+    Domain domain,
+    std::size_t order
+);
+
+/// Get a quadrature rule for a double integral.
+std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
+double_integral_quadrature(
     QuadratureRule rtype,
     Domain domain,
     std::size_t order

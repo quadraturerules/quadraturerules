@@ -2,6 +2,9 @@
 template: Q in rule
 filename: {{Q.snake_case_name}}.h
 --
+{{if Q.itype == double}}
+#include <tuple>
+{{end if}}
 #include <utility>
 #include <vector>
 #include "quadraturerules.h"
@@ -11,6 +14,14 @@ namespace quadraturerules {
 {{if Q.itype == single}}
 /// Get a {{Q.name}} quadrature rule.
 std::pair<std::vector<double>, std::vector<double>>
+{{Q.snake_case_name}}(
+    Domain domain,
+    std::size_t order
+);
+{{end if}}
+{{if Q.itype == double}}
+/// Get a {{Q.name}} quadrature rule.
+std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>
 {{Q.snake_case_name}}(
     Domain domain,
     std::size_t order

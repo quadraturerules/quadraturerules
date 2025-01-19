@@ -1,6 +1,5 @@
 """Quadrature rules."""
 
-import math
 import os
 import re
 import typing
@@ -14,7 +13,18 @@ PointND = typing.Tuple[float, ...]
 Point2D = typing.Tuple[float, float]
 
 
-def dim(domain: str | None) -> int:
+def sort_name(domain: str | None):
+    """Get the name to use when sorting domains."""
+    if domain is None:
+        return ""
+    if domain.startswith("edge-adjacent"):
+        return f"{domain.lower()[14:]}, edge-adjacent"
+    if domain.startswith("vertex-adjacent"):
+        return f"{domain.lower()[16:]}, vertex-adjacent"
+    return domain.lower()
+
+
+def dim(domain: str | None) -> float:
     """Get the dimension of a domain."""
     if domain is None:
         return -1
@@ -24,6 +34,9 @@ def dim(domain: str | None) -> int:
         return 1
     if domain in ["triangle", "quadrilateral", "circle"]:
         return 2
+    for d in ["triangle", "quadrilateral"]:
+        if domain in [f"edge-adjacent {d}s", f"vertex-adjacent {d}s"]:
+            return 2
     if "agon" in domain:
         return 2
     if domain in ["prism", "pyramid", "wedge"]:
@@ -31,6 +44,12 @@ def dim(domain: str | None) -> int:
     if "ahedron" in domain:
         return 3
     return 10
+
+
+def rounded(n: float, dp: int = 5):
+    """Round to a number of decimal places."""
+    i, j = str(n).split(".")
+    return f"{i}.{j[:dp]}"
 
 
 def to_html(content: str) -> str:
@@ -62,19 +81,15 @@ class QRule:
         self,
         domain: typing.Optional[str],
         order: typing.Optional[int],
-        points: typing.List[typing.List[float]],
-        weights: typing.List[float],
-        itype: str,
         rule: str,
+        npoints: int,
     ):
         """Create."""
         self.domain = domain
         self.order = order
-        self.points = points
-        self.weights = weights
-        self.itype = itype
         self._rule = rule
         self.family: typing.Optional[QRuleFamily] = None
+        self.npoints = npoints
 
     def title(self, format: str = "default") -> str:
         """Get title."""
@@ -108,6 +123,47 @@ class QRule:
 
     def image(self, filename: str) -> str:
         """Make image of rule."""
+        raise NotImplementedError()
+
+    def save_html_table(self, filename):
+        """Save HTML table of points and weights to a file."""
+        raise NotImplementedError()
+
+    def barycentric_info(self) -> str:
+        """Get info about points being barycentric and truncated."""
+        return (
+            "<div class='small-note'>The points given here are represented using "
+            "<a href='/barycentric.html'>barycentric coordinates</a>. The values "
+            "given here are truncated to 5 decimal places; fully accurate values can "
+            "be found in the downloads below.</div>\n"
+        )
+
+    def first200(self, colspan: int) -> str:
+        """Get row saying only first 200 points are shown."""
+        return (
+            f"<tr><td colspan='{colspan}' style='color:#ACACAC;text-align:center'>"
+            "(only the first 200 points are shown in this table)</td></tr>"
+        )
+
+
+class QRuleSingle(QRule):
+    """A quadrature rule for a single integral."""
+
+    def __init__(
+        self,
+        domain: typing.Optional[str],
+        order: typing.Optional[int],
+        points: typing.List[typing.List[float]],
+        weights: typing.List[float],
+        rule: str,
+    ):
+        """Create."""
+        self.points = points
+        self.weights = weights
+        super().__init__(domain, order, rule, len(points))
+
+    def image(self, filename: str) -> str:
+        """Make image of rule."""
         match filename.split(".")[-1]:
             case "svg":
                 with open(filename, "w") as f:
@@ -123,7 +179,7 @@ class QRule:
                             domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
                             domain_lines = [[0, 1, 2, 0]]
                             origin = (10.0, 184.0)
-                            axes = [(200.0, 0.0), (100.0, -100*math.sqrt(3))]
+                            axes = [(200.0, 0.0), (100.0, -173.2)]
                         case "quadrilateral":
                             size = (220, 220)
                             domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
@@ -178,14 +234,14 @@ class QRule:
                             f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
                                     "stroke='#000000' stroke-width='1.5' "
                                     "stroke-linecap='round' />\n")
-                        for p_, w in zip(self.points, self.weights):
-                            p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
-                            if w > 0:
-                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' "
-                                        "fill='red' />")
-                            else:
-                                f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
-                                        "fill='blue' />")
+                    for p_, w in zip(self.points, self.weights):
+                        p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
+                        if w > 0:
+                            f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' "
+                                    "fill='red' />")
+                        else:
+                            f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
+                                    "fill='blue' />")
                     f.write("</svg>")
             case _:
                 raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
@@ -203,38 +259,237 @@ class QRule:
             f.write(f"--\n{self.family._qr}{self._rule[3:]}")
 
         with open(filename, "w") as f:
+            f.write(self.barycentric_info())
             f.write("<div class='small-note'>"
                     f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>")
-            if self.itype == "single":
-                with open(f"{filename_root}.csv", "w") as f2:
-                    f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
-                    f2.write(",weight\n")
-                    for p, w in zip(self.points, self.weights):
-                        f2.write(",".join(f"{i}" for i in p) + f",{w}\n")
-                f.write("<div class='small-note'>"
-                        f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>")
-                with open(f"{filename_root}.json", "w") as f2:
-                    f2.write('{"points": [')
-                    f2.write(", ".join("[" + ", ".join(
-                        f"{i}" for i in p) + "]" for p in self.points))
-                    f2.write('], "weights": [')
-                    f2.write(", ".join(f"{w}" for w in self.weights))
-                    f2.write(']}')
-                f.write("<div class='small-note'>"
-                        f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>")
+            with open(f"{filename_root}.csv", "w") as f2:
+                f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
+                f2.write(",weight\n")
+                for p, w in zip(self.points, self.weights):
+                    f2.write(",".join(f"{i}" for i in p) + f",{w}\n")
+            f.write("<div class='small-note'>"
+                    f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>")
+            with open(f"{filename_root}.json", "w") as f2:
+                f2.write('{"points": [')
+                f2.write(", ".join("[" + ", ".join(
+                    f"{i}" for i in p) + "]" for p in self.points))
+                f2.write('], "weights": [')
+                f2.write(", ".join(f"{w}" for w in self.weights))
+                f2.write(']}')
+            f.write("<div class='small-note'>"
+                    f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>")
             f.write("<br />\n")
             f.write("<table class='points'>\n")
             f.write("<thead>")
             f.write(f"<tr><td colspan='{len(self.points[0])}'>Point</td><td>Weight</td></tr>")
             f.write("</thead>\n")
-            for p, w in zip(self.points, self.weights):
+            for n, (p, w) in enumerate(zip(self.points, self.weights)):
+                if n >= 200:
+                    f.write(self.first200(1+len(self.points[0])))
+                    break
                 f.write("<tr>")
                 for i in p:
-                    f.write(f"<td>{i}</td>")
-                f.write(f"<td>{w}</td></tr>\n")
+                    f.write(f"<td>{rounded(i)}</td>")
+                f.write(f"<td>{rounded(w)}</td></tr>\n")
             f.write("</table>\n")
-            f.write("<div class='small-note'>The points given above are represented using "
-                    "<a href='/barycentric.html'>barycentric coordinates</a></div>\n")
+
+
+class QRuleDouble(QRule):
+    """A quadrature rule for a double integral."""
+
+    def __init__(
+        self,
+        domain: typing.Optional[str],
+        order: typing.Optional[int],
+        first_points: typing.List[typing.List[float]],
+        second_points: typing.List[typing.List[float]],
+        weights: typing.List[float],
+        rule: str,
+    ):
+        """Create."""
+        self.first_points = first_points
+        self.second_points = second_points
+        self.weights = weights
+        super().__init__(domain, order, rule, len(first_points))
+
+    def image(self, filename: str) -> str:
+        """Make image of rule."""
+        match filename.split(".")[-1]:
+            case "svg":
+                with open(filename, "w") as f:
+                    match self.domain:
+                        case "triangle":
+                            size = (220, 194)
+                            domain1: typing.List[PointND] = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (10.0, 184.0)
+                            axes1 = [(200.0, 0.0), (100.0, -173.2)]
+                            domain2 = domain1
+                            origin2 = origin1
+                            axes2 = axes1
+                            domain_lines = [[[0, 1, 2, 0]], []]
+                        case "edge-adjacent triangles":
+                            size = (368, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 210.0)
+                            axes1 = [(0.0, -200.0), (-173.2, -100.0)]
+                            domain2 = domain1
+                            origin2 = origin1
+                            axes2 = [(173.2, -100.0), (0.0, -200.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2]]]
+                        case "vertex-adjacent triangles":
+                            size = (368, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 110.0)
+                            axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
+                            domain2 = domain1
+                            origin2 = origin1
+                            axes2 = [(173.2, -100.0), (173.2, 100.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2, 0]]]
+                        case "quadrilateral":
+                            size = (220, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            origin1 = (10.0, 210.0)
+                            axes1 = [(200.0, 0.0), (0.0, -200.0)]
+                            domain2 = domain1
+                            origin2 = origin1
+                            axes2 = axes1
+                            domain_lines = [[[0, 1, 3, 2, 0]], []]
+                        case "edge-adjacent quadrilaterals":
+                            size = (420, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            origin1 = (10.0, 210.0)
+                            axes1 = [(200.0, 0.0), (0.0, -200.0)]
+                            domain2 = domain1
+                            origin2 = (210.0, 210.0)
+                            axes2 = axes1
+                            domain_lines = [[[0, 1, 3, 2, 0]], [[0, 1, 3, 2]]]
+                        case "vertex-adjacent quadrilaterals":
+                            size = (420, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            origin1 = (210.0, 110.0)
+                            axes1 = [(100.0, 100.0), (100.0, -100.0)]
+                            domain2 = domain1
+                            origin2 = origin1
+                            axes2 = [(-100.0, -100.0), (-100.0, 100.0)]
+                            domain_lines = [[[0, 1, 3, 2, 0]], [[0, 1, 3, 2, 0]]]
+                        case "edge-adjacent triangle and quadrilateral":
+                            size = (394, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 210.0)
+                            axes1 = [(0.0, -200.0), (-173.2, -100.0)]
+                            domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            origin2 = origin1
+                            axes2 = [(200.0, 0.0), (0.0, -200.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2]]]
+                        case "vertex-adjacent triangle and quadrilateral":
+                            size = (394, 220)
+                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                            origin1 = (184.0, 110.0)
+                            axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
+                            domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                            origin2 = origin1
+                            axes2 = [(100.0, 100.0), (100.0, -100.0)]
+                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2, 0]]]
+                        case _:
+                            raise ValueError(f"Unsupported domain: {self.domain}")
+                    f.write(f"<svg width='{size[0]}' height='{size[1]}' "
+                            "xmlns='http://www.w3.org/2000/svg' "
+                            "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
+                    for domain, origin, axes, dlines in [
+                        (domain1, origin1, axes1, domain_lines[0]),
+                        (domain2, origin2, axes2, domain_lines[1]),
+                    ]:
+                        for lines in dlines:
+                            for a_, b_ in zip(lines[:-1], lines[1:]):
+                                a = to_2d(domain[a_], origin, axes)
+                                b = to_2d(domain[b_], origin, axes)
+                                f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
+                                        "stroke='#000000' stroke-width='1.5' "
+                                        "stroke-linecap='round' />\n")
+                    for p1_, p2_ in zip(self.first_points, self.second_points):
+                        p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
+                        p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
+                        f.write(f"<line x1='{p1[0]}' y1='{p1[1]}' x2='{p2[0]}' y2='{p2[1]}' "
+                                "stroke='#ACACAC' stroke-width='0.5' "
+                                "stroke-linecap='round' />\n")
+                    for p1_, p2_, w in zip(self.first_points, self.second_points, self.weights):
+                        p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
+                        p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
+                        if w > 0:
+                            f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * w ** 0.5}' "
+                                    "fill='red' />")
+                            f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * w ** 0.5}' "
+                                    "fill='blue' />")
+                        else:
+                            f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * (-w) ** 0.5}' "
+                                    "fill='red' />")
+                            f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * (-w) ** 0.5}' "
+                                    "fill='blue' />")
+                    f.write("</svg>")
+            case _:
+                raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
+        return f"<img src='{html_local(filename)}'>"
+
+    def save_html_table(self, filename):
+        """Save HTML table of points and weights to a file."""
+        assert filename.endswith(".html")
+        filename_root = filename[:-5]
+        filename_root_local = html_local(filename_root)
+
+        assert self._rule.startswith("--\n")
+        assert self.family._qr.endswith("\n")
+        with open(f"{filename_root}.rule", "w") as f:
+            f.write(f"--\n{self.family._qr}{self._rule[3:]}")
+
+        with open(filename, "w") as f:
+            f.write(self.barycentric_info())
+            f.write("<div class='small-note'>"
+                    f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>")
+            with open(f"{filename_root}.csv", "w") as f2:
+                f2.write(",".join([f"point0[{i}]" for i, _ in enumerate(self.first_points[0])]))
+                f2.write(",")
+                f2.write(",".join([f"point1[{i}]" for i, _ in enumerate(self.second_points[0])]))
+                f2.write(",weight\n")
+                for p1, p2, w in zip(self.first_points, self.second_points, self.weights):
+                    f2.write(",".join(f"{i}" for i in p1) + "," + ",".join(
+                        f"{i}" for i in p2) + f",{w}\n")
+            f.write("<div class='small-note'>"
+                    f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>")
+            with open(f"{filename_root}.json", "w") as f2:
+                f2.write('{"points": [')
+                f2.write(", ".join(
+                    "[[" + ", ".join(
+                        f"{i}" for i in p1
+                    ) + "], [" + ", ".join(f"{i}" for i in p2) + "]]"
+                    for p1, p2 in zip(self.first_points, self.second_points)
+                ))
+                f2.write('], "weights": [')
+                f2.write(", ".join(f"{w}" for w in self.weights))
+                f2.write(']}')
+            f.write("<div class='small-note'>"
+                    f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>")
+            f.write("<br />\n")
+            f.write("<table class='points'>\n")
+            f.write("<thead>")
+            f.write(f"<tr><td colspan='{len(self.first_points[0])}'>Point</td>"
+                    f"<td colspan='{len(self.second_points[0])}' class='left-border'>Point</td>"
+                    "<td>Weight</td></tr>")
+            f.write("</thead>\n")
+            for n, (p1, p2, w) in enumerate(
+                zip(self.first_points, self.second_points, self.weights)
+            ):
+                if n >= 200:
+                    f.write(self.first200(
+                        1 + len(self.first_points[0]) + len(self.second_points[0])))
+                    break
+                f.write("<tr>")
+                for i in p1:
+                    f.write(f"<td>{rounded(i)}</td>")
+                f.write(f"<td class='left-border'>{rounded(p2[0])}</td>")
+                for i in p2[1:]:
+                    f.write(f"<td>{rounded(i)}</td>")
+                f.write(f"<td>{rounded(w)}</td></tr>\n")
+            f.write("</table>\n")
 
 
 class QRuleFamily:
@@ -313,12 +568,16 @@ class QRuleFamily:
                 match self.itype:
                     case "single":
                         i += "\\int"
+                    case "double":
+                        i += "\\int\\int"
                     case _:
                         raise ValueError(f"Unsupported integral type: {self.itype}")
                 i += f" {self.integrand}"
                 match self.itype:
                     case "single":
                         i += "\\,\\mathrm{d}x"
+                    case "double":
+                        i += "\\,\\mathrm{d}x\\,\\mathrm{d}y"
                     case _:
                         raise ValueError(f"Unsupported integral type: {self.itype}")
                 i += "\\)"
@@ -364,7 +623,7 @@ def load_rule(code: str) -> QRuleFamily:
 
     itype = data["integral-type"] if "integral-type" in data else "single"
 
-    rules = []
+    rules: typing.List[QRule] = []
     pt_dir = os.path.join(settings.rules_path, f"{code}")
     for pt_file in os.listdir(pt_dir):
         if pt_file.endswith(".rule"):
@@ -375,22 +634,44 @@ def load_rule(code: str) -> QRuleFamily:
                     metadata = yaml.safe_load(metadata_)
                 else:
                     metadata = {}
-                points = []
-                weights = []
-                for line in rule_content.strip().split("\n"):
-                    p, w = line.split("|")
-                    points.append([float(i) for i in p.strip().split()])
-                    weights.append(float(w))
 
-                rules.append(QRule(
-                    metadata.get("domain"),
-                    metadata.get("order"),
-                    points,
-                    weights,
-                    itype,
-                    content,
-                ))
-    rules.sort(key=lambda r: (dim(r.domain), r.domain, r.order))
+                match itype:
+                    case "single":
+                        points = []
+                        weights = []
+                        for line in rule_content.strip().split("\n"):
+                            p, w = line.split("|")
+                            points.append([float(i) for i in p.strip().split()])
+                            weights.append(float(w))
+
+                        rules.append(QRuleSingle(
+                            metadata.get("domain"),
+                            metadata.get("order"),
+                            points,
+                            weights,
+                            content,
+                        ))
+                    case "double":
+                        points1 = []
+                        points2 = []
+                        weights = []
+                        for line in rule_content.strip().split("\n"):
+                            p1, p2, w = line.split("|")
+                            points1.append([float(i) for i in p1.strip().split()])
+                            points2.append([float(i) for i in p2.strip().split()])
+                            weights.append(float(w))
+
+                        rules.append(QRuleDouble(
+                            metadata.get("domain"),
+                            metadata.get("order"),
+                            points1,
+                            points2,
+                            weights,
+                            content,
+                        ))
+                    case _:
+                        raise ValueError(f"Unsupported integral type: {itype}")
+    rules.sort(key=lambda r: (dim(r.domain), sort_name(r.domain), r.order))
 
     r = QRuleFamily(
         code,
