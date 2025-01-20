@@ -1,6 +1,6 @@
 name: closed Newton--Cotes
-integral-type: double
-integrand: f(x,y)
+integral-type: single
+integrand: f(x)
 notes:
   - Order 1 closed Newton--Cotes is the trapezium rule
   - Order 2 closed Newton--Cotes is Simpson's rule
