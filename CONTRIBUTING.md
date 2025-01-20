@@ -3,16 +3,16 @@
 ## Making suggestions
 
 If you want to suggest changes to the online encyclopedia of quadrature rules, please use the
-[issue tracker](https://github.com/mscroggs/quadraturerules/issues)
+[issue tracker](https://github.com/quadraturerules/quadraturerules/issues)
 on GitHub.
 
 ## Contributing directly
 
 ### Submitting a pull request
-If you want to directly submit changes to the online encyclopedia of quadrature rules, you can do this by forking the [GitHub repository](https://github.com/mscroggs/quadraturerules),
+If you want to directly submit changes to the online encyclopedia of quadrature rules, you can do this by forking the [GitHub repository](https://github.com/quadraturerules/quadraturerules),
 making changes, then submitting a pull request.
 If you want to contribute, but are unsure where to start, have a look at the
-[issue tracker](https://github.com/mscroggs/quadraturerules/labels/good%20first%20issue) for issues labelled "good first issue".
+[issue tracker](https://github.com/quadraturerules/quadraturerules/labels/good%20first%20issue) for issues labelled "good first issue".
 
 ### Adding a quadrature rule
 Rules in the online encyclopedia of quadrature rules are defined using files in the `rules/` folder.
