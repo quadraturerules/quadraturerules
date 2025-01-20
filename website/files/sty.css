@@ -95,7 +95,8 @@ p.pcode {margin-left:50px;margin-right:50px;font-family:monospace;white-space:no
 a.more {display:block;margin-top:20px;font-family: 'Convergence', sans-serif;font-weight:400;margin-bottom:30px}
 
 #sideplots {
-    float:right;width:220px;padding:10px 0px 20px 40px
+    float:right;width:220px;padding:10px 0px 20px 40px;
+    position:relative;z-index:10;
 }
 
 #sideplots div {
