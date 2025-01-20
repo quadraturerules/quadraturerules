@@ -11,8 +11,8 @@ for reuse in a paper, you could cite the online encyclopedia of quadrature rules
 
 ## Citing the online encyclopedia of quadrature rules
 
-The code used to generate this website is available on [GitHub](https://github.com/mscroggs/quadraturerules)
-under an [MIT license](https://github.com/mscroggs/quadraturerules/blob/main/LICENSE).
+The code used to generate this website is available on [GitHub](https://github.com/quadraturerules/quadraturerules)
+under an [MIT license](https://github.com/quadraturerules/quadraturerules/blob/main/LICENSE).
 
 On each quadrature rule's page, you can find citations for the paper(s) that introduced
 that rule. These papers should be cited when using a given rule. If you wish to cite this

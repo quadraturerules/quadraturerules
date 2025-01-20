@@ -18,7 +18,7 @@ jobs:
 
     steps:
     - name: Pull
-      run: git clone https://github.com/mscroggs/quadraturerules.git .
+      run: git clone https://github.com/quadraturerules/quadraturerules.git .
     - name: Set up Python 3.12
       uses: actions/setup-python@v4
       with:
@@ -184,6 +184,6 @@ jobs:
           files: |
             quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz
           body: |
-            - [C++ source](https://github.com/mscroggs/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
+            - [C++ source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
             - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
             - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})

@@ -10,5 +10,8 @@ To make a new release of the quadraturerules library, follow these steps:
 2. Wait for the CI to pass and merge the PR.
 
 3. A new tag should automatically be created on GitHub.
+   The [release](https://github.com/quadraturerules/quadraturerules/actions/workflows/release.yml) CI workflow should automatically create:
 
-4. Python and Rust releases should be created automaticaly by the [release](https://github.com/mscroggs/quadraturerules/actions/workflows/release.yml) CI workflow.
+   - A Python release
+   - A Rust release
+   - An archive of the C++ library source

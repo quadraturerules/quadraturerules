@@ -4,8 +4,11 @@ import argparse
 import os
 import re
 import sys
+from datetime import datetime
 
 from webtools.tools import join
+
+start_all = datetime.now()
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(join(path, "..", "website"))
@@ -231,19 +234,27 @@ def sub_and_copy_files(folder):
             match loop_over:
                 case "in rule":
                     for rule in all_rules:
+                        start = datetime.now()
+                        print(f"{file} [{rule.name()}]", end="", flush=True)
                         with open(join(
                             target_dir,
                             folder,
                             family_replace(metadata["filename"], var, rule),
                         ), "w") as f:
                             f.write(sub(family_replace(content, var, rule), {var: rule}))
+                        end = datetime.now()
+                        print(f" (completed in {(end - start).total_seconds():.2f}s)")
                 case _:
                     raise ValueError(f"Unsupported loop: {loop_over}")
         else:
+            start = datetime.now()
+            print(file, end="", flush=True)
             with open(join(source_dir, file)) as f:
                 content = f.read()
             with open(join(target_dir, file), "w") as f:
                 f.write(sub(content))
+            end = datetime.now()
+            print(f" (completed in {(end - start).total_seconds():.2f}s)")
 
 
 sub_and_copy_files("")
@@ -253,3 +264,6 @@ if lib == "python":
     os.system(f"cd {target_dir} && ruff format .")
 if lib == "rust":
     os.system(f"cd {target_dir} && cargo fmt")
+
+end_all = datetime.now()
+print(f" (completed in {(end_all - start_all).total_seconds():.2f}s)")
