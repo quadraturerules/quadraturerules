@@ -49,6 +49,7 @@ for file in os.listdir(settings.rules_path):
 all_rules.sort(key=lambda r: r.name())
 
 domains = list(set(i.domain for r in all_rules for i in r.rules))
+domains.sort(key=lambda d: (rules.dim(d), rules.sort_name(d)))
 
 
 def replace(content, subs):
