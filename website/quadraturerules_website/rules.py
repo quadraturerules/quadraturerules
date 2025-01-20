@@ -24,7 +24,7 @@ def sort_name(domain: str | None):
     return domain.lower()
 
 
-def dim(domain: str | None) -> float:
+def dim(domain: str | None) -> int:
     """Get the dimension of a domain."""
     if domain is None:
         return -1
@@ -34,8 +34,8 @@ def dim(domain: str | None) -> float:
         return 1
     if domain in ["triangle", "quadrilateral", "circle"]:
         return 2
-    for d in ["triangle", "quadrilateral"]:
-        if domain in [f"edge-adjacent {d}s", f"vertex-adjacent {d}s"]:
+    for d in ["triangles", "quadrilaterals", "triangle and quadrilateral"]:
+        if domain in [f"edge-adjacent {d}", f"vertex-adjacent {d}"]:
             return 2
     if "agon" in domain:
         return 2
