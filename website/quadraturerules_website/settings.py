@@ -36,7 +36,7 @@ settings.website_name = [
     "The online encyclopedia of quadrature rules",
     "the online encyclopedia of quadrature rules",
 ]
-settings.repo = "mscroggs/quadraturerules"
+settings.repo = "quadraturerules/quadraturerules"
 
 settings.dir_path = dir_path
 settings.html_path = html_path

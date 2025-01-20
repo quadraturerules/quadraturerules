@@ -12,7 +12,7 @@ dependencies = ["numpy"]
 
 [project.urls]
 homepage = "https://quadraturerules.org"
-repository = "https://github.com/mscroggs/quadraturerules"
+repository = "https://github.com/quadraturerules/quadraturerules"
 
 [project.optional-dependencies]
 style = ["ruff", "mypy"]
