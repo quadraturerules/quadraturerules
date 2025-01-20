@@ -1,0 +1,15 @@
+name: open Newton--Cotes
+integral-type: single
+integrand: f(x)
+notes:
+  - Order 0 open Newton--Cotes is the midpoint rule
+  - Order 2 closed Newton--Cotes is Milne's rule
+references:
+  - title: Newton-Cotes formulas (open type)
+    author:
+      - Abrahamowitz, Milton
+      - Stegum, Irene A.
+    booktitle: Handbook of mathematical functions with formulas, graphs, and mathematical tables
+    year: 1964
+    pagestart: 887
+    pageend: 887
