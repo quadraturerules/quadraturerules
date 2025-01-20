@@ -10,7 +10,7 @@ mod rules;
 #[repr(u8)]
 pub enum Domain {
     {{for D in domains}}
-    /// {{D.name}}}
+    /// {{D.name}}
     {{D.PascalCaseName}} = {{D.index}},
     {{end for}}
 }
