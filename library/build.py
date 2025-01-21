@@ -1,12 +1,12 @@
 """Build library."""
 
-import numpy.typing as npt
 import argparse
 import os
 import re
 import sys
 from datetime import datetime
 
+import numpy.typing as npt
 from webtools.tools import join
 
 start_all = datetime.now()
