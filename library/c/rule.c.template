@@ -1,0 +1,75 @@
+--
+template: Q in rule
+filename: {{Q.snake_case_name}}.c
+--
+#include "quadraturerules.h"
+
+int {{Q.snake_case_name}}_npoints(
+    Domain domain,
+    int order
+)
+{
+  switch (domain)
+  {
+  {{for D in domains}}
+  case QR_{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      return {{R.npoints}};
+    {{end if}}
+    {{end for}}
+    default:
+      return -1;
+    }
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+
+int {{Q.snake_case_name}}(
+    Domain domain,
+    int order,
+{{if Q.itype == single}}
+    double* points,
+    double* weights
+{{end if}}
+{{if Q.itype == double}}
+    double* first_points,
+    double* second_points,
+    double* weights
+{{end if}}
+)
+{
+  switch (domain)
+  {
+  {{for D in domains}}
+  case QR_{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      {{if Q.itype == single}}
+      {{R.c_set_points<points>}}
+      {{R.c_set_weights<weights>}}
+      {{end if}}
+      {{if Q.itype == double}}
+      {{R.c_set_first_points<first_points>}}
+      {{R.c_set_second_points<second_points>}}
+      {{R.c_set_weights<weights>}}
+      {{end if}}
+      return 0;
+    {{end if}}
+    {{end for}}
+    default:
+      return 1;
+    }
+  {{end for}}
+  default:
+    return 1;
+  }
+}

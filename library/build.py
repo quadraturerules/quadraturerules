@@ -1,5 +1,6 @@
 """Build library."""
 
+import numpy.typing as npt
 import argparse
 import os
 import re
@@ -52,6 +53,18 @@ domains = list(set(i.domain for r in all_rules for i in r.rules))
 domains.sort(key=lambda d: (rules.dim(d), rules.sort_name(d)))
 
 
+def nvertices(domain: str) -> int:
+    """Get the number of vertices that a domain has."""
+    for q in all_rules:
+        for r in q.rules:
+            if r.domain == domain:
+                if isinstance(r, rules.QRuleSingle):
+                    return len(r.points[0])
+                elif isinstance(r, rules.QRuleDouble):
+                    return len(r.first_points[0])
+    return -1
+
+
 def replace(content, subs):
     """Replace templated code."""
     for a, b in subs:
@@ -80,18 +93,58 @@ def family_replace(content, variable, family):
     ])
 
 
+def c_write_points(memory: str, points: npt.NDArray[float]) -> str:
+    """Create C string to write points into memory."""
+    out = ""
+    i = 0
+    for p in points:
+        for c in p:
+            out += f"{memory}[{i}] = {c};"
+            i += 1
+    return out
+
+
 def rule_replace(content, variable, rule):
     """Replace templated code for a rule."""
     subs = [
         [f"{variable}.order", f"{rule.order}"],
         [f"{variable}.domain", rule.domain],
     ]
+
+    if isinstance(rule, rules.QRuleSingle):
+        content = re.sub(
+            r"\{\{R\.c_set_points<([^>]+)>\}\}",
+            lambda m: c_write_points(m[1], rule.points),
+            content,
+        )
+        content = re.sub(r"\{\{R\.c_set_first_points<([^>]+)>\}\}", "<<ERROR>>", content)
+        content = re.sub(r"\{\{R\.c_set_second_points<([^>]+)>\}\}", "<<ERROR>>", content)
+        content = re.sub(r"\{\{R\.c_set_weights<([^>]+)>\}\}", lambda m: "".join(
+            f"{m[1]}[{i}] = {w};" for i, w in enumerate(rule.weights)
+        ), content)
+    elif isinstance(rule, rules.QRuleDouble):
+        content = re.sub(r"\{\{R\.c_set_points<([^>]+)>\}\}", "<<ERROR>>", content)
+        content = re.sub(
+            r"\{\{R\.c_set_first_points<([^>]+)>\}\}",
+            lambda m: c_write_points(m[1], rule.first_points),
+            content,
+        )
+        content = re.sub(
+            r"\{\{R\.c_set_second_points<([^>]+)>\}\}",
+            lambda m: c_write_points(m[1], rule.second_points),
+            content,
+        )
+        content = re.sub(r"\{\{R\.c_set_weights<([^>]+)>\}\}", lambda m: "".join(
+            f"{m[1]}[{i}] = {w};" for i, w in enumerate(rule.weights)
+        ), content)
+
     for open, close, name in [
         ("[", "]", "list"),
         ("{", "}", "curly_list"),
     ]:
         if isinstance(rule, rules.QRuleSingle):
             subs += [
+                [f"{variable}.npoints", f"{len(rule.weights)}"],
                 [f"{variable}.first_points_as_{name}", "<<ERROR>>"],
                 [f"{variable}.first_points_as_flat_{name}", "<<ERROR>>"],
                 [f"{variable}.second_points_as_{name}", "<<ERROR>>"],
@@ -105,6 +158,7 @@ def rule_replace(content, variable, rule):
             ]
         elif isinstance(rule, rules.QRuleDouble):
             subs += [
+                [f"{variable}.npoints", f"{len(rule.weights)}"],
                 [f"{variable}.points_as_{name}", "<<ERROR>>"],
                 [f"{variable}.points_as_flat_{name}", "<<ERROR>>"],
                 [f"{variable}.first_points_as_{name}", open + ", ".join(
@@ -128,6 +182,7 @@ def domain_replace(content, variable, domain):
     parts = re.split(r"--|\s|-", domain)
     return replace(content, [
         [f"{variable}.index", f"{domains.index(domain)}"],
+        [f"{variable}.nvertices", f"{nvertices(domain)}"],
         [f"{variable}.PascalCaseName", "".join(i[0].upper() + i[1:].lower() for i in parts)],
         [f"{variable}.camelCaseName", parts[0].lower() + "".join(
             i[0].upper() + i[1:].lower() for i in parts[1:])],
@@ -181,7 +236,8 @@ def sub(content, vars={}):
         for v, value in vars.items():
             if loop_over == f"in {v}.rules":
                 for rule in value.rules:
-                    content += rule_replace(inside, var, rule)
+                    if len(rule.weights) < 1000:  # TODO: remove this limit
+                        content += rule_replace(inside, var, rule)
                 break
         else:
             match loop_over:
@@ -267,4 +323,4 @@ if lib == "rust":
     os.system(f"cd {target_dir} && cargo fmt")
 
 end_all = datetime.now()
-print(f" (completed in {(end_all - start_all).total_seconds():.2f}s)")
+print(f"Total time: {(end_all - start_all).total_seconds():.2f}s")

@@ -39,7 +39,7 @@ order 3 Xiao--Gimbutas rule on a triangle:
 ```cpp
 #include <quadraturerules.h>
 
-using quadraturerules
+using quadraturerules;
 
 auto [points, weights] = single_integral_quadrature(
     QuadratureRule::XiaoGimbutas,
