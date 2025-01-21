@@ -4,9 +4,9 @@ import argparse
 import os
 import re
 import sys
+import typing
 from datetime import datetime
 
-import numpy.typing as npt
 from webtools.tools import join
 
 start_all = datetime.now()
@@ -93,7 +93,7 @@ def family_replace(content, variable, family):
     ])
 
 
-def c_write_points(memory: str, points: npt.NDArray[float]) -> str:
+def c_write_points(memory: str, points: typing.List[rules.PointND]) -> str:
     """Create C string to write points into memory."""
     out = ""
     i = 0
