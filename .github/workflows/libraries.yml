@@ -116,3 +116,32 @@ jobs:
           export CMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH:$(pwd)/library/cpp.build/build/lib/cmake"
           python library/cpp.build/test/run_tests.py
         name: Run C++ tests
+
+  c-library:
+    name: Build and test C library
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          python3 -m pip install -r website/requirements.txt
+          python3 -m pip install -r library/requirements.txt
+        name: Install requirements
+
+      - run: |
+          cd library
+          python build.py c
+          cd c.build
+          gcc -c -Wall -Werror -fpic quadraturerules.c
+          gcc -shared -o libquadraturerules.so quadraturerules.o
+        name: Build C++ library
+
+      - run: |
+          cd c.buildtest
+          gcc -L.. -Wall -o test test.c -lquadraturerules
+          ./test
+        name: Run C++ tests
