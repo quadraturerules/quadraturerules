@@ -193,6 +193,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: cpp_source
+      - name: Download C source
+        uses: actions/download-artifact@v4
+        with:
+          name: c_source
 
       - name: Write version number into GITHUB_OUTPUT
         run: |
@@ -218,6 +222,7 @@ jobs:
           tag_name: ${{ steps.v.outputs.version }}
           files: |
             quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz
+            quadraturerules-c-${{ steps.v.outputs.version }}.tar.gz
           body: |
             - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
             - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})
