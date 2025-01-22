@@ -6,6 +6,7 @@ import re
 import sys
 from datetime import datetime
 
+import gen
 from webtools.tools import join
 
 start_all = datetime.now()
@@ -21,7 +22,7 @@ parser.add_argument('library', metavar='library', nargs=1,
 args = parser.parse_args()
 lib = args.library[0]
 
-assert lib in os.listdir(path)
+assert lib in os.listdir(path) and lib != "gen"
 
 source_dir = join(path, lib)
 assert os.path.isdir(source_dir)
@@ -157,61 +158,21 @@ def load_library_file(m):
         return "#" + f.read()
 
 
+loop_targets={
+    "rules": [gen.qr.RuleFamily(r) for r in all_rules],
+    "domains": [gen.qr.Domain(d, i) for i, d in enumerate(domains)],
+}
+
+
 def sub(content, vars={}):
     """Make substitutions in a file."""
     content = content.replace("{{VERSION}}", version)
     content = content.replace("{{LICENSE}}", license)
     content = content.replace("{{README}}", readme)
     content = re.sub(r"{{website/pages/libraries/([^}]+)}}", load_library_file, content)
-    while "{{end for}}" in content:
-        temp, after = content.split("{{end for}}", 1)
-        if after.startswith("\n"):
-            after = after[1:]
-        while temp.endswith(" "):
-            temp = temp[:-1]
-        temp2 = temp.split("{{for ")
-        before = "{{for ".join(temp2[:-1])
-        var, inside = temp2[-1].split(" ", 1)
-        while before.endswith(" "):
-            before = before[:-1]
-        content = before
-        loop_over, inside = inside.split("}}", 1)
-        if inside.startswith("\n"):
-            inside = inside[1:]
-        for v, value in vars.items():
-            if loop_over == f"in {v}.rules":
-                for rule in value.rules:
-                    content += rule_replace(inside, var, rule)
-                break
-        else:
-            match loop_over:
-                case "in rules":
-                    for rule in all_rules:
-                        content += family_replace(inside, var, rule)
-                case "in domains":
-                    for domain in domains:
-                        content += domain_replace(inside, var, domain)
-                case _:
-                    raise ValueError(f"Unsupported loop: {loop_over}")
-        content += after
-    while "{{end if}}" in content:
-        temp, after = content.split("{{end if}}", 1)
-        if after.startswith("\n"):
-            after = after[1:]
-        while temp.endswith(" "):
-            temp = temp[:-1]
-        temp2 = temp.split("{{if ")
-        before = "{{if ".join(temp2[:-1])
-        while before.endswith(" "):
-            before = before[:-1]
-        content = before
-        condition, inside = temp2[-1].split("}}", 1)
-        if inside.startswith("\n"):
-            inside = inside[1:]
-        if is_true(condition):
-            content += inside
-        content += after
-    return content
+
+    file = gen.parser.parse(content)
+    return file.substitute(loop_targets=loop_targets)
 
 
 def sub_and_copy_files(folder):
