@@ -13,8 +13,8 @@ quadraturerules::single_integral_quadrature(
     QuadratureRule rtype,
     Domain domain,
     std::size_t order
-) {
-
+)
+{
   switch (rtype)
   {
   {{for Q in rules}}
@@ -33,8 +33,8 @@ quadraturerules::double_integral_quadrature(
     QuadratureRule rtype,
     Domain domain,
     std::size_t order
-) {
-
+)
+{
   switch (rtype)
   {
   {{for Q in rules}}

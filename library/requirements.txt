@@ -1,2 +1,3 @@
 pyyaml
 ruff
+typing_extensions
