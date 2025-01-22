@@ -13,7 +13,7 @@ int main()
     single_integral_quadrature(QR_GaussLegendre, QR_Interval, 3, pts, wts);
 
     double sum = 0.0;
-    for (int i=0; i<pts_size; ++i)
+    for (int i=0; i<wts_size; ++i)
       sum += wts[i];
 
     assert(fabs(1.0 - sum) < 1e-8);

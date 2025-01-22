@@ -143,5 +143,5 @@ jobs:
       - run: |
           cd library/c.build/test
           gcc -L.. -Wall -o test test.c -lquadraturerules
-          ./test
+          LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.. ./test
         name: Run C tests
