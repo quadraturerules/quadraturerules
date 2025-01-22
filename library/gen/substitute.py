@@ -19,5 +19,7 @@ class Substitutor(ABC):
         """Substitute."""
 
     @abstractmethod
-    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Substitutor]]:
+    def loop_targets(
+        self, variable: str,
+    ) -> typing.Dict[str, typing.Generator[Substitutor, None, None]]:
         """Get list of loop targets."""

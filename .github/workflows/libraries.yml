@@ -141,7 +141,7 @@ jobs:
         name: Build C++ library
 
       - run: |
-          cd c.buildtest
+          cd c.build/test
           gcc -L.. -Wall -o test test.c -lquadraturerules
           ./test
         name: Run C++ tests

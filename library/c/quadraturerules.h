@@ -49,4 +49,39 @@ extern int barycentric_dim(
     Domain domain
 );
 
+/// Size of points
+int single_integral_quadrature_points_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+);
+
+/// Size of weights
+int single_integral_quadrature_weights_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+);
+
+/// Size of points
+int double_integral_quadrature_first_points_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+);
+
+/// Size of points
+int double_integral_quadrature_second_points_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+);
+
+/// Size of weights
+int double_integral_quadrature_weights_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+);
+
 #endif // QUADRATURERULES_H

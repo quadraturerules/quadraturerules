@@ -48,7 +48,26 @@ int double_integral_quadrature(
   }
 }
 
-int quadrature_npoints(
+int single_integral_quadrature_points_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+)
+{
+  switch (rtype)
+  {
+  {{for Q in rules}}
+  {{if Q.itype == single}}
+  case QR_{{Q.PascalCaseName}}:
+    return {{Q.snake_case_name}}_points_size(domain, order);
+  {{end if}}
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+
+int single_integral_quadrature_weights_size(
     QuadratureRule rtype,
     Domain domain,
     int order
@@ -58,21 +77,62 @@ int quadrature_npoints(
   {
   {{for Q in rules}}
   case QR_{{Q.PascalCaseName}}:
-    return {{Q.snake_case_name}}_npoints(domain, order);
+    return {{Q.snake_case_name}}_weights_size(domain, order);
   {{end for}}
   default:
     return -1;
   }
 }
 
-int barycentric_dim(
-    Domain domain
-){
-  switch (domain)
+int double_integral_quadrature_first_points_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+)
+{
+  switch (rtype)
   {
-  {{for D in domains}}
-  case QR_{{D.PascalCaseName}}:
-    return {{D.nvertices}};
+  {{for Q in rules}}
+  {{if Q.itype == double}}
+  case QR_{{Q.PascalCaseName}}:
+    return {{Q.snake_case_name}}_first_points_size(domain, order);
+  {{end if}}
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+
+int double_integral_quadrature_second_points_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+)
+{
+  switch (rtype)
+  {
+  {{for Q in rules}}
+  {{if Q.itype == double}}
+  case QR_{{Q.PascalCaseName}}:
+    return {{Q.snake_case_name}}_second_points_size(domain, order);
+  {{end if}}
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+
+int double_integral_quadrature_weights_size(
+    QuadratureRule rtype,
+    Domain domain,
+    int order
+)
+{
+  switch (rtype)
+  {
+  {{for Q in rules}}
+  case QR_{{Q.PascalCaseName}}:
+    return {{Q.snake_case_name}}_weights_size(domain, order);
   {{end for}}
   default:
     return -1;
