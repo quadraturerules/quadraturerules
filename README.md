@@ -11,6 +11,7 @@ $$\int f(x)\,\mathrm{d}x \approx \sum_{i=0}^{n-1}f(p_i)w_i$$
 
 All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages:
 
-- [C++](website/pages/libraries/cpp.md)
 - [Python](website/pages/libraries/python.md)
 - [Rust](website/pages/libraries/rust.md)
+- [C++](website/pages/libraries/cpp.md)
+- [C](website/pages/libraries/c.md)

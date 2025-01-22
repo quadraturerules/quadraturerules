@@ -128,4 +128,4 @@ if lib == "rust":
     os.system(f"cd {target_dir} && cargo fmt")
 
 end_all = datetime.now()
-print(f" (completed in {(end_all - start_all).total_seconds():.2f}s)")
+print(f"Total time: {(end_all - start_all).total_seconds():.2f}s")

@@ -17,7 +17,8 @@ enum class Domain : int
 };
 
 /// A quadrature rule family.
-enum class QuadratureRule {
+enum class QuadratureRule
+{
   {{for Q in rules}}
   {{Q.PascalCaseName}} = {{Q.index}},
   {{end for}}

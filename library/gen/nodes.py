@@ -90,7 +90,8 @@ class For(Node):
         if self.loop_over in loop_targets:
             return "".join(
                 self.inside.substitute(
-                    {**vars, self.variable: i}, loop_targets,
+                    {**vars, self.variable: i},
+                    loop_targets,
                 )
                 for i in loop_targets[self.loop_over]
             )
@@ -99,7 +100,8 @@ class For(Node):
             if self.loop_over in lt:
                 return "".join(
                     self.inside.substitute(
-                        {**vars, self.variable: i}, loop_targets,
+                        {**vars, self.variable: i},
+                        loop_targets,
                     )
                     for i in lt[self.loop_over]
                 )

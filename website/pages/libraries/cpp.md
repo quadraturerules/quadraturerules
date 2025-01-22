@@ -5,9 +5,9 @@ The source code of the quadraturerules C++ library can be downloaded from the
 It can be installed by running:
 
 ```bash
-wget https://github.com/quadraturerules/quadraturerules/releases/download/{{VERSION}}/cpp_source.tar.gz
+wget https://github.com/quadraturerules/quadraturerules/releases/download/{{VERSION}}/quadraturerules-cpp-{{VERSION}}.tar.gz
 mkdir src
-tar -xvf cpp_source.tar.gz -C src
+tar -xvf quadraturerules-cpp-{{VERSION}}.tar.gz -C src
 mkdir build
 cd build
 cmake ../src
@@ -39,7 +39,7 @@ order 3 Xiao--Gimbutas rule on a triangle:
 ```cpp
 #include <quadraturerules.h>
 
-using quadraturerules
+using quadraturerules;
 
 auto [points, weights] = single_integral_quadrature(
     QuadratureRule::XiaoGimbutas,
@@ -48,5 +48,5 @@ auto [points, weights] = single_integral_quadrature(
 );
 ```
 
-Note that the points return by the library are represented using
+Note that the points returned by the library are represented using
 [barycentric coordinates](/barycentric.md).

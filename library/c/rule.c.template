@@ -1,0 +1,163 @@
+--
+template: Q in rule
+filename: {{Q.snake_case_name}}.c
+--
+#include "quadraturerules.h"
+
+int {{Q.snake_case_name}}_weights_size(
+    Domain domain,
+    int order
+)
+{
+  switch (domain)
+  {
+  {{for D in domains}}
+  case QR_{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      return {{R.len_weights}};
+    {{end if}}
+    {{end for}}
+    default:
+      return -1;
+    }
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+
+{{if Q.itype == single}}
+int {{Q.snake_case_name}}_points_size(
+    Domain domain,
+    int order
+)
+{
+  switch (domain)
+  {
+  {{for D in domains}}
+  case QR_{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      return {{R.len_flat_points}};
+    {{end if}}
+    {{end for}}
+    default:
+      return -1;
+    }
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+{{end if}}
+{{if Q.itype == double}}
+int {{Q.snake_case_name}}_first_points_size(
+    Domain domain,
+    int order
+)
+{
+  switch (domain)
+  {
+  {{for D in domains}}
+  case QR_{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      return {{R.len_flat_first_points}};
+    {{end if}}
+    {{end for}}
+    default:
+      return -1;
+    }
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+
+int {{Q.snake_case_name}}_second_points_size(
+    Domain domain,
+    int order
+)
+{
+  switch (domain)
+  {
+  {{for D in domains}}
+  case QR_{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      return {{R.len_flat_second_points}};
+    {{end if}}
+    {{end for}}
+    default:
+      return -1;
+    }
+  {{end for}}
+  default:
+    return -1;
+  }
+}
+{{end if}}
+
+int {{Q.snake_case_name}}(
+    Domain domain,
+    int order,
+{{if Q.itype == single}}
+    double* points,
+    double* weights
+{{end if}}
+{{if Q.itype == double}}
+    double* first_points,
+    double* second_points,
+    double* weights
+{{end if}}
+)
+{
+  switch (domain)
+  {
+  {{for D in domains}}
+  case QR_{{D.PascalCaseName}}:
+    switch (order)
+    {
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    case {{R.order}}:
+      {{if Q.itype == single}}
+      {{for p in R.flat_points}}
+      points[{{p.index}}] = {{p}};
+      {{end for}}
+      {{end if}}
+      {{if Q.itype == double}}
+      {{for p in R.flat_first_points}}
+      first_points[{{p.index}}] = {{p}};
+      {{end for}}
+      {{for p in R.flat_second_points}}
+      second_points[{{p.index}}] = {{p}};
+      {{end for}}
+      {{end if}}
+      {{for w in R.weights}}
+      weights[{{w.index}}] = {{w}};
+      {{end for}}
+      return 0;
+    {{end if}}
+    {{end for}}
+    default:
+      return 1;
+    }
+  {{end for}}
+  default:
+    return 1;
+  }
+}

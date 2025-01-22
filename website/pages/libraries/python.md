@@ -23,5 +23,5 @@ points, weights = single_integral_quadrature(
 )
 ```
 
-Note that the points return by the library are represented using
+Note that the points returned by the library are represented using
 [barycentric coordinates](/barycentric.md).
