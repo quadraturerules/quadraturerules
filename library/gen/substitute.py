@@ -10,13 +10,14 @@ if typing.TYPE_CHECKING:
 else:
     Node = typing.Any
 
+
 class Substitutor(ABC):
     """Substitutor."""
 
     @abstractmethod
-    def substitute(self, code: str, variable: str) -> str:
+    def substitute(self, code: str, variable: str, bracketed: bool = True) -> str:
         """Substitute."""
 
     @abstractmethod
-    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[typing.Self]]:
+    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Substitutor]]:
         """Get list of loop targets."""

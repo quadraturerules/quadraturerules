@@ -13,6 +13,7 @@ start_all = datetime.now()
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(join(path, "..", "website"))
+import gen.qr
 from quadraturerules_website import rules, settings  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
@@ -99,9 +100,10 @@ def sub_and_copy_files(folder):
                     for rule in all_rules:
                         start = datetime.now()
                         print(f"{file} [{rule.name()}]", end="", flush=True)
-                        filename = gen.parse(metadata["filename"]).substitute(vars={var: gen.qr.RuleFamily(rule)})
+                        vars = {var: gen.qr.RuleFamily(rule)}
+                        filename = sub(metadata["filename"], vars).strip()
                         with open(join(target_dir, folder, filename), "w") as f:
-                            f.write(sub(content, {var: gen.qr.RuleFamily(rule)}))
+                            f.write(sub(content, vars))
                         end = datetime.now()
                         print(f" (completed in {(end - start).total_seconds():.2f}s)")
                 case _:

@@ -3,14 +3,19 @@
 import typing
 import re
 
-from gen.nodes import Node, If, For, Line, ListOfNodes
+from gen.nodes import For, If, Line, ListOfNodes
 
 
 def parse(code: str) -> ListOfNodes:
+    """Parse a string of code."""
+    if code == "":
+        return ListOfNodes([])
+    if code.endswith("\n"):
+        code = code[:-1]
     pre = ""
     inside = ""
     loop_count = None
-    loop_start = None
+    loop_start  = None
     for line_n, line in enumerate(code.split("\n")):
         if re.match(r"^\{\{(:?if|for)[^\}]+\}\}$", line.strip()):
             if loop_count is None:
@@ -20,6 +25,7 @@ def parse(code: str) -> ListOfNodes:
                 loop_count += 1
                 inside += line + "\n"
         elif re.match(r"^\{\{end (:?if|for)\}\}$", line.strip()):
+            assert loop_count is not None and loop_start is not None
             loop_count -= 1
             if loop_count == 0:
                 post = "\n".join(code.split("\n")[line_n + 1:])

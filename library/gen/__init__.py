@@ -1,4 +1,3 @@
 """Code generation tools."""
-from gen import parser, nodes, substitute, qr
-
+from gen import nodes, parser, substitute
 from gen.parser import parse
