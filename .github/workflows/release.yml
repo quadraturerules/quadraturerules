@@ -140,6 +140,40 @@ jobs:
           path: library/cpp.build/quadraturerules-cpp-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
+  c-library:
+    name: Build C source for release
+    runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          python3 -m pip install -r website/requirements.txt
+          python3 -m pip install -r library/requirements.txt
+        name: Install requirements
+
+      - run: |
+          cd library
+          python build.py c
+        name: Build C library
+      - run: |
+          cd library/c.build
+          tar -cvf quadraturerules-c-${{ needs.check-version.outputs.tag }}.tar.gz *
+        name: Make tar.gz of source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: c_source
+          path: library/c.build/quadraturerules-c-${{ needs.check-version.outputs.tag }}.tar.gz
+          retention-days: 1
+
   make-release:
     name: Make release on GitHub
     runs-on: ubuntu-22.04
@@ -153,6 +187,7 @@ jobs:
       - python-library
       - rust-library
       - cpp-library
+      - c-library
     steps:
       - name: Download C++ source
         uses: actions/download-artifact@v4
@@ -184,6 +219,7 @@ jobs:
           files: |
             quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz
           body: |
-            - [C++ source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
             - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
             - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})
+            - [C++ source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
+            - [C source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-c-${{ steps.v.outputs.version }}.tar.gz)

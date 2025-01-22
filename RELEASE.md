@@ -15,3 +15,4 @@ To make a new release of the quadraturerules library, follow these steps:
    - A Python release
    - A Rust release
    - An archive of the C++ library source
+   - An archive of the C library source

@@ -293,6 +293,21 @@ class QRuleSingle(QRule):
                 f.write(f"<td>{rounded(w)}</td></tr>\n")
             f.write("</table>\n")
 
+    def points_as_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of points as a string."""
+        return open + ", ".join([
+            open + ", ".join([f"{c}" for c in p]) + close
+            for p in self.points
+        ]) + close
+
+    def points_as_flat_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of flat points as a string."""
+        return open + ", ".join([f"{c}" for p in self.points for c in p]) + close
+
+    def weights_as_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of flat points as a string."""
+        return open + ", ".join([f"{w}" for w in self.weights]) + close
+
 
 class QRuleDouble(QRule):
     """A quadrature rule for a double integral."""
@@ -490,6 +505,32 @@ class QRuleDouble(QRule):
                     f.write(f"<td>{rounded(i)}</td>")
                 f.write(f"<td>{rounded(w)}</td></tr>\n")
             f.write("</table>\n")
+
+    def first_points_as_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of first points as a string."""
+        return open + ", ".join([
+            open + ", ".join([f"{c}" for c in p]) + close
+            for p in self.first_points
+        ]) + close
+
+    def first_points_as_flat_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of flat first points as a string."""
+        return open + ", ".join([f"{c}" for p in self.first_points for c in p]) + close
+
+    def second_points_as_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of second points as a string."""
+        return open + ", ".join([
+            open + ", ".join([f"{c}" for c in p]) + close
+            for p in self.second_points
+        ]) + close
+
+    def second_points_as_flat_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of flat second points as a string."""
+        return open + ", ".join([f"{c}" for p in self.second_points for c in p]) + close
+
+    def weights_as_list(self, open: str = "[", close: str = "]") -> str:
+        """Get a list of flat points as a string."""
+        return open + ", ".join([f"{w}" for w in self.weights]) + close
 
 
 class QRuleFamily:
