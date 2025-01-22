@@ -7,12 +7,14 @@ import sys
 import typing
 from datetime import datetime
 
+import gen
 from webtools.tools import join
 
 start_all = datetime.now()
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(join(path, "..", "website"))
+import gen.qr  # noqa: E402
 from quadraturerules_website import rules, settings  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
@@ -22,7 +24,7 @@ parser.add_argument('library', metavar='library', nargs=1,
 args = parser.parse_args()
 lib = args.library[0]
 
-assert lib in os.listdir(path)
+assert lib in os.listdir(path) and lib != "gen"
 
 source_dir = join(path, lib)
 assert os.path.isdir(source_dir)
@@ -53,163 +55,16 @@ domains = list(set(i.domain for r in all_rules for i in r.rules))
 domains.sort(key=lambda d: (rules.dim(d), rules.sort_name(d)))
 
 
-def nvertices(domain: str) -> int:
-    """Get the number of vertices that a domain has."""
-    for q in all_rules:
-        for r in q.rules:
-            if r.domain == domain:
-                if isinstance(r, rules.QRuleSingle):
-                    return len(r.points[0])
-                elif isinstance(r, rules.QRuleDouble):
-                    return len(r.first_points[0])
-    return -1
-
-
-def replace(content, subs):
-    """Replace templated code."""
-    for a, b in subs:
-        content = content.replace(f"{{{{{a}}}}}", b)
-    parts = content.split("{{if ")
-    content = parts[0]
-    for p in parts[1:]:
-        inner, rest = p.split("}}", 1)
-        for a, b in subs:
-            inner = inner.replace(a, b)
-        content += f"{{{{if {inner}}}}}"
-        content += rest
-    return content
-
-
-def family_replace(content, variable, family):
-    """Replace templated code for a rule family."""
-    return replace(content, [
-        [f"{variable}.code", f"{family.code}"],
-        [f"{variable}.index", f"{family.index}"],
-        [f"{variable}.itype", family.itype],
-        [f"{variable}.name", family.name()],
-        [f"{variable}.PascalCaseName", family.name("PascalCase")],
-        [f"{variable}.camelCaseName", family.name("camelCase")],
-        [f"{variable}.snake_case_name", family.name("snake_case")],
-    ])
-
-
-def c_write_points(memory: str, points: typing.List[rules.PointND]) -> str:
-    """Create C string to write points into memory."""
-    out = ""
-    i = 0
-    for p in points:
-        for c in p:
-            out += f"{memory}[{i}] = {c};"
-            i += 1
-    return out
-
-
-def rule_replace(content, variable, rule):
-    """Replace templated code for a rule."""
-    subs = [
-        [f"{variable}.order", f"{rule.order}"],
-        [f"{variable}.domain", rule.domain],
-    ]
-
-    if isinstance(rule, rules.QRuleSingle):
-        content = re.sub(
-            r"\{\{R\.c_set_points<([^>]+)>\}\}",
-            lambda m: c_write_points(m[1], rule.points),
-            content,
-        )
-        content = re.sub(r"\{\{R\.c_set_first_points<([^>]+)>\}\}", "<<ERROR>>", content)
-        content = re.sub(r"\{\{R\.c_set_second_points<([^>]+)>\}\}", "<<ERROR>>", content)
-        content = re.sub(r"\{\{R\.c_set_weights<([^>]+)>\}\}", lambda m: "".join(
-            f"{m[1]}[{i}] = {w};" for i, w in enumerate(rule.weights)
-        ), content)
-    elif isinstance(rule, rules.QRuleDouble):
-        content = re.sub(r"\{\{R\.c_set_points<([^>]+)>\}\}", "<<ERROR>>", content)
-        content = re.sub(
-            r"\{\{R\.c_set_first_points<([^>]+)>\}\}",
-            lambda m: c_write_points(m[1], rule.first_points),
-            content,
-        )
-        content = re.sub(
-            r"\{\{R\.c_set_second_points<([^>]+)>\}\}",
-            lambda m: c_write_points(m[1], rule.second_points),
-            content,
-        )
-        content = re.sub(r"\{\{R\.c_set_weights<([^>]+)>\}\}", lambda m: "".join(
-            f"{m[1]}[{i}] = {w};" for i, w in enumerate(rule.weights)
-        ), content)
-
-    for open, close, name in [
-        ("[", "]", "list"),
-        ("{", "}", "curly_list"),
-    ]:
-        if isinstance(rule, rules.QRuleSingle):
-            subs += [
-                [f"{variable}.npoints", f"{len(rule.weights)}"],
-                [f"{variable}.first_points_as_{name}", "<<ERROR>>"],
-                [f"{variable}.first_points_as_flat_{name}", "<<ERROR>>"],
-                [f"{variable}.second_points_as_{name}", "<<ERROR>>"],
-                [f"{variable}.second_points_as_flat_{name}", "<<ERROR>>"],
-                [f"{variable}.points_as_{name}", open + ", ".join(
-                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.points]) + close],
-                [f"{variable}.points_as_flat_{name}", open + ", ".join([
-                    f"{c}" for p in rule.points for c in p]) + close],
-                [f"{variable}.weights_as_{name}", open + ", ".join([
-                    f"{w}" for w in rule.weights]) + close],
-            ]
-        elif isinstance(rule, rules.QRuleDouble):
-            subs += [
-                [f"{variable}.npoints", f"{len(rule.weights)}"],
-                [f"{variable}.points_as_{name}", "<<ERROR>>"],
-                [f"{variable}.points_as_flat_{name}", "<<ERROR>>"],
-                [f"{variable}.first_points_as_{name}", open + ", ".join(
-                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.first_points]
-                ) + close],
-                [f"{variable}.first_points_as_flat_{name}", open + ", ".join([
-                    f"{c}" for p in rule.first_points for c in p]) + close],
-                [f"{variable}.second_points_as_{name}", open + ", ".join(
-                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.second_points]
-                ) + close],
-                [f"{variable}.second_points_as_flat_{name}", open + ", ".join([
-                    f"{c}" for p in rule.second_points for c in p]) + close],
-                [f"{variable}.weights_as_{name}", open + ", ".join([
-                    f"{w}" for w in rule.weights]) + close],
-            ]
-    return replace(content, subs)
-
-
-def domain_replace(content, variable, domain):
-    """Replace templated code for a domain."""
-    parts = re.split(r"--|\s|-", domain)
-    return replace(content, [
-        [f"{variable}.index", f"{domains.index(domain)}"],
-        [f"{variable}.nvertices", f"{nvertices(domain)}"],
-        [f"{variable}.PascalCaseName", "".join(i[0].upper() + i[1:].lower() for i in parts)],
-        [f"{variable}.camelCaseName", parts[0].lower() + "".join(
-            i[0].upper() + i[1:].lower() for i in parts[1:])],
-        [f"{variable}.snake_case_name", "_".join(i.lower() for i in parts)],
-        [f"{variable}.name", domain],
-    ])
-
-
-def is_true(condition):
-    """Check if a condition is true."""
-    if "==" in condition:
-        a, b = condition.split("==")
-        a = a.strip()
-        b = b.strip()
-        return a == b
-    if "!=" in condition:
-        a, b = condition.split("!=")
-        a = a.strip()
-        b = b.strip()
-        return a != b
-    raise ValueError(f"Unsupported condition: {condition}")
-
-
 def load_library_file(m):
     """Load the content of a files in website/pages/libraries/."""
     with open(join(path, "..", "website", "pages", "libraries", f"{m[1]}.md")) as f:
         return "#" + f.read()
+
+
+loop_targets = {
+    "rules": [gen.qr.RuleFamily(r) for r in all_rules],
+    "domains": [gen.qr.Domain(d, i) for i, d in enumerate(domains)],
+}
 
 
 def sub(content, vars={}):
@@ -218,56 +73,9 @@ def sub(content, vars={}):
     content = content.replace("{{LICENSE}}", license)
     content = content.replace("{{README}}", readme)
     content = re.sub(r"{{website/pages/libraries/([^}]+)}}", load_library_file, content)
-    while "{{end for}}" in content:
-        temp, after = content.split("{{end for}}", 1)
-        if after.startswith("\n"):
-            after = after[1:]
-        while temp.endswith(" "):
-            temp = temp[:-1]
-        temp2 = temp.split("{{for ")
-        before = "{{for ".join(temp2[:-1])
-        var, inside = temp2[-1].split(" ", 1)
-        while before.endswith(" "):
-            before = before[:-1]
-        content = before
-        loop_over, inside = inside.split("}}", 1)
-        if inside.startswith("\n"):
-            inside = inside[1:]
-        for v, value in vars.items():
-            if loop_over == f"in {v}.rules":
-                for rule in value.rules:
-                    if len(rule.weights) < 1000:  # TODO: remove this limit
-                        content += rule_replace(inside, var, rule)
-                break
-        else:
-            match loop_over:
-                case "in rules":
-                    for rule in all_rules:
-                        content += family_replace(inside, var, rule)
-                case "in domains":
-                    for domain in domains:
-                        content += domain_replace(inside, var, domain)
-                case _:
-                    raise ValueError(f"Unsupported loop: {loop_over}")
-        content += after
-    while "{{end if}}" in content:
-        temp, after = content.split("{{end if}}", 1)
-        if after.startswith("\n"):
-            after = after[1:]
-        while temp.endswith(" "):
-            temp = temp[:-1]
-        temp2 = temp.split("{{if ")
-        before = "{{if ".join(temp2[:-1])
-        while before.endswith(" "):
-            before = before[:-1]
-        content = before
-        condition, inside = temp2[-1].split("}}", 1)
-        if inside.startswith("\n"):
-            inside = inside[1:]
-        if is_true(condition):
-            content += inside
-        content += after
-    return content
+
+    file = gen.parse(content)
+    return file.substitute(vars=vars, loop_targets=loop_targets)
 
 
 def sub_and_copy_files(folder):
@@ -293,12 +101,10 @@ def sub_and_copy_files(folder):
                     for rule in all_rules:
                         start = datetime.now()
                         print(f"{file} [{rule.name()}]", end="", flush=True)
-                        with open(join(
-                            target_dir,
-                            folder,
-                            family_replace(metadata["filename"], var, rule),
-                        ), "w") as f:
-                            f.write(sub(family_replace(content, var, rule), {var: rule}))
+                        vars = {var: gen.qr.RuleFamily(rule)}
+                        filename = sub(metadata["filename"], vars).strip()
+                        with open(join(target_dir, folder, filename), "w") as f:
+                            f.write(sub(content, vars))
                         end = datetime.now()
                         print(f" (completed in {(end - start).total_seconds():.2f}s)")
                 case _:
