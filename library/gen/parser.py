@@ -1,6 +1,5 @@
 """Code parsing."""
 
-import typing
 import re
 
 from gen.nodes import For, If, Line, ListOfNodes
@@ -15,7 +14,7 @@ def parse(code: str) -> ListOfNodes:
     pre = ""
     inside = ""
     loop_count = None
-    loop_start  = None
+    loop_start = None
     for line_n, line in enumerate(code.split("\n")):
         if re.match(r"^\{\{(:?if|for)[^\}]+\}\}$", line.strip()):
             if loop_count is None:
