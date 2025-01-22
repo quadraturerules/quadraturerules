@@ -138,10 +138,10 @@ jobs:
           cd c.build
           gcc -c -Wall -Werror -fpic quadraturerules.c
           gcc -shared -o libquadraturerules.so quadraturerules.o
-        name: Build C++ library
+        name: Build C library
 
       - run: |
-          cd c.build/test
+          cd library/c.build/test
           gcc -L.. -Wall -o test test.c -lquadraturerules
           ./test
-        name: Run C++ tests
+        name: Run C tests
