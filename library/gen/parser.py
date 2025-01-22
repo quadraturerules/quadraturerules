@@ -28,7 +28,7 @@ def parse(code: str) -> ListOfNodes:
             loop_count -= 1
             if loop_count == 0:
                 assert line.strip()[6:-2] == loop_start[2:].split(" ")[0]
-                post = "\n".join(code.split("\n")[line_n + 1 :])
+                post = "\n".join(code.split("\n")[line_n + 1:])
                 if loop_start.startswith("{{for "):
                     var, loop_over = loop_start[6:-2].split(" ", 1)
                     assert loop_over.startswith("in ")
