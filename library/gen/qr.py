@@ -26,6 +26,7 @@ class IndexedFloat(Substitutor):
     """Substitutor for a floating point number in an array."""
 
     def __init__(self, value, index):
+        """Initialise."""
         self.value = value
         self.index = index
 
