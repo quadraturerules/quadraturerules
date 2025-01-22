@@ -28,12 +28,14 @@ def parse(code: str) -> ListOfNodes:
             loop_count -= 1
             if loop_count == 0:
                 assert line.strip()[6:-2] == loop_start[2:].split(" ")[0]
-                post = "\n".join(code.split("\n")[line_n + 1:])
+                post = "\n".join(code.split("\n")[line_n + 1 :])
                 if loop_start.startswith("{{for "):
                     var, loop_over = loop_start[6:-2].split(" ", 1)
                     assert loop_over.startswith("in ")
                     loop_over = loop_over[3:]
-                    return parse(pre) + [For(var, loop_over, parse(inside))] + parse(post)
+                    return (
+                        parse(pre) + [For(var, loop_over, parse(inside))] + parse(post)
+                    )
                 elif loop_start.startswith("{{if "):
                     condition = loop_start[5:-2]
                     return parse(pre) + [If(condition, parse(inside))] + parse(post)
