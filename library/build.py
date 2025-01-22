@@ -13,7 +13,7 @@ start_all = datetime.now()
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(join(path, "..", "website"))
-import gen.qr
+import gen.qr  # noqa: E402
 from quadraturerules_website import rules, settings  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
@@ -60,7 +60,7 @@ def load_library_file(m):
         return "#" + f.read()
 
 
-loop_targets={
+loop_targets = {
     "rules": [gen.qr.RuleFamily(r) for r in all_rules],
     "domains": [gen.qr.Domain(d, i) for i, d in enumerate(domains)],
 }
