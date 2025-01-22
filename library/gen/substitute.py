@@ -1,5 +1,7 @@
 """Substitution."""
 
+from __future__ import annotations
+
 import typing
 from abc import ABC, abstractmethod
 
@@ -16,5 +18,5 @@ class Substitutor(ABC):
         """Substitute."""
 
     @abstractmethod
-    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Node]]:
+    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[typing.Self]]:
         """Get list of loop targets."""

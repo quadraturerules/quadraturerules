@@ -9,7 +9,6 @@ from gen.nodes import Node
 
 def replace(content, subs):
     """Make multiple replacements."""
-    print(subs)
     for a, b in subs:
         content = content.replace(f"{{{{{a}}}}}", b)
     return content
@@ -33,9 +32,10 @@ class RuleFamily(Substitutor):
             [f"{variable}.snake_case_name", self.family.name("snake_case")],
         ])
 
-    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Node]]:
+    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Substitutor]]:
         """Get list of loop targets."""
-        return {}
+        return {f"{variable}.rules": [Rule(r) for r in self.family.rules]}
+
 
 class Rule(Substitutor):
     """Substitutor for a rule."""
@@ -85,7 +85,7 @@ class Rule(Substitutor):
                 ]
         return replace(code, subs)
 
-    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Node]]:
+    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Substitutor]]:
         """Get list of loop targets."""
         return {}
 
@@ -109,6 +109,6 @@ class Domain(Substitutor):
             [f"{variable}.name", self.domain],
         ])
 
-    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Node]]:
+    def loop_targets(self, variable: str) -> typing.Dict[str, typing.List[Substitutor]]:
         """Get list of loop targets."""
         return {}

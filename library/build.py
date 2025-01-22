@@ -53,105 +53,6 @@ domains = list(set(i.domain for r in all_rules for i in r.rules))
 domains.sort(key=lambda d: (rules.dim(d), rules.sort_name(d)))
 
 
-def replace(content, subs):
-    """Replace templated code."""
-    for a, b in subs:
-        content = content.replace(f"{{{{{a}}}}}", b)
-    parts = content.split("{{if ")
-    content = parts[0]
-    for p in parts[1:]:
-        inner, rest = p.split("}}", 1)
-        for a, b in subs:
-            inner = inner.replace(a, b)
-        content += f"{{{{if {inner}}}}}"
-        content += rest
-    return content
-
-
-def family_replace(content, variable, family):
-    """Replace templated code for a rule family."""
-    return replace(content, [
-        [f"{variable}.code", f"{family.code}"],
-        [f"{variable}.index", f"{family.index}"],
-        [f"{variable}.itype", family.itype],
-        [f"{variable}.name", family.name()],
-        [f"{variable}.PascalCaseName", family.name("PascalCase")],
-        [f"{variable}.camelCaseName", family.name("camelCase")],
-        [f"{variable}.snake_case_name", family.name("snake_case")],
-    ])
-
-
-def rule_replace(content, variable, rule):
-    """Replace templated code for a rule."""
-    subs = [
-        [f"{variable}.order", f"{rule.order}"],
-        [f"{variable}.domain", rule.domain],
-    ]
-    for open, close, name in [
-        ("[", "]", "list"),
-        ("{", "}", "curly_list"),
-    ]:
-        if isinstance(rule, rules.QRuleSingle):
-            subs += [
-                [f"{variable}.first_points_as_{name}", "<<ERROR>>"],
-                [f"{variable}.first_points_as_flat_{name}", "<<ERROR>>"],
-                [f"{variable}.second_points_as_{name}", "<<ERROR>>"],
-                [f"{variable}.second_points_as_flat_{name}", "<<ERROR>>"],
-                [f"{variable}.points_as_{name}", open + ", ".join(
-                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.points]) + close],
-                [f"{variable}.points_as_flat_{name}", open + ", ".join([
-                    f"{c}" for p in rule.points for c in p]) + close],
-                [f"{variable}.weights_as_{name}", open + ", ".join([
-                    f"{w}" for w in rule.weights]) + close],
-            ]
-        elif isinstance(rule, rules.QRuleDouble):
-            subs += [
-                [f"{variable}.points_as_{name}", "<<ERROR>>"],
-                [f"{variable}.points_as_flat_{name}", "<<ERROR>>"],
-                [f"{variable}.first_points_as_{name}", open + ", ".join(
-                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.first_points]
-                ) + close],
-                [f"{variable}.first_points_as_flat_{name}", open + ", ".join([
-                    f"{c}" for p in rule.first_points for c in p]) + close],
-                [f"{variable}.second_points_as_{name}", open + ", ".join(
-                    [open + ", ".join([f"{c}" for c in p]) + close for p in rule.second_points]
-                ) + close],
-                [f"{variable}.second_points_as_flat_{name}", open + ", ".join([
-                    f"{c}" for p in rule.second_points for c in p]) + close],
-                [f"{variable}.weights_as_{name}", open + ", ".join([
-                    f"{w}" for w in rule.weights]) + close],
-            ]
-    return replace(content, subs)
-
-
-def domain_replace(content, variable, domain):
-    """Replace templated code for a domain."""
-    parts = re.split(r"--|\s|-", domain)
-    return replace(content, [
-        [f"{variable}.index", f"{domains.index(domain)}"],
-        [f"{variable}.PascalCaseName", "".join(i[0].upper() + i[1:].lower() for i in parts)],
-        [f"{variable}.camelCaseName", parts[0].lower() + "".join(
-            i[0].upper() + i[1:].lower() for i in parts[1:])],
-        [f"{variable}.snake_case_name", "_".join(i.lower() for i in parts)],
-        [f"{variable}.name", domain],
-    ])
-
-
-def is_true(condition):
-    """Check if a condition is true."""
-    if "==" in condition:
-        a, b = condition.split("==")
-        a = a.strip()
-        b = b.strip()
-        return a == b
-    if "!=" in condition:
-        a, b = condition.split("!=")
-        a = a.strip()
-        b = b.strip()
-        return a != b
-    raise ValueError(f"Unsupported condition: {condition}")
-
-
 def load_library_file(m):
     """Load the content of a files in website/pages/libraries/."""
     with open(join(path, "..", "website", "pages", "libraries", f"{m[1]}.md")) as f:
@@ -171,8 +72,8 @@ def sub(content, vars={}):
     content = content.replace("{{README}}", readme)
     content = re.sub(r"{{website/pages/libraries/([^}]+)}}", load_library_file, content)
 
-    file = gen.parser.parse(content)
-    return file.substitute(loop_targets=loop_targets)
+    file = gen.parse(content)
+    return file.substitute(vars=vars, loop_targets=loop_targets)
 
 
 def sub_and_copy_files(folder):
@@ -198,12 +99,9 @@ def sub_and_copy_files(folder):
                     for rule in all_rules:
                         start = datetime.now()
                         print(f"{file} [{rule.name()}]", end="", flush=True)
-                        with open(join(
-                            target_dir,
-                            folder,
-                            family_replace(metadata["filename"], var, rule),
-                        ), "w") as f:
-                            f.write(sub(family_replace(content, var, rule), {var: rule}))
+                        filename = gen.parse(metadata["filename"]).substitute(vars={var: gen.qr.RuleFamily(rule)})
+                        with open(join(target_dir, folder, filename), "w") as f:
+                            f.write(sub(content, {var: gen.qr.RuleFamily(rule)}))
                         end = datetime.now()
                         print(f" (completed in {(end - start).total_seconds():.2f}s)")
                 case _:
