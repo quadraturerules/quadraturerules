@@ -4,7 +4,6 @@ import argparse
 import os
 import re
 import sys
-import typing
 from datetime import datetime
 
 import gen
