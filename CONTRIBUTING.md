@@ -14,6 +14,9 @@ making changes, then submitting a pull request.
 If you want to contribute, but are unsure where to start, have a look at the
 [issue tracker](https://github.com/quadraturerules/quadraturerules/labels/good%20first%20issue) for issues labelled "good first issue".
 
+Your changes will be reviewed by one of the editors of the encyclopedia. You can tag [@editors](https://github.com/orgs/quadraturerules/teams/editors)
+in your pull request if you have any questions or comments for the editors.
+
 ### Adding a quadrature rule
 Rules in the online encyclopedia of quadrature rules are defined using files in the `rules/` folder.
 A yaml file called `Qxxxxxx.qr` (where `xxxxxx` is the next unused index) is used to define a family of rules.
