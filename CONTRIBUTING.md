@@ -33,7 +33,7 @@ The entries in this yaml file are:
 
 Alongside this yaml file, a folder called `Qxxxxxx` is included, which contants a series of yaml files called `*.rule`. Each of these files
 contains the points and weights for an instance of the quadrature family on a given domain with a given order. At the top of this file, metadata
-in included in yaml format between two lines containing only `&#8209;&#8209;`. These entries in the metadata are used:
+in included in yaml format between two lines containing only `--`. These entries in the metadata are used:
 
 <table class='bordered align-left'>
 <thead>
