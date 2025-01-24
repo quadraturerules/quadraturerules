@@ -14,6 +14,9 @@ making changes, then submitting a pull request.
 If you want to contribute, but are unsure where to start, have a look at the
 [issue tracker](https://github.com/quadraturerules/quadraturerules/labels/good%20first%20issue) for issues labelled "good first issue".
 
+Your changes will be reviewed by one of the editors of the encyclopedia. You can tag [@editors](https://github.com/orgs/quadraturerules/teams/editors)
+in your pull request if you have any questions or comments for the editors.
+
 ### Adding a quadrature rule
 Rules in the online encyclopedia of quadrature rules are defined using files in the `rules/` folder.
 A yaml file called `Qxxxxxx.qr` (where `xxxxxx` is the next unused index) is used to define a family of rules.
@@ -33,7 +36,7 @@ The entries in this yaml file are:
 
 Alongside this yaml file, a folder called `Qxxxxxx` is included, which contants a series of yaml files called `*.rule`. Each of these files
 contains the points and weights for an instance of the quadrature family on a given domain with a given order. At the top of this file, metadata
-in included in yaml format between two lines containing only `&#8209;&#8209;`. These entries in the metadata are used:
+in included in yaml format between two lines containing only `--`. These entries in the metadata are used:
 
 <table class='bordered align-left'>
 <thead>
