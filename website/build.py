@@ -166,6 +166,7 @@ def make_pages(sub_dir=""):
                 metadata, content = parse_metadata(f.read())
 
             content = re.sub(r"\{\{(.+\.md)\}\}", load_md_file, content)
+            content = content.replace("`--`", "`&#8209;&#8209;`")
             content = to_html(content)
             content = content.replace("](website/pages/", "](")
             content = markup(content, sub_dir)
