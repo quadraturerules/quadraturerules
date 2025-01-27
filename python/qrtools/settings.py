@@ -22,8 +22,6 @@ processes = 1
 site_data = {}
 
 settings.owners = ["mscroggs"]
-settings.editors = site_data["editors"]
-settings.contributors = site_data["contributors"]
 settings.url = "https://quadraturerules.org"
 settings.website_name = [
     "The online encyclopedia of quadrature rules",
@@ -66,6 +64,9 @@ def set_root_path(path):
         ("{{tick}}", "<span style='color:#008800'>&#10004;</span>"),
         ("{{VERSION}}", version),
     ]
+
+    settings.editors = site_data["editors"]
+    settings.contributors = site_data["contributors"]
 
     if html_path == "":
         html_path = _join(dir_path, "_html")
