@@ -5,8 +5,8 @@ import os
 import re
 from datetime import datetime
 
-from quadraturerules_website import settings
-from quadraturerules_website.rules import dim, load_rule, to_html
+from qrtools import settings
+from qrtools.rules import dim, load_rule, to_html
 from webtools.html import make_html_page
 from webtools.markup import heading, heading_with_self_ref, markup
 from webtools.tools import html_local, join, parse_metadata

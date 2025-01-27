@@ -8,13 +8,10 @@ from datetime import datetime
 
 import generate
 from webtools.tools import join
+from qrtools import generate_qr, rules, settings
 
 start_all = datetime.now()
-
 path = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(join(path, "..", "website"))
-import generate_qr  # noqa: E402
-from quadraturerules_website import rules, settings  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
 parser.add_argument('library', metavar='library', nargs=1,

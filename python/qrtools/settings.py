@@ -7,7 +7,7 @@ import yaml as _yaml
 from webtools import settings
 from webtools.tools import join as _join
 
-dir_path = _join(_os.path.dirname(_os.path.realpath(__file__)), "..")
+dir_path = _join(_os.path.dirname(_os.path.realpath(__file__)), "..", "..", "website")
 root_path = _join(dir_path, "..")
 template_path = _join(dir_path, "template")
 files_path = _join(dir_path, "files")
