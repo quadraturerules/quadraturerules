@@ -86,4 +86,5 @@ def set_github_token(token):
     settings.github_token = token
 
 
-set_root_path(_join(_os.path.dirname(_os.path.realpath(__file__)), "..", ".."))
+if os.path.isfile(_join(_os.path.dirname(_os.path.realpath(__file__)), "..", "..", "README.md")):
+    set_root_path(_join(_os.path.dirname(_os.path.realpath(__file__)), "..", ".."))
