@@ -1,4 +1,4 @@
 pyyaml
 ruff
 typing_extensions
-git+https://github.com/quadraturerules/generate.py
+git+https://github.com/quadraturerules/generate.git
