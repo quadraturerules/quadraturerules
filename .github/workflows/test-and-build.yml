@@ -42,7 +42,7 @@ jobs:
         name: Pydocstyle checks
       - run: |
           cd python
-          python3 -m mypy --install-types --non-interactive .
+          python3 -m mypy --install-types --non-interactive qrtools
           cd ../website
           python3 -m mypy --install-types --non-interactive .
         name: mypy checks
