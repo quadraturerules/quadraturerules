@@ -1,5 +1,5 @@
 --
-template: Q in rule
+template: Q in rules
 filename: {{Q.snake_case_name}}.c
 --
 #include "quadraturerules.h"
