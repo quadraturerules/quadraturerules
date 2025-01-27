@@ -1,4 +1,0 @@
-pyyaml
-ruff
-typing_extensions
-git+https://github.com/quadraturerules/generate.git

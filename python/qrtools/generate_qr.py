@@ -4,7 +4,7 @@ import re
 import typing
 
 from generate.substitute import IndexedFloat, Substitutor, replace
-from quadraturerules_website import rules
+from qrtools import rules
 
 
 class RuleFamily(Substitutor):

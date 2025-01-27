@@ -1,0 +1,18 @@
+[project]
+name = "qrtools"
+version = "0.1.0"
+description = "tools for building websites, used by defelement.org and quadraturerules.org"
+readme = "README.md"
+requires-python = ">=3.8.0"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Matthew Scroggs", email = "defelement@mscroggs.co.uk" }
+]
+dependencies = ["PyGithub", "pytz", "website-build-tools", "ruff", "qr-generate"]
+
+[project.urls]
+homepage = "https://github.com/quadraturerules/quadraturerules"
+repository = "https://github.com/quadraturerules/quadraturerules"
+
+[tool.mypy]
+ignore_missing_imports = true

@@ -5,7 +5,7 @@ import re
 import typing
 
 import yaml
-from quadraturerules_website import settings
+from qrtools import settings
 from webtools.citations import make_bibtex, markup_citation
 from webtools.tools import html_local
 
