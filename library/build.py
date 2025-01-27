@@ -91,4 +91,3 @@ if lib == "rust":
 
 end_all = datetime.now()
 print(f"Total time: {(end_all - start_all).total_seconds():.2f}s")
-
