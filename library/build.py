@@ -13,7 +13,7 @@ from qrtools import generate_qr, rules, settings
 
 start_all = datetime.now()
 path = os.path.dirname(os.path.realpath(__file__))
-qrtools.settings.set_root_path(join(path, ".."))
+settings.set_root_path(join(path, ".."))
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
 parser.add_argument('library', metavar='library', nargs=1,
