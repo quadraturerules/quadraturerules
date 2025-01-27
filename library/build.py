@@ -6,14 +6,14 @@ import re
 import sys
 from datetime import datetime
 
-import gen
+import generate
 from webtools.tools import join
 
 start_all = datetime.now()
 
 path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(join(path, "..", "website"))
-import gen.qr  # noqa: E402
+import generate_qr  # noqa: E402
 from quadraturerules_website import rules, settings  # noqa: E402
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
@@ -23,7 +23,7 @@ parser.add_argument('library', metavar='library', nargs=1,
 args = parser.parse_args()
 lib = args.library[0]
 
-assert lib in os.listdir(path) and lib != "gen"
+assert lib in os.listdir(path)
 
 source_dir = join(path, lib)
 assert os.path.isdir(source_dir)
@@ -61,65 +61,27 @@ def load_library_file(m):
 
 
 loop_targets = {
-    "rules": [gen.qr.RuleFamily(r) for r in all_rules],
-    "domains": [gen.qr.Domain(d, i) for i, d in enumerate(domains)],
+    "rules": [generate_qr.RuleFamily(r) for r in all_rules],
+    "domains": [generate_qr.Domain(d, i) for i, d in enumerate(domains)],
 }
 
 
-def sub(content, vars={}):
+def extra_subs(content):
     """Make substitutions in a file."""
     content = content.replace("{{VERSION}}", version)
     content = content.replace("{{LICENSE}}", license)
     content = content.replace("{{README}}", readme)
     content = re.sub(r"{{website/pages/libraries/([^}]+)}}", load_library_file, content)
-
-    file = gen.parse(content)
-    return file.substitute(vars=vars, loop_targets=loop_targets)
+    return content
 
 
-def sub_and_copy_files(folder):
-    """Make substitutions and copy all files recursively in a directory."""
-    for file_ in os.listdir(join(source_dir, folder)):
-        file = join(folder, file_)
-        if file_.startswith("."):
-            continue
-        if os.path.isdir(join(source_dir, file)):
-            os.mkdir(join(target_dir, file))
-            sub_and_copy_files(file)
-        elif file.endswith(".template"):
-            with open(join(source_dir, file)) as f:
-                content = f.read()
-            _, metadata_, content = content.split("--\n", 2)
-            metadata = {}
-            for line in metadata_.strip().split("\n"):
-                var, value = line.split(":", 1)
-                metadata[var.strip()] = value.strip()
-            var, loop_over = metadata["template"].split(" ", 1)
-            match loop_over:
-                case "in rule":
-                    for rule in all_rules:
-                        start = datetime.now()
-                        print(f"{file} [{rule.name()}]", end="", flush=True)
-                        vars = {var: gen.qr.RuleFamily(rule)}
-                        filename = sub(metadata["filename"], vars).strip()
-                        with open(join(target_dir, folder, filename), "w") as f:
-                            f.write(sub(content, vars))
-                        end = datetime.now()
-                        print(f" (completed in {(end - start).total_seconds():.2f}s)")
-                case _:
-                    raise ValueError(f"Unsupported loop: {loop_over}")
-        else:
-            start = datetime.now()
-            print(file, end="", flush=True)
-            with open(join(source_dir, file)) as f:
-                content = f.read()
-            with open(join(target_dir, file), "w") as f:
-                f.write(sub(content))
-            end = datetime.now()
-            print(f" (completed in {(end - start).total_seconds():.2f}s)")
-
-
-sub_and_copy_files("")
+generate.folder.generate(
+    source_dir,
+    target_dir,
+    loop_targets=loop_targets,
+    extra_subs=extra_subs,
+    print_timing=True,
+)
 
 # Linting
 if lib == "python":
