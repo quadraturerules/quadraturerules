@@ -19,12 +19,7 @@ github_token: _typing.Optional[str] = None
 
 processes = 1
 
-
 site_data = {}
-for file in _os.listdir(_join(website_path, "data")):
-    if not file.startswith("."):
-        with open(_join(website_path, "data", file)) as f:
-            site_data[file] = _yaml.load(f, Loader=_yaml.FullLoader)
 
 settings.owners = ["mscroggs"]
 settings.editors = site_data["editors"]
@@ -48,6 +43,7 @@ def set_root_path(path):
     global pages_path
     global rules_path
     global html_path
+    global site_data
 
     root_path = path
     website_path = _join(root_path, "website")
@@ -55,6 +51,11 @@ def set_root_path(path):
     files_path = _join(website_path, "files")
     pages_path = _join(website_path, "pages")
     rules_path = _join(root_path, "rules")
+
+    for file in _os.listdir(_join(website_path, "data")):
+        if not file.startswith("."):
+            with open(_join(website_path, "data", file)) as f:
+                site_data[file] = _yaml.load(f, Loader=_yaml.FullLoader)
 
     with open(_join(root_path, "VERSION")) as f:
         version = f.read().strip()
