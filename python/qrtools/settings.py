@@ -60,12 +60,15 @@ def set_root_path(path):
         version = f.read().strip()
 
     settings.dir_path = website_path
-    settings.html_path = html_path
     settings.template_path = template_path
     settings.str_extras = [
         ("{{tick}}", "<span style='color:#008800'>&#10004;</span>"),
         ("{{VERSION}}", version),
     ]
+
+    if html_path == "":
+        html_path = _join(dir_path, "_html")
+        settings.html_path = html_path
 
 
 def set_html_path(path):
