@@ -69,7 +69,7 @@ def set_root_path(path):
     settings.contributors = site_data["contributors"]
 
     if html_path == "":
-        html_path = _join(dir_path, "_html")
+        html_path = _join(website_path, "_html")
         settings.html_path = html_path
 
 
