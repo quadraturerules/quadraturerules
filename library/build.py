@@ -6,9 +6,8 @@ import re
 from datetime import datetime
 
 import generate
-from webtools.tools import join
 from qrtools import generate_qr, rules, settings
-
+from webtools.tools import join
 
 start_all = datetime.now()
 path = os.path.dirname(os.path.realpath(__file__))
