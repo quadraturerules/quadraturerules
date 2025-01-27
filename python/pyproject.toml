@@ -14,15 +14,5 @@ dependencies = ["PyGithub", "pytz", "website-build-tools", "ruff", "qr-generate"
 homepage = "https://github.com/quadraturerules/quadraturerules"
 repository = "https://github.com/quadraturerules/quadraturerules"
 
-[tool.ruff]
-line-length = 100
-indent-width = 4
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
 [tool.mypy]
 ignore_missing_imports = true
