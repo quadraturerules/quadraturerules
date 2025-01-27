@@ -12,6 +12,8 @@ from webtools.markup import heading, heading_with_self_ref, markup
 from webtools.tools import html_local, join, parse_metadata
 
 start_all = datetime.now()
+path = os.path.dirname(os.path.realpath(__file__))
+qrtools.settings.set_root_path(join(path, ".."))
 
 parser = argparse.ArgumentParser(description="Build quadraturerules.org")
 parser.add_argument('destination', metavar='destination', nargs="?",
