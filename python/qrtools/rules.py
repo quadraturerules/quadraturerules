@@ -238,7 +238,13 @@ class QRuleSingle(QRule):
         self.weights = weights
         super().__init__(domain, order, rule, len(points))
 
-    def _get_image_config(self):
+    def _get_image_config(self) -> typing.Tuple[
+        typing.Tuple[int, int],
+        typing.List[PointND],
+        typing.List[typing.List[int]],
+        Point2D,
+        typing.List[Point2D],
+    ]:
         """Get image size, domain, domain lines, origin and axes."""
         match self.domain:
             case "interval":
@@ -303,6 +309,7 @@ class QRuleSingle(QRule):
         """Make SVG image of rule."""
         assert filename.endswith(".svg")
         assert not os.path.isfile(filename)
+        assert self.family is not None
 
         size, domain, domain_lines, origin, axes = self._get_image_config()
 
@@ -431,7 +438,16 @@ class QRuleDouble(QRule):
         self.weights = weights
         super().__init__(domain, order, rule, len(first_points))
 
-    def _get_image_config(self):
+    def _get_image_config(self) -> typing.Tuple[
+        typing.Tuple[int, int],
+        typing.List[PointND],
+        Point2D,
+        typing.List[Point2D],
+        typing.List[PointND],
+        Point2D,
+        typing.List[Point2D],
+        typing.List[typing.List[typing.List[int]]],
+    ]:
         """Get image size, domain, domain lines, origin and axes."""
         match self.domain:
             case "triangle":
@@ -442,7 +458,7 @@ class QRuleDouble(QRule):
                 domain2 = domain1
                 origin2 = origin1
                 axes2 = axes1
-                domain_lines = [[[0, 1, 2, 0]], []]
+                domain_lines: typing.List[typing.List[typing.List[int]]] = [[[0, 1, 2, 0]], []]
             case "edge-adjacent triangles":
                 size = (368, 220)
                 domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
@@ -514,6 +530,7 @@ class QRuleDouble(QRule):
         """Make SVG image of rule."""
         assert filename.endswith(".svg")
         assert not os.path.isfile(filename)
+        assert self.family is not None
 
         (
             size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines
