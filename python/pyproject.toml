@@ -10,6 +10,9 @@ authors = [
 ]
 dependencies = ["PyGithub", "pytz", "website-build-tools", "ruff", "qr-generate"]
 
+[project.optional-dependencies]
+optional = ["CairoSVG>=2.6.0"]
+
 [project.urls]
 homepage = "https://github.com/quadraturerules/quadraturerules"
 repository = "https://github.com/quadraturerules/quadraturerules"

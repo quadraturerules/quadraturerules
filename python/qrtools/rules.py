@@ -121,8 +121,33 @@ class QRule:
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
-    def image(self, filename: str) -> str:
+    def image(self, filename: str):
         """Make image of rule."""
+        if os.path.isfile(filename):
+            return
+        match filename.split(".")[-1]:
+            case "png":
+                try:
+                    from cairosvg import svg2png
+                except ImportError:
+                    raise ImportError("CairoSVG is needed for plotting PNGs (pip install CairoSVG)")
+                svg = filename[:-4] + ".svg"
+                self.image(svg)
+                with open(svg) as f:
+                    svg2png(bytestring=f.read(), write_to=filename, scale=4)
+            case "svg":
+                self.svg_image(filename)
+            case "tex":
+                self.tikz_image(filename)
+            case _:
+                raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
+
+    def svg_image(self, filename: str):
+        """Make SVG image of rule."""
+        raise NotImplementedError()
+
+    def tikz_image(self, filename: str):
+        """Make TikZ image of rule."""
         raise NotImplementedError()
 
     def save_html_table(self, filename):
@@ -146,6 +171,57 @@ class QRule:
         )
 
 
+def svg_license(title: str) -> str:
+    """Get SVG license information."""
+    return (
+        f"<title>{title}</title>\n"
+        "<desc>This plot is from the online encyclopedia of quadrature rules"
+        "(https://quadraturerules.org) and is available under a Creative "
+        "Commons Attribution 4.0 International (CC BY 4.0) license: "
+        "https://creativecommons.org/licenses/by/4.0/</desc>\n"
+        "<metadata id='license'>\n"
+        " <rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' "
+        "xmlns:dc='http://purl.org/dc/elements/1.1/' "
+        "xmlns:cc='http://web.resource.org/cc/'>\n"
+        "   <cc:Work rdf:about=''>\n"
+        f"     <dc:title>{title}</dc:title>\n"
+        "     <dc:date>2025-01-27</dc:date>\n"
+        "     <dc:creator>\n"
+        "       <cc:Agent><dc:title>The online encyclopedia of quadrature rules"
+        "</dc:title></cc:Agent>\n"
+        "       <cc:Agent><dc:title>Matthew Scroggs</dc:title></cc:Agent>\n"
+        "     </dc:creator>\n"
+        "     <dc:description>See document description</dc:description>\n"
+        "     <cc:license rdf:resource='http://creativecommons.org/licenses/by/4.0/'/>\n"
+        "     <dc:format>image/svg+xml</dc:format>\n"
+        "     <dc:type rdf:resource='http://purl.org/dc/dcmitype/StillImage'/>\n"
+        "   </cc:Work>\n"
+        "   <cc:License rdf:about='http://creativecommons.org/licenses/by/4.0/'>\n"
+        "     <cc:permits rdf:resource='http://web.resource.org/cc/Reproduction'/>\n"
+        "     <cc:permits rdf:resource='http://web.resource.org/cc/Distribution'/>\n"
+        "     <cc:permits rdf:resource='http://web.resource.org/cc/DerivativeWorks'/>\n"
+        "     <cc:requires rdf:resource='http://web.resource.org/cc/Notice'/>\n"
+        "     <cc:requires rdf:resource='http://web.resource.org/cc/Attribution'/>\n"
+        "   </cc:License>\n"
+        " </rdf:RDF>\n"
+        "</metadata>\n"
+    )
+
+
+def tikz_license() -> str:
+    """Get TikZ license information."""
+    return (
+        "% -------------------------------------------------------\n"
+        "% This plot is from the online encyclopedia of quadrature\n"
+        "% rules (https://quadraturerules.org) and is available\n"
+        "% under a Creative Commons Attribution 4.0 International\n"
+        "% (CC BY 4.0) license:\n"
+        "% https://creativecommons.org/licenses/by/4.0/\n"
+        "% -------------------------------------------------------\n"
+        "\n"
+    )
+
+
 class QRuleSingle(QRule):
     """A quadrature rule for a single integral."""
 
@@ -162,90 +238,125 @@ class QRuleSingle(QRule):
         self.weights = weights
         super().__init__(domain, order, rule, len(points))
 
-    def image(self, filename: str) -> str:
-        """Make image of rule."""
-        match filename.split(".")[-1]:
-            case "svg":
-                with open(filename, "w") as f:
-                    match self.domain:
-                        case "interval":
-                            size = (220, 20)
-                            domain: typing.List[PointND] = [(0.0,), (1.0,)]
-                            domain_lines = [[0, 1]]
-                            origin = (10.0, 10.0)
-                            axes = [(200.0, 0.0)]
-                        case "triangle":
-                            size = (220, 194)
-                            domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
-                            domain_lines = [[0, 1, 2, 0]]
-                            origin = (10.0, 184.0)
-                            axes = [(200.0, 0.0), (100.0, -173.2)]
-                        case "quadrilateral":
-                            size = (220, 220)
-                            domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
-                            domain_lines = [[0, 1, 3, 2, 0]]
-                            origin = (10.0, 210.0)
-                            axes = [(200.0, 0.0), (0.0, -200.0)]
-                        case "tetrahedron":
-                            size = (205, 209)
-                            domain = [
-                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)
-                            ]
-                            domain_lines = [[0, 1, 2, 0], [0, 3, 1], [3, 2]]
-                            origin = (10.0, 168.5)
-                            axes = [(180.0, 30.0), (185.0, -45.5), (122.0, -158.5)]
-                        case "hexahedron":
-                            size = (223, 223)
-                            domain = [
-                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
-                                (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0), (1.0, 1.0, 1.0),
-                            ]
-                            domain_lines = [[0, 1, 3, 2, 0], [4, 5, 7, 6, 4],
-                                            [0, 4], [1, 5], [2, 6], [3, 7]]
-                            origin = (10.0, 192.0)
-                            axes = [(126.0, 21.0), (77.0, -49.0), (0.0, -133.0)]
-                        case "triangular prism":
-                            size = (167, 213)
-                            domain = [
-                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0),
-                                (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0),
-                            ]
-                            domain_lines = [[0, 1, 2, 0], [3, 4, 5, 3], [0, 3], [1, 4], [2, 5]]
-                            origin = (10.0, 182.0)
-                            axes = [(126.0, 21.0), (129.5, -32.0), (0.0, -140.0)]
-                        case "square-based pyramid":
-                            size = (223, 164)
-                            domain = [
-                                (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
-                                (0.0, 0.0, 1.0),
-                            ]
-                            domain_lines = [[0, 1, 3, 2, 0], [0, 4, 1], [2, 4, 3]]
-                            origin = (10.0, 133.0)
-                            axes = [(126.0, 21.0), (77.0, -49.0), (101.5, -123.0)]
-                        case _:
-                            raise ValueError(f"Unsupported domain: {self.domain}")
-                    f.write(f"<svg width='{size[0]}' height='{size[1]}' "
-                            "xmlns='http://www.w3.org/2000/svg' "
-                            "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
-                    for lines in domain_lines:
-                        for a_, b_ in zip(lines[:-1], lines[1:]):
-                            a = to_2d(domain[a_], origin, axes)
-                            b = to_2d(domain[b_], origin, axes)
-                            f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
-                                    "stroke='#000000' stroke-width='1.5' "
-                                    "stroke-linecap='round' />\n")
-                    for p_, w in zip(self.points, self.weights):
-                        p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
-                        if w > 0:
-                            f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' "
-                                    "fill='red' />")
-                        else:
-                            f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
-                                    "fill='blue' />")
-                    f.write("</svg>")
+    def _get_image_config(self) -> typing.Tuple[
+        typing.Tuple[int, int],
+        typing.List[PointND],
+        typing.List[typing.List[int]],
+        Point2D,
+        typing.List[Point2D],
+    ]:
+        """Get image size, domain, domain lines, origin and axes."""
+        match self.domain:
+            case "interval":
+                size = (220, 20)
+                domain: typing.List[PointND] = [(0.0,), (1.0,)]
+                domain_lines = [[0, 1]]
+                origin = (10.0, 10.0)
+                axes = [(200.0, 0.0)]
+            case "triangle":
+                size = (220, 194)
+                domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                domain_lines = [[0, 1, 2, 0]]
+                origin = (10.0, 184.0)
+                axes = [(200.0, 0.0), (100.0, -173.2)]
+            case "quadrilateral":
+                size = (220, 220)
+                domain = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                domain_lines = [[0, 1, 3, 2, 0]]
+                origin = (10.0, 210.0)
+                axes = [(200.0, 0.0), (0.0, -200.0)]
+            case "tetrahedron":
+                size = (205, 209)
+                domain = [
+                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)
+                ]
+                domain_lines = [[0, 1, 2, 0], [0, 3, 1], [3, 2]]
+                origin = (10.0, 168.5)
+                axes = [(180.0, 30.0), (185.0, -45.5), (122.0, -158.5)]
+            case "hexahedron":
+                size = (223, 223)
+                domain = [
+                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
+                    (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0), (1.0, 1.0, 1.0),
+                ]
+                domain_lines = [[0, 1, 3, 2, 0], [4, 5, 7, 6, 4],
+                                [0, 4], [1, 5], [2, 6], [3, 7]]
+                origin = (10.0, 192.0)
+                axes = [(126.0, 21.0), (77.0, -49.0), (0.0, -133.0)]
+            case "triangular prism":
+                size = (167, 213)
+                domain = [
+                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0),
+                    (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0),
+                ]
+                domain_lines = [[0, 1, 2, 0], [3, 4, 5, 3], [0, 3], [1, 4], [2, 5]]
+                origin = (10.0, 182.0)
+                axes = [(126.0, 21.0), (129.5, -32.0), (0.0, -140.0)]
+            case "square-based pyramid":
+                size = (223, 164)
+                domain = [
+                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
+                    (0.0, 0.0, 1.0),
+                ]
+                domain_lines = [[0, 1, 3, 2, 0], [0, 4, 1], [2, 4, 3]]
+                origin = (10.0, 133.0)
+                axes = [(126.0, 21.0), (77.0, -49.0), (101.5, -123.0)]
             case _:
-                raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
-        return f"<img src='{html_local(filename)}'>"
+                raise ValueError(f"Unsupported domain: {self.domain}")
+        return size, domain, domain_lines, origin, axes
+
+    def svg_image(self, filename: str):
+        """Make SVG image of rule."""
+        assert filename.endswith(".svg")
+        assert not os.path.isfile(filename)
+        assert self.family is not None
+
+        size, domain, domain_lines, origin, axes = self._get_image_config()
+
+        with open(filename, "w") as f:
+            f.write(f"<svg width='{size[0]}' height='{size[1]}' "
+                    "xmlns='http://www.w3.org/2000/svg' "
+                    "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
+            f.write(svg_license(f"{self.family.name()} order {self.order}"))
+            for lines in domain_lines:
+                for a_, b_ in zip(lines[:-1], lines[1:]):
+                    a = to_2d(domain[a_], origin, axes)
+                    b = to_2d(domain[b_], origin, axes)
+                    f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
+                            "stroke='#000000' stroke-width='1.5' "
+                            "stroke-linecap='round' />\n")
+            for p_, w in zip(self.points, self.weights):
+                p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
+                if w > 0:
+                    f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' "
+                            "fill='red' />\n")
+                else:
+                    f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
+                            "fill='blue' />\n")
+            f.write("</svg>\n")
+
+    def tikz_image(self, filename: str):
+        """Make TikZ image of rule."""
+        assert filename.endswith(".tex")
+        assert not os.path.isfile(filename)
+
+        size, domain, domain_lines, origin, axes = self._get_image_config()
+
+        with open(filename, "w") as f:
+            f.write(tikz_license())
+            f.write("\\begin{tikzpicture}[line cap=round,line join=round]\n")
+            for lines in domain_lines:
+                for a_, b_ in zip(lines[:-1], lines[1:]):
+                    a = to_2d(domain[a_], origin, axes)
+                    b = to_2d(domain[b_], origin, axes)
+                    f.write(f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) -- ({b[0]},{b[1]});\n")
+            for p_, w in zip(self.points, self.weights):
+                p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
+                if w > 0:
+                    f.write(f"\\fill[red] ({p[0]},{p[1]}) circle ({9 * w ** 0.5});\n")
+                else:
+                    f.write(f"\\fill[blue] ({p[0]},{p[1]}) circle ({9 * (-w) ** 0.5});\n")
+            f.write("\\end{tikzpicture}\n")
 
     def save_html_table(self, filename):
         """Save HTML table of points and weights to a file."""
@@ -327,123 +438,178 @@ class QRuleDouble(QRule):
         self.weights = weights
         super().__init__(domain, order, rule, len(first_points))
 
-    def image(self, filename: str) -> str:
-        """Make image of rule."""
-        match filename.split(".")[-1]:
-            case "svg":
-                with open(filename, "w") as f:
-                    match self.domain:
-                        case "triangle":
-                            size = (220, 194)
-                            domain1: typing.List[PointND] = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
-                            origin1 = (10.0, 184.0)
-                            axes1 = [(200.0, 0.0), (100.0, -173.2)]
-                            domain2 = domain1
-                            origin2 = origin1
-                            axes2 = axes1
-                            domain_lines = [[[0, 1, 2, 0]], []]
-                        case "edge-adjacent triangles":
-                            size = (368, 220)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
-                            origin1 = (184.0, 210.0)
-                            axes1 = [(0.0, -200.0), (-173.2, -100.0)]
-                            domain2 = domain1
-                            origin2 = origin1
-                            axes2 = [(173.2, -100.0), (0.0, -200.0)]
-                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2]]]
-                        case "vertex-adjacent triangles":
-                            size = (368, 220)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
-                            origin1 = (184.0, 110.0)
-                            axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
-                            domain2 = domain1
-                            origin2 = origin1
-                            axes2 = [(173.2, -100.0), (173.2, 100.0)]
-                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2, 0]]]
-                        case "quadrilateral":
-                            size = (220, 220)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
-                            origin1 = (10.0, 210.0)
-                            axes1 = [(200.0, 0.0), (0.0, -200.0)]
-                            domain2 = domain1
-                            origin2 = origin1
-                            axes2 = axes1
-                            domain_lines = [[[0, 1, 3, 2, 0]], []]
-                        case "edge-adjacent quadrilaterals":
-                            size = (420, 220)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
-                            origin1 = (10.0, 210.0)
-                            axes1 = [(200.0, 0.0), (0.0, -200.0)]
-                            domain2 = domain1
-                            origin2 = (210.0, 210.0)
-                            axes2 = axes1
-                            domain_lines = [[[0, 1, 3, 2, 0]], [[0, 1, 3, 2]]]
-                        case "vertex-adjacent quadrilaterals":
-                            size = (420, 220)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
-                            origin1 = (210.0, 110.0)
-                            axes1 = [(100.0, 100.0), (100.0, -100.0)]
-                            domain2 = domain1
-                            origin2 = origin1
-                            axes2 = [(-100.0, -100.0), (-100.0, 100.0)]
-                            domain_lines = [[[0, 1, 3, 2, 0]], [[0, 1, 3, 2, 0]]]
-                        case "edge-adjacent triangle and quadrilateral":
-                            size = (394, 220)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
-                            origin1 = (184.0, 210.0)
-                            axes1 = [(0.0, -200.0), (-173.2, -100.0)]
-                            domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
-                            origin2 = origin1
-                            axes2 = [(200.0, 0.0), (0.0, -200.0)]
-                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2]]]
-                        case "vertex-adjacent triangle and quadrilateral":
-                            size = (394, 220)
-                            domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
-                            origin1 = (184.0, 110.0)
-                            axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
-                            domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
-                            origin2 = origin1
-                            axes2 = [(100.0, 100.0), (100.0, -100.0)]
-                            domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2, 0]]]
-                        case _:
-                            raise ValueError(f"Unsupported domain: {self.domain}")
-                    f.write(f"<svg width='{size[0]}' height='{size[1]}' "
-                            "xmlns='http://www.w3.org/2000/svg' "
-                            "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
-                    for domain, origin, axes, dlines in [
-                        (domain1, origin1, axes1, domain_lines[0]),
-                        (domain2, origin2, axes2, domain_lines[1]),
-                    ]:
-                        for lines in dlines:
-                            for a_, b_ in zip(lines[:-1], lines[1:]):
-                                a = to_2d(domain[a_], origin, axes)
-                                b = to_2d(domain[b_], origin, axes)
-                                f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
-                                        "stroke='#000000' stroke-width='1.5' "
-                                        "stroke-linecap='round' />\n")
-                    for p1_, p2_ in zip(self.first_points, self.second_points):
-                        p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
-                        p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
-                        f.write(f"<line x1='{p1[0]}' y1='{p1[1]}' x2='{p2[0]}' y2='{p2[1]}' "
-                                "stroke='#ACACAC' stroke-width='0.5' "
-                                "stroke-linecap='round' />\n")
-                    for p1_, p2_, w in zip(self.first_points, self.second_points, self.weights):
-                        p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
-                        p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
-                        if w > 0:
-                            f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * w ** 0.5}' "
-                                    "fill='red' />")
-                            f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * w ** 0.5}' "
-                                    "fill='blue' />")
-                        else:
-                            f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * (-w) ** 0.5}' "
-                                    "fill='red' />")
-                            f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * (-w) ** 0.5}' "
-                                    "fill='blue' />")
-                    f.write("</svg>")
+    def _get_image_config(self) -> typing.Tuple[
+        typing.Tuple[int, int],
+        typing.List[PointND],
+        Point2D,
+        typing.List[Point2D],
+        typing.List[PointND],
+        Point2D,
+        typing.List[Point2D],
+        typing.List[typing.List[typing.List[int]]],
+    ]:
+        """Get image size, domain, domain lines, origin and axes."""
+        match self.domain:
+            case "triangle":
+                size = (220, 194)
+                domain1: typing.List[PointND] = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                origin1 = (10.0, 184.0)
+                axes1 = [(200.0, 0.0), (100.0, -173.2)]
+                domain2 = domain1
+                origin2 = origin1
+                axes2 = axes1
+                domain_lines: typing.List[typing.List[typing.List[int]]] = [[[0, 1, 2, 0]], []]
+            case "edge-adjacent triangles":
+                size = (368, 220)
+                domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                origin1 = (184.0, 210.0)
+                axes1 = [(0.0, -200.0), (-173.2, -100.0)]
+                domain2 = domain1
+                origin2 = origin1
+                axes2 = [(173.2, -100.0), (0.0, -200.0)]
+                domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2]]]
+            case "vertex-adjacent triangles":
+                size = (368, 220)
+                domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                origin1 = (184.0, 110.0)
+                axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
+                domain2 = domain1
+                origin2 = origin1
+                axes2 = [(173.2, -100.0), (173.2, 100.0)]
+                domain_lines = [[[0, 1, 2, 0]], [[0, 1, 2, 0]]]
+            case "quadrilateral":
+                size = (220, 220)
+                domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                origin1 = (10.0, 210.0)
+                axes1 = [(200.0, 0.0), (0.0, -200.0)]
+                domain2 = domain1
+                origin2 = origin1
+                axes2 = axes1
+                domain_lines = [[[0, 1, 3, 2, 0]], []]
+            case "edge-adjacent quadrilaterals":
+                size = (420, 220)
+                domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                origin1 = (10.0, 210.0)
+                axes1 = [(200.0, 0.0), (0.0, -200.0)]
+                domain2 = domain1
+                origin2 = (210.0, 210.0)
+                axes2 = axes1
+                domain_lines = [[[0, 1, 3, 2, 0]], [[0, 1, 3, 2]]]
+            case "vertex-adjacent quadrilaterals":
+                size = (420, 220)
+                domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                origin1 = (210.0, 110.0)
+                axes1 = [(100.0, 100.0), (100.0, -100.0)]
+                domain2 = domain1
+                origin2 = origin1
+                axes2 = [(-100.0, -100.0), (-100.0, 100.0)]
+                domain_lines = [[[0, 1, 3, 2, 0]], [[0, 1, 3, 2, 0]]]
+            case "edge-adjacent triangle and quadrilateral":
+                size = (394, 220)
+                domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                origin1 = (184.0, 210.0)
+                axes1 = [(0.0, -200.0), (-173.2, -100.0)]
+                domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                origin2 = origin1
+                axes2 = [(200.0, 0.0), (0.0, -200.0)]
+                domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2]]]
+            case "vertex-adjacent triangle and quadrilateral":
+                size = (394, 220)
+                domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                origin1 = (184.0, 110.0)
+                axes1 = [(-173.2, 100.0), (-173.2, -100.0)]
+                domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
+                origin2 = origin1
+                axes2 = [(100.0, 100.0), (100.0, -100.0)]
+                domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2, 0]]]
             case _:
-                raise ValueError(f"Unsupported format: {filename.split('.')[-1]}")
-        return f"<img src='{html_local(filename)}'>"
+                raise ValueError(f"Unsupported domain: {self.domain}")
+        return size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines
+
+    def svg_image(self, filename: str):
+        """Make SVG image of rule."""
+        assert filename.endswith(".svg")
+        assert not os.path.isfile(filename)
+        assert self.family is not None
+
+        (
+            size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines
+        ) = self._get_image_config()
+
+        with open(filename, "w") as f:
+            f.write(f"<svg width='{size[0]}' height='{size[1]}' "
+                    "xmlns='http://www.w3.org/2000/svg' "
+                    "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
+            f.write(svg_license(f"{self.family.name()} order {self.order}"))
+            for domain, origin, axes, dlines in [
+                (domain1, origin1, axes1, domain_lines[0]),
+                (domain2, origin2, axes2, domain_lines[1]),
+            ]:
+                for lines in dlines:
+                    for a_, b_ in zip(lines[:-1], lines[1:]):
+                        a = to_2d(domain[a_], origin, axes)
+                        b = to_2d(domain[b_], origin, axes)
+                        f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
+                                "stroke='#000000' stroke-width='1.5' "
+                                "stroke-linecap='round' />\n")
+            for p1_, p2_ in zip(self.first_points, self.second_points):
+                p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
+                p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
+                f.write(f"<line x1='{p1[0]}' y1='{p1[1]}' x2='{p2[0]}' y2='{p2[1]}' "
+                        "stroke='#ACACAC' stroke-width='0.5' "
+                        "stroke-linecap='round' />\n")
+            for p1_, p2_, w in zip(self.first_points, self.second_points, self.weights):
+                p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
+                p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
+                if w > 0:
+                    f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * w ** 0.5}' "
+                            "fill='red' />")
+                    f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * w ** 0.5}' "
+                            "fill='red' />")
+                else:
+                    f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * (-w) ** 0.5}' "
+                            "fill='blue' />")
+                    f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * (-w) ** 0.5}' "
+                            "fill='blue' />")
+            f.write("</svg>")
+
+    def tikz_image(self, filename: str):
+        """Make TikZ image of rule."""
+        assert filename.endswith(".tex")
+        assert not os.path.isfile(filename)
+
+        (
+            size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines
+        ) = self._get_image_config()
+
+        with open(filename, "w") as f:
+            f.write(tikz_license())
+            f.write("\\begin{tikzpicture}[line cap=round,line join=round]\n")
+            for domain, origin, axes, dlines in [
+                (domain1, origin1, axes1, domain_lines[0]),
+                (domain2, origin2, axes2, domain_lines[1]),
+            ]:
+                for lines in dlines:
+                    for a_, b_ in zip(lines[:-1], lines[1:]):
+                        a = to_2d(domain[a_], origin, axes)
+                        b = to_2d(domain[b_], origin, axes)
+                        f.write(f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) "
+                                f"-- ({b[0]},{b[1]});\n")
+            for p1_, p2_ in zip(self.first_points, self.second_points):
+                p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
+                p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
+                f.write(f"\\draw[dashed,gray,line width=0.5pt] ({p1[0]},{p1[1]}) "
+                        f"-- ({p2[0]},{p2[1]});\n")
+            for p1_, p2_, w in zip(self.first_points, self.second_points, self.weights):
+                p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
+                p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
+                if w > 0:
+                    f.write(f"\\fill[red] ({p1[0]},{p1[1]}) circle ({9 * w ** 0.5});\n")
+                    f.write(f"\\fill[red] ({p2[0]},{p2[1]}) circle ({9 * w ** 0.5});\n")
+                else:
+                    f.write(f"\\fill[blue] ({p1[0]},{p1[1]}) circle ({9 * (-w) ** 0.5});\n")
+                    f.write(f"\\fill[blue] ({p2[0]},{p2[1]}) circle ({9 * (-w) ** 0.5});\n")
+            f.write("\\end{tikzpicture}\n")
 
     def save_html_table(self, filename):
         """Save HTML table of points and weights to a file."""
