@@ -31,6 +31,7 @@ def write_html_page(path: str, title: str, content: str, include_in_sitemap: boo
         path: Page path
         title: Page title
         content: Page content
+        include_in_sitemap: Should this page be included in the list of all pages?
     """
     global sitemap
     assert html_local(path) not in sitemap
