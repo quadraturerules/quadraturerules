@@ -3,6 +3,7 @@
 import argparse
 import os
 import re
+import typing
 from datetime import datetime
 
 import generate
@@ -57,7 +58,7 @@ def load_library_file(m):
         return "#" + f.read()
 
 
-loop_targets = {
+loop_targets: typing.Dict[str, typing.List[generate.substitute.Substitutor]] = {
     "rules": [generate_qr.RuleFamily(r) for r in all_rules],
     "domains": [generate_qr.Domain(d, i) for i, d in enumerate(domains)],
 }
