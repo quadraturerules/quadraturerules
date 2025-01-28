@@ -117,6 +117,7 @@ for file in os.listdir(settings.rules_path):
                 if r.order is not None:
                     rule_content += heading_with_self_ref("h3", f"Order {r.order}")
                 if r.npoints <= 1000:
+                    assert r.domain is not None
                     img_title = (
                         f"{q.name('HTML')} order {r.order} on "
                         f"{'an' if r.domain[0] in 'aeiou' else 'a'} {r.domain}"
