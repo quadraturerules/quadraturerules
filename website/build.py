@@ -24,17 +24,19 @@ parser.add_argument('--github-token', metavar="github_token", default=None,
 sitemap = {}
 
 
-def write_html_page(path: str, title: str, content: str):
+def write_html_page(path: str, title: str, content: str, include_in_sitemap: bool = True):
     """Write a HTML page.
 
     Args:
         path: Page path
         title: Page title
         content: Page content
+        include_in_sitemap: Should this page be included in the list of all pages?
     """
     global sitemap
     assert html_local(path) not in sitemap
-    sitemap[html_local(path)] = title
+    if include_in_sitemap:
+        sitemap[html_local(path)] = title
     with open(path, "w") as f:
         f.write(make_html_page(content, title))
 
@@ -115,7 +117,44 @@ for file in os.listdir(settings.rules_path):
                 if r.order is not None:
                     rule_content += heading_with_self_ref("h3", f"Order {r.order}")
                 if r.npoints <= 1000:
-                    rule_content += r.image(join(rpath, f"{r.title('filename')}.svg"))
+                    assert r.domain is not None
+                    img_title = (
+                        f"{q.name('HTML')} order {r.order} on "
+                        f"{'an' if r.domain[0] in 'aeiou' else 'a'} {r.domain}"
+                    )
+                    img_page = heading("h1", img_title)
+                    svg_filename = join(rpath, f"{r.title('filename')}.svg")
+                    png_filename = join(rpath, f"{r.title('filename')}.png")
+                    tikz_filename = join(rpath, f"{r.title('filename')}.tex")
+                    r.image(svg_filename)
+                    r.image(png_filename)
+                    r.image(tikz_filename)
+                    svg_image = html_local(svg_filename)
+                    png_image = html_local(png_filename)
+                    tikz_image = html_local(tikz_filename)
+                    img_page += (
+                        f"<center><img src='{svg_image}'></center>"
+                        "<p>This image can be used under a "
+                        "<a href='https://creativecommons.org/licenses/by/4.0/'>"
+                        "Creative Commons Attribution 4.0 International (CC BY 4.0) license</a>: "
+                        "if you use it anywhere, you must attribute the online encyclopedia of "
+                        "quadrature rules. If you use this image anywhere online, please include a "
+                        "link to the online encyclopedia of quadrature rules; if you use this "
+                        "image in a paper, please <a href='/citing.html'>cite the online "
+                        "encyclopedia of quadrature rules</a>.</p>\n"
+                        "<ul>\n"
+                        f"<li><a href='{svg_image}'>Download SVG</a></li>"
+                        f"<li><a href='{png_image}'>Download PNG</a></li>"
+                        f"<li><a href='{tikz_image}'>Download TikZ</a></li>"
+                        "</ul>\n"
+                    )
+                    write_html_page(
+                        join(rpath, f"img-{r.title('filename')}.html"), img_title, img_page, False,
+                    )
+                    rule_content += (
+                        f"<a href='{html_local(rpath)}/img-{r.title('filename')}.html'>"
+                        f"<img src='{svg_image}'></a>"
+                    )
                 else:
                     rule_content += (
                         "<div style='color:#ACACAC;margin:5px'>"
@@ -184,7 +223,10 @@ def make_pages(sub_dir=""):
                     img += "<div>"
                     for r in q.rules:
                         if r.domain == i['domain'] and r.order == i['order']:
-                            img += f"<img src='/{i['rule']}/{r.title('filename')}.svg'>"
+                            img += (
+                                f"<a href='/{i['rule']}/img-{r.title('filename')}.html'>"
+                                f"<img src='/{i['rule']}/{r.title('filename')}.svg'></a>"
+                            )
                             break
                     else:
                         raise ValueError(f"Invalid domain or order: {i['domain']}, {i['order']}")
