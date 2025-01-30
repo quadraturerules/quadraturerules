@@ -26,10 +26,12 @@ python3 build.py
 
 All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages:
 
-- [Python](website/pages/libraries/python.md)
-- [Rust](website/pages/libraries/rust.md)
-- [C++](website/pages/libraries/cpp.md)
-- [C](website/pages/libraries/c.md)
+| Software                                     | Badges |
+| -------------------------------------------- | ------ |
+| [Python](website/pages/libraries/python.md)  | |
+| [Rust](website/pages/libraries/rust.md)      | |
+| [C++](website/pages/libraries/cpp.md)        | |
+| [C](website/pages/libraries/c.md)            | |
 
 Before building any of the libraries, you must first install qrtools
 from the [python](python) directory:
