@@ -26,7 +26,7 @@ python3 build.py
 
 All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages:
 
-| Software                                     | Badges |
+| Language                                     | Badges |
 | -------------------------------------------- | ------ |
 | [Python](website/pages/libraries/python.md)  | [![Test and build Python library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-python.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-python.yml) [![PyPI](https://img.shields.io/pypi/v/quadraturerules?color=blue&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/quadraturerules/) |
 | [Rust](website/pages/libraries/rust.md)      | [![Test and build Rust library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-rust.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-rust.yml) [![crates.io](https://img.shields.io/crates/v/quadraturerules?color=blue&logo=Rust&logoColor=white)](https://crates.io/crates/quadraturerules/) [![docs.rs](https://img.shields.io/docsrs/quadraturerules?logo=Docs.rs&logoColor=white)](https://docs.rs/quadraturerules/) |
