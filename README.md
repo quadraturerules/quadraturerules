@@ -26,7 +26,6 @@ python3 build.py
 
 All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages:
 
-| Software                                     | Badges |
 | -------------------------------------------- | ------ |
 | [Python](website/pages/libraries/python.md)  | |
 | [Rust](website/pages/libraries/rust.md)      | |
