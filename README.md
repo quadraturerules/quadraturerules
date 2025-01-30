@@ -48,7 +48,7 @@ cd library
 python build.py python
 ```
 
-and to rust library, you can run:
+and to build the rust library, you can run:
 
 ```bash
 cd library
