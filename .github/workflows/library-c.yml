@@ -1,4 +1,4 @@
-name: Test and build libraries
+name: Test and build C library
 
 on:
   push:
