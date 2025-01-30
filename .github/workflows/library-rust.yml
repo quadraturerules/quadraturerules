@@ -1,0 +1,49 @@
+name: Test and build libraries
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  rust-library:
+    name: Build and test Rust library
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        rust-version: ["stable"]
+        feature-flags: ['--features "strict"', '', '--features "serde,strict"']
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust-version }}
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py rust
+          cd rust.build
+          cargo build
+        name: Build Rust library
+      - run: |
+          cd library/rust.build
+          cargo fmt -- --check
+        name: Style checks
+
+      - run: |
+          cd library/rust.build
+          cargo test ${{ matrix.feature-flags }}
+        name: Run Rust tests
