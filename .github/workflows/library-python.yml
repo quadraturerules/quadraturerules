@@ -1,0 +1,49 @@
+name: Test and build Python library
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  python-library:
+    name: Build and test Python library
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py python
+          cd python.build
+          python3 -m pip install -e .[ci]
+        name: Build and install Python library
+      - run: |
+          cd library/python.build
+          python3 -m ruff check .
+          python3 -m ruff format --check .
+        name: Ruff checks
+      - run: |
+          cd library/python.build
+          python3 -m mypy .
+        name: mypy checks
+
+      - run: |
+          cd library/python.build
+          python3 -m pytest test
+        name: Run Python tests
