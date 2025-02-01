@@ -39,6 +39,8 @@ jobs:
       - name: git commit
         run: |
           cd QR.jl
+          git config --global user.email "julia@mscroggs.co.uk"
+          git config --global user.name "GitHub Actions"
           git add .
           git commit -a -m "Update Julia source"
       - name: Push changes
