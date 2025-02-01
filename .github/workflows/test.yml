@@ -30,7 +30,7 @@ jobs:
       - name: Clone Julia source repo
         run: git clone https://github.com/quadraturerules/QuadratureRulesDotOrg.jl QR.jl
       - name: Copy Julia source
-        run: cp -r ../library/julia.build/* QR.jl/
+        run: cp -r library/julia.build/* QR.jl/
       - name: git add and commit
         run: |
           cd QR.jl
