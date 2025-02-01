@@ -511,8 +511,8 @@ class QRuleDouble(QRule):
                 axes1 = [(0.0, -200.0), (-173.2, -100.0)]
                 domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
                 origin2 = origin1
-                axes2 = [(200.0, 0.0), (0.0, -200.0)]
-                domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2]]]
+                axes2 = [(0.0, -200.0), (200.0, 0.0)]
+                domain_lines = [[[0, 1, 2, 0]], [[0, 2, 3, 1]]]
             case "vertex-adjacent triangle and quadrilateral":
                 size = (394, 220)
                 domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
