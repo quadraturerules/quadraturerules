@@ -28,15 +28,9 @@ jobs:
         name: Build Rust library
 
       - name: Clone Julia source repo
-        uses: actions/checkout@v4
-        with:
-          repo: quadraturerules/QuadratureRulesDotOrg.jl
-          path: QR.jl
-          token: ${{ secrets.JULIA_REPO_TOKEN }}
+        run: git clone https://github.com/quadraturerules/QuadratureRulesDotOrg.jl QR.jl
       - name: Copy Julia source
-        run: |
-          cd QR.jl
-          cp -r ../library/julia.build/* .
+        run: cp -r ../library/julia.build/* QR.jl/
       - name: git add and commit
         run: |
           cd QR.jl
