@@ -1,4 +1,4 @@
-name: Test and build Julia library
+name: Julia library
 
 on:
   push:
