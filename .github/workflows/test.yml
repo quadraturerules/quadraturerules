@@ -47,4 +47,5 @@ jobs:
       - name: git push
         run: |
           cd QR.jl
+          git remote set-url origin https://x-access-token:${{ secrets.JULIA_REPO_TOKEN }}@github.com/quadraturerules/QuadratureRulesDotOrg.jl
           git push
