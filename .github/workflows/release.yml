@@ -132,25 +132,21 @@ jobs:
         name: Build Rust library
 
       - name: Clone Julia source repo
-        uses: actions/checkout@v4
-        with:
-          repo: quadraturerules/QuadratureRulesDotOrg.jl
-          path: QR.jl
+        run: git clone https://github.com/quadraturerules/QuadratureRulesDotOrg.jl QR.jl
       - name: Copy Julia source
+        run: cp -r library/julia.build/* QR.jl/
+      - name: git add and commit
         run: |
           cd QR.jl
-          cp -r ../library/julia.build/* .
-      - name: git commit
-        run: |
-          cd QR.jl
+          git config --global user.email "julia@mscroggs.co.uk"
+          git config --global user.name "GitHub Actions"
           git add .
           git commit -a -m "Update Julia source"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.JULIA_REPO_TOKEN }}
-          branch: ${{ github.ref }}
-          path: QR.jl
+      - name: git push
+        run: |
+          cd QR.jl
+          git remote set-url origin https://x-access-token:${{ secrets.JULIA_REPO_TOKEN }}@github.com/quadraturerules/QuadratureRulesDotOrg.jl
+          git push
 
   cpp-library:
     name: Build C++ source for release
