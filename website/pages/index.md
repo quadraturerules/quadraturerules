@@ -21,6 +21,8 @@ The points that make up the quadrature rules in this encyclopedia are represente
 
 All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages:
 
+* [C](libraries/c.md)
 * [C++](libraries/cpp.md)
+* [Julia](libraries/julia.md)
 * [Python](libraries/python.md)
 * [Rust](libraries/rust.md)
