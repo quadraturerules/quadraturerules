@@ -1,0 +1,45 @@
+name: Test and build Julia library
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  julia-library:
+    name: Build and test Julia library
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        julia-version: ['lts', '1', 'pre']
+        julia-arch: [x64, x86]
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v4
+        path: _qr
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.julia-arch }}
+
+      - run: |
+          cd _qr/python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd _qr/library
+          python build.py julia
+          cd ../..
+          mv _qr/library/julia.build/* .
+        name: Build and move Julia library
+
+      - uses: julia-actions/cache@v2
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1
