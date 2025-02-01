@@ -1,0 +1,51 @@
+name: Make new releases - test
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  julia-library:
+    name: Release Julia library
+    runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py julia
+        name: Build Rust library
+
+      - name: Clone Julia source repo
+        uses: actions/checkout@v4
+        with:
+          repo: quadraturerules/QuadratureRulesDotOrg.jl
+          path: QR.jl
+      - name: Copy Julia source
+        run: |
+          cd QR.jl
+          cp -r ../library/julia.build/* .
+      - name: git commit
+        run: |
+          cd QR.jl
+          gti commit -a -m "Update Julia source"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.JULIA_REPO_TOKEN }}
+          branch: ${{ github.ref }}
+          path: QR.jl
