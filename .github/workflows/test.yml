@@ -48,5 +48,5 @@ jobs:
         with:
           github_token: ${{ secrets.JULIA_REPO_TOKEN }}
           branch: ${{ github.ref }}
-          repo: quadraturerules/QuadratureRulesDotOrg.jl
+          repository: quadraturerules/QuadratureRulesDotOrg.jl
           directory: QR.jl
