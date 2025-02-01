@@ -32,21 +32,19 @@ jobs:
         with:
           repo: quadraturerules/QuadratureRulesDotOrg.jl
           path: QR.jl
+          token: ${{ secrets.JULIA_REPO_TOKEN }}
       - name: Copy Julia source
         run: |
           cd QR.jl
           cp -r ../library/julia.build/* .
-      - name: git commit
+      - name: git add and commit
         run: |
           cd QR.jl
           git config --global user.email "julia@mscroggs.co.uk"
           git config --global user.name "GitHub Actions"
           git add .
           git commit -a -m "Update Julia source"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.JULIA_REPO_TOKEN }}
-          branch: main
-          repository: quadraturerules/QuadratureRulesDotOrg.jl
-          directory: QR.jl
+      - name: git push
+        run: |
+          cd QR.jl
+          git push
