@@ -22,7 +22,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: actions/checkout@v4
-        path: _qr
+        with:
+          path: _qr
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
