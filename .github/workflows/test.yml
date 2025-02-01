@@ -47,6 +47,6 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.JULIA_REPO_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: main
           repository: quadraturerules/QuadratureRulesDotOrg.jl
           directory: QR.jl
