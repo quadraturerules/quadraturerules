@@ -69,6 +69,10 @@ class Rule(Substitutor):
                 ),
                 (f"{variable}.points_as_list", lambda: self.rule.points_as_list()),
                 (
+                    f"{variable}.points_as_list_no_outer_commas",
+                    lambda: self.rule.points_as_list(outer_joiner=" "),
+                ),
+                (
                     f"{variable}.points_as_flat_list",
                     lambda: self.rule.points_as_flat_list(),
                 ),
@@ -94,6 +98,14 @@ class Rule(Substitutor):
                 (
                     f"{variable}.first_points_as_list",
                     lambda: self.rule.first_points_as_list(),
+                ),
+                (
+                    f"{variable}.first_points_as_list_no_outer_commas",
+                    lambda: self.rule.first_points_as_list(outer_joiner=" "),
+                ),
+                (
+                    f"{variable}.second_points_as_list_no_outer_commas",
+                    lambda: self.rule.second_points_as_list(outer_joiner=" "),
                 ),
                 (
                     f"{variable}.first_points_as_flat_list",

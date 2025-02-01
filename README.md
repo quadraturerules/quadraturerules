@@ -28,10 +28,11 @@ All of the quadrature rules included in the online encylopedia of quadrature rul
 
 | Language                                     | Badges |
 | -------------------------------------------- | ------ |
+| [C](website/pages/libraries/c.md)            | [![Test and build C library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-c.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-c.yml) |
+| [C++](website/pages/libraries/cpp.md)        | [![Test and build C++ library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-cpp.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-cpp.yml) |
+| [Julia](website/pages/libraries/julia.md)    | [![Test and build Julia library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-julia.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-julia.yml) |
 | [Python](website/pages/libraries/python.md)  | [![Test and build Python library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-python.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-python.yml) [![PyPI](https://img.shields.io/pypi/v/quadraturerules?color=blue&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/quadraturerules/) |
 | [Rust](website/pages/libraries/rust.md)      | [![Test and build Rust library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-rust.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-rust.yml) [![crates.io](https://img.shields.io/crates/v/quadraturerules?color=blue&logo=Rust&logoColor=white)](https://crates.io/crates/quadraturerules/) [![docs.rs](https://img.shields.io/docsrs/quadraturerules?logo=Docs.rs&logoColor=white)](https://docs.rs/quadraturerules/) |
-| [C++](website/pages/libraries/cpp.md)        | [![Test and build C++ library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-cpp.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-cpp.yml) |
-| [C](website/pages/libraries/c.md)            | [![Test and build C library](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-c.yml/badge.svg)](https://github.com/quadraturerules/quadraturerules/actions/workflows/library-c.yml) |
 
 Before building any of the libraries, you must first install qrtools
 from the [python](python) directory:

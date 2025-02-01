@@ -1,0 +1,36 @@
+--
+template: Q in rules
+filename: {{Q.snake_case_name}}.jl
+--
+function {{Q.snake_case_name}}(
+    domain::Domain,
+    order::Integer,
+)
+{{if Q.itype == single}}
+    {{for D in domains}}
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    if domain == Domain_{{D.PascalCaseName}} && order == {{R.order}}
+        return {{R.points_as_list_no_outer_commas}}, {{R.weights_as_list}}
+    end
+    {{end if}}
+    {{end for}}
+    {{end for}}
+    throw("Invalid domain or order: ($domain, $order)")
+{{end if}}
+{{if Q.itype == double}}
+    {{for D in domains}}
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    if domain == Domain_{{D.PascalCaseName}} && order == {{R.order}}
+        return {{R.first_points_as_list_no_outer_commas}}, {{R.second_points_as_list_no_outer_commas}}, {{R.weights_as_list}}
+    end
+    {{end if}}
+    {{end for}}
+    {{end for}}
+    throw("Invalid domain or order: ($domain, $order)")
+
+{{end if}}
+end
+
+export {{Q.snake_case_name}}
