@@ -10,6 +10,7 @@ abbrv_names = {}
 
 
 def get_abbrv_name(long_name: str) -> str:
+    global abbrv_names
     if long_name not in abbrv_names:
         n = long_name.lower()
         short_name = ""
@@ -22,6 +23,7 @@ def get_abbrv_name(long_name: str) -> str:
             n = n[1:]
         abbrv_names[long_name] = short_name
     return abbrv_names[long_name]
+
 
 class RuleFamily(Substitutor):
     """Substitutor for a rule family."""
