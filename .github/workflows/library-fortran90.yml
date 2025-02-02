@@ -33,6 +33,8 @@ jobs:
 
       - run: |
           cd library/fortran90.build
+          ./test
           ./test > output
+          cat output
           grep fail output
         name: Run Fortran tests
