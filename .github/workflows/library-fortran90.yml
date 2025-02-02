@@ -32,7 +32,7 @@ jobs:
         name: Build Fortran library test
 
       - run: |
-          cd library/fortran.build
+          cd library/fortran90.build
           ./test > output
           grep fail output
         name: Run Fortran tests
