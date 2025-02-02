@@ -36,5 +36,10 @@ jobs:
           ./test
           ./test > output
           cat output
-          grep fail output
+          if grep fail output
+          then
+            return 1
+          else
+            return 0
+          fi
         name: Run Fortran tests
