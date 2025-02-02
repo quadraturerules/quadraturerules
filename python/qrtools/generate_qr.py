@@ -3,9 +3,25 @@
 import re
 import typing
 
-from generate.substitute import IndexedFloat, Substitutor, replace
+from generate.substitute import IndexedArray, IndexedFloat, Substitutor, replace
 from qrtools import rules
 
+abbrv_names = {}
+
+
+def get_abbrv_name(long_name: str) -> str:
+    if long_name not in abbrv_names:
+        n = long_name.lower()
+        short_name = ""
+        while short_name == "" or short_name in abbrv_names.values():
+            while n[0] not in "abcdefghijklmnopqrstuvwxyz":
+                n = n[1:]
+                if n == "":
+                    n = long_name.lower()
+            short_name += n[0]
+            n = n[1:]
+        abbrv_names[long_name] = short_name
+    return abbrv_names[long_name]
 
 class RuleFamily(Substitutor):
     """Substitutor for a rule family."""
@@ -30,6 +46,7 @@ class RuleFamily(Substitutor):
                 (f"{variable}.PascalCaseName", lambda: self.family.name("PascalCase")),
                 (f"{variable}.camelCaseName", lambda: self.family.name("camelCase")),
                 (f"{variable}.snake_case_name", lambda: self.family.name("snake_case")),
+                (f"{variable}.abbrv_name", lambda: get_abbrv_name(self.family.name())),
             ],
             bracketed,
         )
@@ -63,6 +80,7 @@ class Rule(Substitutor):
         ]
         if isinstance(self.rule, rules.QRuleSingle):
             subs += [
+                (f"{variable}.point_dim", lambda: f"{len(self.rule.points[0])}"),
                 (
                     f"{variable}.len_flat_points",
                     lambda: f"{len(self.rule.points) * len(self.rule.points[0])}",
@@ -87,6 +105,8 @@ class Rule(Substitutor):
             ]
         elif isinstance(self.rule, rules.QRuleDouble):
             subs += [
+                (f"{variable}.first_point_dim", lambda: f"{len(self.rule.first_points[0])}"),
+                (f"{variable}.second_point_dim", lambda: f"{len(self.rule.second_points[0])}"),
                 (
                     f"{variable}.len_flat_first_points",
                     lambda: f"{len(self.rule.first_points) * len(self.rule.first_points[0])}",
@@ -154,7 +174,19 @@ class Rule(Substitutor):
                 for i, p in enumerate(self.rule.points)
                 for j, c in enumerate(p)
             )
+            out[f"{variable}.points"] = (
+                IndexedArray(p, i)
+                for i, p in enumerate(self.rule.points)
+            )
         if isinstance(self.rule, rules.QRuleDouble):
+            out[f"{variable}.first_points"] = (
+                IndexedArray(p, i)
+                for i, p in enumerate(self.rule.first_points)
+            )
+            out[f"{variable}.second_points"] = (
+                IndexedArray(p, i)
+                for i, p in enumerate(self.rule.second_points)
+            )
             out[f"{variable}.flat_first_points"] = (
                 IndexedFloat(c, i * len(self.rule.first_points[0]) + j)
                 for i, p in enumerate(self.rule.first_points)
@@ -197,6 +229,7 @@ class Domain(Substitutor):
                     lambda: "_".join(i.lower() for i in parts),
                 ),
                 (f"{variable}.name", lambda: self.domain),
+                (f"{variable}.abbrv_name", lambda: get_abbrv_name(self.domain)),
             ],
             bracketed,
         )

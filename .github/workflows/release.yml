@@ -216,6 +216,41 @@ jobs:
           path: library/c.build/quadraturerules-c-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
+  fortran90-library:
+    # TODO
+    name: Build Fortran 90 source for release
+    runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py fortran90
+        name: Build Fortran 90 library
+      - run: |
+          cd library/fortran90.build
+          tar -cvf quadraturerules-fortran90-${{ needs.check-version.outputs.tag }}.tar.gz *
+        name: Make tar.gz of source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fotran90_source
+          path: library/fortran90.build/quadraturerules-fortran90-${{ needs.check-version.outputs.tag }}.tar.gz
+          retention-days: 1
+
   make-release:
     name: Make release on GitHub
     runs-on: ubuntu-22.04
@@ -231,6 +266,7 @@ jobs:
       - julia-library
       - cpp-library
       - c-library
+      - fortran90-library
     steps:
       - name: Download C++ source
         uses: actions/download-artifact@v4
@@ -240,6 +276,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: c_source
+      - name: Download Fortran 90 source
+        uses: actions/download-artifact@v4
+        with:
+          name: fortran90_source
 
       - name: Write version number into GITHUB_OUTPUT
         run: |
@@ -266,8 +306,10 @@ jobs:
           files: |
             quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz
             quadraturerules-c-${{ steps.v.outputs.version }}.tar.gz
+            quadraturerules-fortran90-${{ steps.v.outputs.version }}.tar.gz
           body: |
             - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
             - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})
             - [C++ source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
             - [C source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-c-${{ steps.v.outputs.version }}.tar.gz)
+            - [Fortran 90 source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-fortran90-${{ steps.v.outputs.version }}.tar.gz)
