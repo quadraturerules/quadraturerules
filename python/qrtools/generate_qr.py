@@ -29,7 +29,7 @@ def get_abbrv_name(long_name: str) -> str:
 class RuleFamily(Substitutor):
     """Substitutor for a rule family."""
 
-    def __init__(self, family: str):
+    def __init__(self, family: rules.QRuleFamily):
         """Initialise."""
         self.family = family
 
@@ -65,12 +65,13 @@ class RuleFamily(Substitutor):
 class Rule(Substitutor):
     """Substitutor for a rule."""
 
-    def __init__(self, rule: RuleFamily):
+    def __init__(self, rule):
         """Initialise."""
         self.rule = rule
 
     def substitute(self, code: str, variable: str, bracketed: bool = True) -> str:
         """Substitute."""
+        assert isinstance(self.rule, rules.QRuleSingle | rules.QRuleDouble)
         subs = [
             (f"{variable}.order", lambda: f"{self.rule.order}"),
             (f"{variable}.domain", lambda: self.rule.domain),

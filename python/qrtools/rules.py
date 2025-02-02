@@ -402,6 +402,7 @@ class QRuleSingle(QRule):
         filename_root_local = html_local(filename_root)
 
         assert self._rule.startswith("--\n")
+        assert self.family is not None
         assert self.family._qr.endswith("\n")
         with open(f"{filename_root}.rule", "w") as f:
             f.write(f"--\n{self.family._qr}{self._rule[3:]}")
@@ -711,6 +712,7 @@ class QRuleDouble(QRule):
         filename_root_local = html_local(filename_root)
 
         assert self._rule.startswith("--\n")
+        assert self.family is not None
         assert self.family._qr.endswith("\n")
         with open(f"{filename_root}.rule", "w") as f:
             f.write(f"--\n{self.family._qr}{self._rule[3:]}")
