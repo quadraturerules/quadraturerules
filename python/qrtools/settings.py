@@ -1,7 +1,6 @@
 """Settings."""
 
 import os as _os
-import typing as _typing
 
 import yaml as _yaml
 from webtools import settings
