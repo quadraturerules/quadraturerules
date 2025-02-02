@@ -34,6 +34,7 @@ jobs:
       - run: |
           cd library/fortran90.build
           ./test > output
+          grep Test output
           if grep fail output
           then
             exit 1
