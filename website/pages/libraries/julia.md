@@ -1,6 +1,7 @@
 # Julia library
 
-The QuadratureRulesDotOrg Julia library is available at [github.com/quadraturerules/QuadratureRulesDotOrg.jl](https://github.com/quadraturerules/QuadratureRulesDotOrg.jl).
+The source code of the QuadratureRulesDotOrg Julia library is available at [github.com/quadraturerules/QuadratureRulesDotOrg.jl](https://github.com/quadraturerules/QuadratureRulesDotOrg.jl).
+It can be installed using `Pkg.add("QuadratureRulesDotOrg")`.
 
 ## Usage
 
