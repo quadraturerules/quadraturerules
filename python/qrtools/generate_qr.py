@@ -108,8 +108,14 @@ class Rule(Substitutor):
             ]
         elif isinstance(self.rule, rules.QRuleDouble):
             subs += [
-                (f"{variable}.first_point_dim", lambda: f"{len(self.rule.first_points[0])}"),
-                (f"{variable}.second_point_dim", lambda: f"{len(self.rule.second_points[0])}"),
+                (
+                    f"{variable}.first_point_dim",
+                    lambda: f"{len(self.rule.first_points[0])}",
+                ),
+                (
+                    f"{variable}.second_point_dim",
+                    lambda: f"{len(self.rule.second_points[0])}",
+                ),
                 (
                     f"{variable}.len_flat_first_points",
                     lambda: f"{len(self.rule.first_points) * len(self.rule.first_points[0])}",
@@ -178,17 +184,14 @@ class Rule(Substitutor):
                 for j, c in enumerate(p)
             )
             out[f"{variable}.points"] = (
-                IndexedArray(p, i)
-                for i, p in enumerate(self.rule.points)
+                IndexedArray(p, i) for i, p in enumerate(self.rule.points)
             )
         if isinstance(self.rule, rules.QRuleDouble):
             out[f"{variable}.first_points"] = (
-                IndexedArray(p, i)
-                for i, p in enumerate(self.rule.first_points)
+                IndexedArray(p, i) for i, p in enumerate(self.rule.first_points)
             )
             out[f"{variable}.second_points"] = (
-                IndexedArray(p, i)
-                for i, p in enumerate(self.rule.second_points)
+                IndexedArray(p, i) for i, p in enumerate(self.rule.second_points)
             )
             out[f"{variable}.flat_first_points"] = (
                 IndexedFloat(c, i * len(self.rule.first_points[0]) + j)
