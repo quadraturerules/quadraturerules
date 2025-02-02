@@ -1,0 +1,72 @@
+--
+template: Q in rules
+filename: {{Q.snake_case_name}}.f90
+--
+module {{Q.snake_case_name}}
+  implicit none
+  {{for D in domains}}
+  public {{Q.abbrv_name}}_{{D.abbrv_name}}
+  {{end for}}
+contains
+  {{if Q.itype == single}}
+  {{for D in domains}}
+  subroutine {{Q.abbrv_name}}_{{D.abbrv_name}}(order, points, weights)
+    implicit none
+    integer, value :: order
+    real, allocatable, intent(out) :: points(:,:)
+    real, allocatable, intent(out) :: weights(:)
+
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    if (order == {{R.order}}) then
+      allocate(points({{R.point_dim}},{{R.len_weights}}))
+      allocate(weights({{R.len_weights}}))
+      {{for p in R.points}}
+      {{for c in p}}
+      points({{c.index}},{{p.index}}) = {{c}}
+      {{end for}}
+      {{end for}}
+      {{for w in R.weights}}
+      weights({{w.index}}) = {{w}}
+      {{end for}}
+    end if
+    {{end if}}
+    {{end for}}
+  end subroutine
+  {{end for}}
+  {{end if}}
+  {{if Q.itype == double}}
+  {{for D in domains}}
+  subroutine {{Q.abbrv_name}}_{{D.abbrv_name}}(order, first_points, second_points, weights)
+    implicit none
+    integer, value :: order
+    real, allocatable, intent(out) :: first_points(:,:)
+    real, allocatable, intent(out) :: second_points(:,:)
+    real, allocatable, intent(out) :: weights(:)
+
+    {{for R in Q.rules}}
+    {{if R.domain == D.name}}
+    if (order == {{R.order}}) then
+      allocate(first_points({{R.first_point_dim}},{{R.len_weights}}))
+      allocate(second_points({{R.second_point_dim}},{{R.len_weights}}))
+      allocate(weights({{R.len_weights}}))
+      {{for p in R.first_points}}
+      {{for c in p}}
+      first_points({{c.index}},{{p.index}}) = {{c}}
+      {{end for}}
+      {{end for}}
+      {{for p in R.second_points}}
+      {{for c in p}}
+      second_points({{c.index}},{{p.index}}) = {{c}}
+      {{end for}}
+      {{end for}}
+      {{for w in R.weights}}
+      weights({{w.index}}) = {{w}}
+      {{end for}}
+    end if
+    {{end if}}
+    {{end for}}
+  end subroutine
+  {{end for}}
+  {{end if}}
+end module {{Q.snake_case_name}}

@@ -23,6 +23,7 @@ All of the quadrature rules included in the online encylopedia of quadrature rul
 
 * [C](libraries/c.md)
 * [C++](libraries/cpp.md)
+* Fortran: [90](libraries/fortran.md)
 * [Julia](libraries/julia.md)
 * [Python](libraries/python.md)
 * [Rust](libraries/rust.md)
