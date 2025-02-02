@@ -10,7 +10,7 @@ on:
 
 jobs:
   fortran-library:
-    name: Build and test Fortran library
+    name: Build and test Fortran 90 library
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Python
@@ -33,9 +33,7 @@ jobs:
 
       - run: |
           cd library/fortran90.build
-          ./test
           ./test > output
-          cat output
           if grep fail output
           then
             return 1
