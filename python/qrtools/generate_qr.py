@@ -6,7 +6,7 @@ import typing
 from generate.substitute import IndexedArray, IndexedFloat, Substitutor, replace
 from qrtools import rules
 
-abbrv_names = {}
+abbrv_names: typing.Dict[str, str] = {}
 
 
 def get_abbrv_name(long_name: str) -> str:
@@ -29,7 +29,7 @@ def get_abbrv_name(long_name: str) -> str:
 class RuleFamily(Substitutor):
     """Substitutor for a rule family."""
 
-    def __init__(self, family):
+    def __init__(self, family: str):
         """Initialise."""
         self.family = family
 
@@ -65,7 +65,7 @@ class RuleFamily(Substitutor):
 class Rule(Substitutor):
     """Substitutor for a rule."""
 
-    def __init__(self, rule):
+    def __init__(self, rule: RuleFamily):
         """Initialise."""
         self.rule = rule
 
@@ -206,7 +206,7 @@ class Rule(Substitutor):
 class Domain(Substitutor):
     """Substitutor for a domain."""
 
-    def __init__(self, domain, index):
+    def __init__(self, domain: str, index: int):
         """Initialise."""
         self.domain = domain
         self.index = index

@@ -13,7 +13,7 @@ PointND = typing.Tuple[float, ...]
 Point2D = typing.Tuple[float, float]
 
 
-def sort_name(domain: str | None):
+def sort_name(domain: str | None) -> str:
     """Get the name to use when sorting domains."""
     if domain is None:
         return ""
@@ -46,7 +46,7 @@ def dim(domain: str | None) -> int:
     return 10
 
 
-def rounded(n: float, dp: int = 5):
+def rounded(n: float, dp: int = 5) -> str:
     """Round to a number of decimal places."""
     i, j = str(n).split(".")
     return f"{i}.{j[:dp]}"
@@ -79,8 +79,8 @@ class QRule:
 
     def __init__(
         self,
-        domain: typing.Optional[str],
-        order: typing.Optional[int],
+        domain: str | None,
+        order: int | None,
         rule: str,
         npoints: int,
     ):
@@ -88,7 +88,7 @@ class QRule:
         self.domain = domain
         self.order = order
         self._rule = rule
-        self.family: typing.Optional[QRuleFamily] = None
+        self.family: QRuleFamily | None = None
         self.npoints = npoints
 
     def title(self, format: str = "default") -> str:
@@ -150,7 +150,7 @@ class QRule:
         """Make TikZ image of rule."""
         raise NotImplementedError()
 
-    def save_html_table(self, filename):
+    def save_html_table(self, filename: str):
         """Save HTML table of points and weights to a file."""
         raise NotImplementedError()
 
@@ -227,8 +227,8 @@ class QRuleSingle(QRule):
 
     def __init__(
         self,
-        domain: typing.Optional[str],
-        order: typing.Optional[int],
+        domain: str | None,
+        order: int | None,
         points: typing.List[typing.List[float]],
         weights: typing.List[float],
         rule: str,
@@ -358,7 +358,7 @@ class QRuleSingle(QRule):
                     f.write(f"\\fill[blue] ({p[0]},{p[1]}) circle ({9 * (-w) ** 0.5});\n")
             f.write("\\end{tikzpicture}\n")
 
-    def save_html_table(self, filename):
+    def save_html_table(self, filename: str):
         """Save HTML table of points and weights to a file."""
         assert filename.endswith(".html")
         filename_root = filename[:-5]
@@ -405,7 +405,7 @@ class QRuleSingle(QRule):
             f.write("</table>\n")
 
     def points_as_list(
-        self, open: str = "[", close: str = "]", outer_joiner=", ", inner_joiner=", "
+        self, open: str = "[", close: str = "]", outer_joiner: str = ", ", inner_joiner: str = ", "
     ) -> str:
         """Get a list of points as a string."""
         return open + outer_joiner.join([
@@ -413,11 +413,11 @@ class QRuleSingle(QRule):
             for p in self.points
         ]) + close
 
-    def points_as_flat_list(self, open: str = "[", close: str = "]", joiner=", ") -> str:
+    def points_as_flat_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat points as a string."""
         return open + joiner.join([f"{c}" for p in self.points for c in p]) + close
 
-    def weights_as_list(self, open: str = "[", close: str = "]", joiner=", ") -> str:
+    def weights_as_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat points as a string."""
         return open + joiner.join([f"{w}" for w in self.weights]) + close
 
@@ -427,8 +427,8 @@ class QRuleDouble(QRule):
 
     def __init__(
         self,
-        domain: typing.Optional[str],
-        order: typing.Optional[int],
+        domain: str | None,
+        order: int | None,
         first_points: typing.List[typing.List[float]],
         second_points: typing.List[typing.List[float]],
         weights: typing.List[float],
@@ -613,7 +613,7 @@ class QRuleDouble(QRule):
                     f.write(f"\\fill[blue] ({p2[0]},{p2[1]}) circle ({9 * (-w) ** 0.5});\n")
             f.write("\\end{tikzpicture}\n")
 
-    def save_html_table(self, filename):
+    def save_html_table(self, filename: str):
         """Save HTML table of points and weights to a file."""
         assert filename.endswith(".html")
         filename_root = filename[:-5]
@@ -675,7 +675,7 @@ class QRuleDouble(QRule):
             f.write("</table>\n")
 
     def first_points_as_list(
-        self, open: str = "[", close: str = "]", outer_joiner=", ", inner_joiner=", ",
+        self, open: str = "[", close: str = "]", outer_joiner: str = ", ", inner_joiner: str = ", ",
     ) -> str:
         """Get a list of first points as a string."""
         return open + outer_joiner.join([
@@ -683,12 +683,12 @@ class QRuleDouble(QRule):
             for p in self.first_points
         ]) + close
 
-    def first_points_as_flat_list(self, open: str = "[", close: str = "]", joiner=", ") -> str:
+    def first_points_as_flat_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat first points as a string."""
         return open + joiner.join([f"{c}" for p in self.first_points for c in p]) + close
 
     def second_points_as_list(
-        self, open: str = "[", close: str = "]", outer_joiner=", ", inner_joiner=", ",
+        self, open: str = "[", close: str = "]", outer_joiner: str = ", ", inner_joiner: str = ", ",
     ) -> str:
         """Get a list of second points as a string."""
         return open + outer_joiner.join([
@@ -696,11 +696,11 @@ class QRuleDouble(QRule):
             for p in self.second_points
         ]) + close
 
-    def second_points_as_flat_list(self, open: str = "[", close: str = "]", joiner=", ") -> str:
+    def second_points_as_flat_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat second points as a string."""
         return open + joiner.join([f"{c}" for p in self.second_points for c in p]) + close
 
-    def weights_as_list(self, open: str = "[", close: str = "]", joiner=", ") -> str:
+    def weights_as_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat points as a string."""
         return open + joiner.join([f"{w}" for w in self.weights]) + close
 

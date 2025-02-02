@@ -15,7 +15,7 @@ pages_path = ""
 rules_path = ""
 html_path = ""
 
-github_token: _typing.Optional[str] = None
+github_token: str | None = None
 
 processes = 1
 
@@ -32,7 +32,7 @@ settings.repo = "quadraturerules/quadraturerules"
 settings.github_token = github_token
 
 
-def set_root_path(path):
+def set_root_path(path: str):
     """Set root path."""
     global root_path
     global website_path
@@ -73,14 +73,14 @@ def set_root_path(path):
         settings.html_path = html_path
 
 
-def set_html_path(path):
+def set_html_path(path: str):
     """Set HTML path."""
     global html_path
     html_path = path
     settings.html_path = path
 
 
-def set_github_token(token):
+def set_github_token(token: str):
     """Set GitHub token."""
     global github_token
     github_token = token
