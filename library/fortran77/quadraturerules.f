@@ -48,9 +48,9 @@ c dtype input:
 {{for D in domains}}
 c   {{D.index}} = {{D.name}}
 {{end for}}
-      SUBROUTINE diquad(rtype, dtype, order, p1, p2, wts, npts, p1d, p2d)
-      INTEGER rtype
-      INTEGER dtype
+      SUBROUTINE diquad(rt, dt, order, p1, p2, wts, npts, p1d, p2d)
+      INTEGER rt
+      INTEGER dt
       INTEGER order
       INTEGER p1d
       INTEGER p2d
@@ -65,7 +65,7 @@ c   {{D.index}} = {{D.name}}
       {{for Q in rules}}
       {{if Q.itype == double}}
       IF (rtype == {{Q.index}}) THEN
-      CALL {{Q.abbrv_name}}(dtype, order, p1, p2, wts, npts, p1d, p2d)
+      CALL {{Q.abbrv_name}}(dt, order, p1, p2, wts, npts, p1d, p2d)
       END IF
       {{end if}}
       {{end for}}
