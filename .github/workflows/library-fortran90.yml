@@ -1,0 +1,43 @@
+name: Fortran 90 library
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  fortran-library:
+    name: Build and test Fortran 90 library
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py fortran90
+          cd fortran90.build
+          gfortran test.f90 -o test
+        name: Build Fortran library test
+
+      - run: |
+          cd library/fortran90.build
+          ./test > output
+          if grep fail output
+          then
+            exit 1
+          else
+            exit 0
+          fi
+        name: Run Fortran tests

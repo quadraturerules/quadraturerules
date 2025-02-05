@@ -1,4 +1,4 @@
-name = "QuadratureRulesDotOrg"
+name = "TabulatedQuadratureRules"
 uuid = "3da39775-d94e-428b-a709-24e9ab7fe27d"
 authors = ["Matthew Scroggs"]
 version = "{{VERSION}}"
