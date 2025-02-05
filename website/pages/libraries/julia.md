@@ -1,7 +1,7 @@
 # Julia library
 
-The source code of the QuadratureRulesDotOrg Julia library is available at [github.com/quadraturerules/QuadratureRulesDotOrg.jl](https://github.com/quadraturerules/QuadratureRulesDotOrg.jl).
-It can be installed using `Pkg.add("QuadratureRulesDotOrg")`.
+The source code of the TabulatedQuadratureRules Julia library is available at [github.com/quadraturerules/TabulatedQuadratureRules.jl](https://github.com/quadraturerules/TabulatedQuadratureRules.jl).
+It can be installed using `Pkg.add("TabulatedQuadratureRules")`.
 
 ## Usage
 
@@ -10,11 +10,11 @@ of quadrature rules for a single integral. For example the following snippet wil
 order 3 Xiao--Gimbutas rule on a triangle:
 
 ```rust
-using QuadratureRulesDotOrg
+using TabulatedQuadratureRules
 
-points, weights = QuadratureRulesDotOrg.single_integral_quadrature(
-    QuadratureRulesDotOrg.QR_XiaoGimbutas,
-    QuadratureRulesDotOrg.Domain_Triangle,
+points, weights = TabulatedQuadratureRules.single_integral_quadrature(
+    TabulatedQuadratureRules.QR_XiaoGimbutas,
+    TabulatedQuadratureRules.Domain_Triangle,
     3,
 )
 ```
