@@ -132,7 +132,7 @@ jobs:
         name: Build Rust library
 
       - name: Clone Julia source repo
-        run: git clone https://github.com/quadraturerules/QuadratureRulesDotOrg.jl QR.jl
+        run: git clone https://github.com/quadraturerules/TabulatedQuadratureRules.jl QR.jl
       - name: Copy Julia source
         run: cp -r library/julia.build/* QR.jl/
       - name: git add and commit
