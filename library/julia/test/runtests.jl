@@ -1,10 +1,10 @@
-using QuadratureRulesDotOrg
+using TabulatedQuadratureRules
 using Test
 
-@testset "QuadratureRulesDotOrg.jl" begin
-    points, weights = QuadratureRulesDotOrg.single_integral_quadrature(
-        QuadratureRulesDotOrg.QR_GaussLobattoLegendre,
-        QuadratureRulesDotOrg.Domain_Interval,
+@testset "TabulatedQuadratureRules.jl" begin
+    points, weights = TabulatedQuadratureRules.single_integral_quadrature(
+        TabulatedQuadratureRules.QR_GaussLobattoLegendre,
+        TabulatedQuadratureRules.Domain_Interval,
         4
     )
     @test isapprox(sum(weights), 1.0)
