@@ -1,4 +1,4 @@
-module QuadratureRulesDotOrg
+module TabulatedQuadratureRules
 
 include("domains.jl")
 {{for Q in rules}}
