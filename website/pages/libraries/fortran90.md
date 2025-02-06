@@ -12,10 +12,8 @@ gfortran test.f90 -o test
 
 ## Usage
 
-The library's function `single_integral_quadrature` can be used to write the points and weights
-of quadrature rules for a single integral into memory. The functions `single_integral_quadrature_points_size` and
-`single_integral_quadrature_weights_size` can be used to compute how large the arrays of doubles for the points and weights
-need to be. For example the following snippet will create an order 3 Xiao--Gimbutas rule on a
+The library's function `single_integral_quadrature` can be used to get the points and weights
+of quadrature rules. For example the following snippet will create an order 3 Xiao--Gimbutas rule on a
 triangle:
 
 ```fortran
