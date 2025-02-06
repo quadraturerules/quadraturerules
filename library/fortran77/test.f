@@ -12,7 +12,7 @@
       sumto = sumto + w(i)
       END DO
 
-      IF (abs(1 - sumto) < 1e-8) THEN
+      IF (abs(1 - sumto) .LT. 0.00000001) THEN
       PRINT *, "Test passed"
       ELSE
       PRINT *, "Test failed"
