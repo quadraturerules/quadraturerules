@@ -28,7 +28,7 @@ jobs:
           cd library
           python build.py fortran77
           cd fortran77.build
-          gfortran test.f90 -o test -std=legacy
+          gfortran test.f -o test -std=legacy
         name: Build Fortran library test
 
       - run: |
