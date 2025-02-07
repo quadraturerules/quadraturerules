@@ -106,6 +106,48 @@ jobs:
           path: './library/rust.build'
         if: needs.check-version.outputs.release == 'yes'
 
+  julia-library:
+    name: Release Julia library
+    runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py julia
+        name: Build Rust library
+
+      - name: Clone Julia source repo
+        run: git clone https://github.com/quadraturerules/TabulatedQuadratureRules.jl QR.jl
+      - name: Copy Julia source
+        run: cp -r library/julia.build/* QR.jl/
+      - name: git add and commit
+        run: |
+          cd QR.jl
+          git config --global user.email "julia@mscroggs.co.uk"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -a -m "Update Julia source"
+      - name: git push
+        run: |
+          cd QR.jl
+          git remote set-url origin https://x-access-token:${{ secrets.JULIA_REPO_TOKEN }}@github.com/quadraturerules/QuadratureRulesDotOrg.jl
+          git push
+
   cpp-library:
     name: Build C++ source for release
     runs-on: ubuntu-22.04
@@ -174,6 +216,77 @@ jobs:
           path: library/c.build/quadraturerules-c-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
+  fortran90-library:
+    name: Build Fortran 90 source for release
+    runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py fortran90
+        name: Build Fortran 90 library
+      - run: |
+          cd library/fortran90.build
+          tar -cvf quadraturerules-fortran90-${{ needs.check-version.outputs.tag }}.tar.gz *
+        name: Make tar.gz of source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fotran90_source
+          path: library/fortran90.build/quadraturerules-fortran90-${{ needs.check-version.outputs.tag }}.tar.gz
+          retention-days: 1
+
+  fortran77-library:
+    name: Build Fortran 77 source for release
+    runs-on: ubuntu-22.04
+    if: needs.check-version.outputs.release == 'yes'
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py fortran77
+          cd fortran77.build
+          python -m fotran77punchcards quadraturerules.f quadraturerules.png --width 400 --row-size 8
+          python -m fotran77punchcards test.f test.png --width 400 --row-size 8
+        name: Build Fortran 77 library
+      - run: |
+          cd library/fortran77.build
+          tar -cvf quadraturerules-fortran77-${{ needs.check-version.outputs.tag }}.tar.gz *.png
+        name: Make tar.gz of source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fotran77_source
+          path: library/fortran77.build/quadraturerules-fortran77-${{ needs.check-version.outputs.tag }}.tar.gz
+          retention-days: 1
+
   make-release:
     name: Make release on GitHub
     runs-on: ubuntu-22.04
@@ -186,8 +299,11 @@ jobs:
       - check-version
       - python-library
       - rust-library
+      - julia-library
       - cpp-library
       - c-library
+      - fortran90-library
+      - fortran77-library
     steps:
       - name: Download C++ source
         uses: actions/download-artifact@v4
@@ -197,6 +313,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: c_source
+      - name: Download Fortran 90 source
+        uses: actions/download-artifact@v4
+        with:
+          name: fortran90_source
+      - name: Download Fortran 77 source
+        uses: actions/download-artifact@v4
+        with:
+          name: fortran77_source
 
       - name: Write version number into GITHUB_OUTPUT
         run: |
@@ -223,8 +347,13 @@ jobs:
           files: |
             quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz
             quadraturerules-c-${{ steps.v.outputs.version }}.tar.gz
+            quadraturerules-fortran90-${{ steps.v.outputs.version }}.tar.gz
+            quadraturerules-fortran77-${{ steps.v.outputs.version }}.tar.gz
           body: |
+            - [C source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-c-${{ steps.v.outputs.version }}.tar.gz)
+            - [C++ source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
+            - [Fortran 77 source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-fortran77-${{ steps.v.outputs.version }}.tar.gz)
+            - [Fortran 90 source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-fortran90-${{ steps.v.outputs.version }}.tar.gz)
+            - [Julia package](https://juliahub.com/ui/Packages/General/TabulatedQuadratureRules)
             - [Python package](https://pypi.org/project/quadraturerules/${{ steps.v.outputs.version }}/)
             - [Rust crate](https://crates.io/crates/quadraturerules/${{ steps.v.outputs.ersion }})
-            - [C++ source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-cpp-${{ steps.v.outputs.version }}.tar.gz)
-            - [C source](https://github.com/quadraturerules/quadraturerules/releases/download/${{ steps.v.outputs.version }}/quadraturerules-c-${{ steps.v.outputs.version }}.tar.gz)

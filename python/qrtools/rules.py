@@ -13,7 +13,7 @@ PointND = typing.Tuple[float, ...]
 Point2D = typing.Tuple[float, float]
 
 
-def sort_name(domain: str | None):
+def sort_name(domain: str | None) -> str:
     """Get the name to use when sorting domains."""
     if domain is None:
         return ""
@@ -46,7 +46,7 @@ def dim(domain: str | None) -> int:
     return 10
 
 
-def rounded(n: float, dp: int = 5):
+def rounded(n: float, dp: int = 5) -> str:
     """Round to a number of decimal places."""
     i, j = str(n).split(".")
     return f"{i}.{j[:dp]}"
@@ -69,8 +69,7 @@ def to_2d(point: PointND, origin: Point2D, axes: typing.List[Point2D]) -> Point2
 def from_barycentric(point: PointND, domain: typing.List[PointND]) -> PointND:
     """Map from barycentric coordinates to a point on a domain."""
     return tuple(
-        sum(p * d[i] for p, d in zip(point, domain))
-        for i in range(len(domain[0]))
+        sum(p * d[i] for p, d in zip(point, domain)) for i in range(len(domain[0]))
     )
 
 
@@ -79,8 +78,8 @@ class QRule:
 
     def __init__(
         self,
-        domain: typing.Optional[str],
-        order: typing.Optional[int],
+        domain: str | None,
+        order: int | None,
         rule: str,
         npoints: int,
     ):
@@ -88,7 +87,7 @@ class QRule:
         self.domain = domain
         self.order = order
         self._rule = rule
-        self.family: typing.Optional[QRuleFamily] = None
+        self.family: QRuleFamily | None = None
         self.npoints = npoints
 
     def title(self, format: str = "default") -> str:
@@ -130,7 +129,9 @@ class QRule:
                 try:
                     from cairosvg import svg2png
                 except ImportError:
-                    raise ImportError("CairoSVG is needed for plotting PNGs (pip install CairoSVG)")
+                    raise ImportError(
+                        "CairoSVG is needed for plotting PNGs (pip install CairoSVG)"
+                    )
                 svg = filename[:-4] + ".svg"
                 self.image(svg)
                 with open(svg) as f:
@@ -150,7 +151,7 @@ class QRule:
         """Make TikZ image of rule."""
         raise NotImplementedError()
 
-    def save_html_table(self, filename):
+    def save_html_table(self, filename: str):
         """Save HTML table of points and weights to a file."""
         raise NotImplementedError()
 
@@ -227,8 +228,8 @@ class QRuleSingle(QRule):
 
     def __init__(
         self,
-        domain: typing.Optional[str],
-        order: typing.Optional[int],
+        domain: str | None,
+        order: int | None,
         points: typing.List[typing.List[float]],
         weights: typing.List[float],
         rule: str,
@@ -238,7 +239,9 @@ class QRuleSingle(QRule):
         self.weights = weights
         super().__init__(domain, order, rule, len(points))
 
-    def _get_image_config(self) -> typing.Tuple[
+    def _get_image_config(
+        self,
+    ) -> typing.Tuple[
         typing.Tuple[int, int],
         typing.List[PointND],
         typing.List[typing.List[int]],
@@ -268,7 +271,10 @@ class QRuleSingle(QRule):
             case "tetrahedron":
                 size = (205, 209)
                 domain = [
-                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)
+                    (0.0, 0.0, 0.0),
+                    (1.0, 0.0, 0.0),
+                    (0.0, 1.0, 0.0),
+                    (0.0, 0.0, 1.0),
                 ]
                 domain_lines = [[0, 1, 2, 0], [0, 3, 1], [3, 2]]
                 origin = (10.0, 168.5)
@@ -276,18 +282,34 @@ class QRuleSingle(QRule):
             case "hexahedron":
                 size = (223, 223)
                 domain = [
-                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
-                    (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0), (1.0, 1.0, 1.0),
+                    (0.0, 0.0, 0.0),
+                    (1.0, 0.0, 0.0),
+                    (0.0, 1.0, 0.0),
+                    (1.0, 1.0, 0.0),
+                    (0.0, 0.0, 1.0),
+                    (1.0, 0.0, 1.0),
+                    (0.0, 1.0, 1.0),
+                    (1.0, 1.0, 1.0),
                 ]
-                domain_lines = [[0, 1, 3, 2, 0], [4, 5, 7, 6, 4],
-                                [0, 4], [1, 5], [2, 6], [3, 7]]
+                domain_lines = [
+                    [0, 1, 3, 2, 0],
+                    [4, 5, 7, 6, 4],
+                    [0, 4],
+                    [1, 5],
+                    [2, 6],
+                    [3, 7],
+                ]
                 origin = (10.0, 192.0)
                 axes = [(126.0, 21.0), (77.0, -49.0), (0.0, -133.0)]
             case "triangular prism":
                 size = (167, 213)
                 domain = [
-                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0),
-                    (0.0, 0.0, 1.0), (1.0, 0.0, 1.0), (0.0, 1.0, 1.0),
+                    (0.0, 0.0, 0.0),
+                    (1.0, 0.0, 0.0),
+                    (0.0, 1.0, 0.0),
+                    (0.0, 0.0, 1.0),
+                    (1.0, 0.0, 1.0),
+                    (0.0, 1.0, 1.0),
                 ]
                 domain_lines = [[0, 1, 2, 0], [3, 4, 5, 3], [0, 3], [1, 4], [2, 5]]
                 origin = (10.0, 182.0)
@@ -295,7 +317,10 @@ class QRuleSingle(QRule):
             case "square-based pyramid":
                 size = (223, 164)
                 domain = [
-                    (0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 0.0),
+                    (0.0, 0.0, 0.0),
+                    (1.0, 0.0, 0.0),
+                    (0.0, 1.0, 0.0),
+                    (1.0, 1.0, 0.0),
                     (0.0, 0.0, 1.0),
                 ]
                 domain_lines = [[0, 1, 3, 2, 0], [0, 4, 1], [2, 4, 3]]
@@ -314,25 +339,33 @@ class QRuleSingle(QRule):
         size, domain, domain_lines, origin, axes = self._get_image_config()
 
         with open(filename, "w") as f:
-            f.write(f"<svg width='{size[0]}' height='{size[1]}' "
-                    "xmlns='http://www.w3.org/2000/svg' "
-                    "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
+            f.write(
+                f"<svg width='{size[0]}' height='{size[1]}' "
+                "xmlns='http://www.w3.org/2000/svg' "
+                "xmlns:xlink='http://www.w3.org/1999/xlink'>\n"
+            )
             f.write(svg_license(f"{self.family.name()} order {self.order}"))
             for lines in domain_lines:
                 for a_, b_ in zip(lines[:-1], lines[1:]):
                     a = to_2d(domain[a_], origin, axes)
                     b = to_2d(domain[b_], origin, axes)
-                    f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
-                            "stroke='#000000' stroke-width='1.5' "
-                            "stroke-linecap='round' />\n")
+                    f.write(
+                        f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
+                        "stroke='#000000' stroke-width='1.5' "
+                        "stroke-linecap='round' />\n"
+                    )
             for p_, w in zip(self.points, self.weights):
                 p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
                 if w > 0:
-                    f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w ** 0.5}' "
-                            "fill='red' />\n")
+                    f.write(
+                        f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w**0.5}' "
+                        "fill='red' />\n"
+                    )
                 else:
-                    f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
-                            "fill='blue' />\n")
+                    f.write(
+                        f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
+                        "fill='blue' />\n"
+                    )
             f.write("</svg>\n")
 
     def tikz_image(self, filename: str):
@@ -349,54 +382,72 @@ class QRuleSingle(QRule):
                 for a_, b_ in zip(lines[:-1], lines[1:]):
                     a = to_2d(domain[a_], origin, axes)
                     b = to_2d(domain[b_], origin, axes)
-                    f.write(f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) -- ({b[0]},{b[1]});\n")
+                    f.write(
+                        f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) -- ({b[0]},{b[1]});\n"
+                    )
             for p_, w in zip(self.points, self.weights):
                 p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
                 if w > 0:
-                    f.write(f"\\fill[red] ({p[0]},{p[1]}) circle ({9 * w ** 0.5});\n")
+                    f.write(f"\\fill[red] ({p[0]},{p[1]}) circle ({9 * w**0.5});\n")
                 else:
-                    f.write(f"\\fill[blue] ({p[0]},{p[1]}) circle ({9 * (-w) ** 0.5});\n")
+                    f.write(
+                        f"\\fill[blue] ({p[0]},{p[1]}) circle ({9 * (-w) ** 0.5});\n"
+                    )
             f.write("\\end{tikzpicture}\n")
 
-    def save_html_table(self, filename):
+    def save_html_table(self, filename: str):
         """Save HTML table of points and weights to a file."""
         assert filename.endswith(".html")
         filename_root = filename[:-5]
         filename_root_local = html_local(filename_root)
 
         assert self._rule.startswith("--\n")
+        assert self.family is not None
         assert self.family._qr.endswith("\n")
         with open(f"{filename_root}.rule", "w") as f:
             f.write(f"--\n{self.family._qr}{self._rule[3:]}")
 
         with open(filename, "w") as f:
             f.write(self.barycentric_info())
-            f.write("<div class='small-note'>"
-                    f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>")
+            f.write(
+                "<div class='small-note'>"
+                f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>"
+            )
             with open(f"{filename_root}.csv", "w") as f2:
-                f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
+                f2.write(
+                    ",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])])
+                )
                 f2.write(",weight\n")
                 for p, w in zip(self.points, self.weights):
                     f2.write(",".join(f"{i}" for i in p) + f",{w}\n")
-            f.write("<div class='small-note'>"
-                    f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>")
+            f.write(
+                "<div class='small-note'>"
+                f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>"
+            )
             with open(f"{filename_root}.json", "w") as f2:
                 f2.write('{"points": [')
-                f2.write(", ".join("[" + ", ".join(
-                    f"{i}" for i in p) + "]" for p in self.points))
+                f2.write(
+                    ", ".join(
+                        "[" + ", ".join(f"{i}" for i in p) + "]" for p in self.points
+                    )
+                )
                 f2.write('], "weights": [')
                 f2.write(", ".join(f"{w}" for w in self.weights))
-                f2.write(']}')
-            f.write("<div class='small-note'>"
-                    f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>")
+                f2.write("]}")
+            f.write(
+                "<div class='small-note'>"
+                f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>"
+            )
             f.write("<br />\n")
             f.write("<table class='points'>\n")
             f.write("<thead>")
-            f.write(f"<tr><td colspan='{len(self.points[0])}'>Point</td><td>Weight</td></tr>")
+            f.write(
+                f"<tr><td colspan='{len(self.points[0])}'>Point</td><td>Weight</td></tr>"
+            )
             f.write("</thead>\n")
             for n, (p, w) in enumerate(zip(self.points, self.weights)):
                 if n >= 200:
-                    f.write(self.first200(1+len(self.points[0])))
+                    f.write(self.first200(1 + len(self.points[0])))
                     break
                 f.write("<tr>")
                 for i in p:
@@ -404,20 +455,36 @@ class QRuleSingle(QRule):
                 f.write(f"<td>{rounded(w)}</td></tr>\n")
             f.write("</table>\n")
 
-    def points_as_list(self, open: str = "[", close: str = "]") -> str:
+    def points_as_list(
+        self,
+        open: str = "[",
+        close: str = "]",
+        outer_joiner: str = ", ",
+        inner_joiner: str = ", ",
+    ) -> str:
         """Get a list of points as a string."""
-        return open + ", ".join([
-            open + ", ".join([f"{c}" for c in p]) + close
-            for p in self.points
-        ]) + close
+        return (
+            open
+            + outer_joiner.join(
+                [
+                    open + inner_joiner.join([f"{c}" for c in p]) + close
+                    for p in self.points
+                ]
+            )
+            + close
+        )
 
-    def points_as_flat_list(self, open: str = "[", close: str = "]") -> str:
+    def points_as_flat_list(
+        self, open: str = "[", close: str = "]", joiner: str = ", "
+    ) -> str:
         """Get a list of flat points as a string."""
-        return open + ", ".join([f"{c}" for p in self.points for c in p]) + close
+        return open + joiner.join([f"{c}" for p in self.points for c in p]) + close
 
-    def weights_as_list(self, open: str = "[", close: str = "]") -> str:
+    def weights_as_list(
+        self, open: str = "[", close: str = "]", joiner: str = ", "
+    ) -> str:
         """Get a list of flat points as a string."""
-        return open + ", ".join([f"{w}" for w in self.weights]) + close
+        return open + joiner.join([f"{w}" for w in self.weights]) + close
 
 
 class QRuleDouble(QRule):
@@ -425,8 +492,8 @@ class QRuleDouble(QRule):
 
     def __init__(
         self,
-        domain: typing.Optional[str],
-        order: typing.Optional[int],
+        domain: str | None,
+        order: int | None,
         first_points: typing.List[typing.List[float]],
         second_points: typing.List[typing.List[float]],
         weights: typing.List[float],
@@ -438,7 +505,9 @@ class QRuleDouble(QRule):
         self.weights = weights
         super().__init__(domain, order, rule, len(first_points))
 
-    def _get_image_config(self) -> typing.Tuple[
+    def _get_image_config(
+        self,
+    ) -> typing.Tuple[
         typing.Tuple[int, int],
         typing.List[PointND],
         Point2D,
@@ -458,7 +527,10 @@ class QRuleDouble(QRule):
                 domain2 = domain1
                 origin2 = origin1
                 axes2 = axes1
-                domain_lines: typing.List[typing.List[typing.List[int]]] = [[[0, 1, 2, 0]], []]
+                domain_lines: typing.List[typing.List[typing.List[int]]] = [
+                    [[0, 1, 2, 0]],
+                    [],
+                ]
             case "edge-adjacent triangles":
                 size = (368, 220)
                 domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
@@ -511,8 +583,8 @@ class QRuleDouble(QRule):
                 axes1 = [(0.0, -200.0), (-173.2, -100.0)]
                 domain2 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0)]
                 origin2 = origin1
-                axes2 = [(200.0, 0.0), (0.0, -200.0)]
-                domain_lines = [[[0, 1, 2, 0]], [[0, 1, 3, 2]]]
+                axes2 = [(0.0, -200.0), (200.0, 0.0)]
+                domain_lines = [[[0, 1, 2, 0]], [[0, 2, 3, 1]]]
             case "vertex-adjacent triangle and quadrilateral":
                 size = (394, 220)
                 domain1 = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
@@ -532,14 +604,16 @@ class QRuleDouble(QRule):
         assert not os.path.isfile(filename)
         assert self.family is not None
 
-        (
-            size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines
-        ) = self._get_image_config()
+        (size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines) = (
+            self._get_image_config()
+        )
 
         with open(filename, "w") as f:
-            f.write(f"<svg width='{size[0]}' height='{size[1]}' "
-                    "xmlns='http://www.w3.org/2000/svg' "
-                    "xmlns:xlink='http://www.w3.org/1999/xlink'>\n")
+            f.write(
+                f"<svg width='{size[0]}' height='{size[1]}' "
+                "xmlns='http://www.w3.org/2000/svg' "
+                "xmlns:xlink='http://www.w3.org/1999/xlink'>\n"
+            )
             f.write(svg_license(f"{self.family.name()} order {self.order}"))
             for domain, origin, axes, dlines in [
                 (domain1, origin1, axes1, domain_lines[0]),
@@ -549,28 +623,40 @@ class QRuleDouble(QRule):
                     for a_, b_ in zip(lines[:-1], lines[1:]):
                         a = to_2d(domain[a_], origin, axes)
                         b = to_2d(domain[b_], origin, axes)
-                        f.write(f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
-                                "stroke='#000000' stroke-width='1.5' "
-                                "stroke-linecap='round' />\n")
+                        f.write(
+                            f"<line x1='{a[0]}' y1='{a[1]}' x2='{b[0]}' y2='{b[1]}' "
+                            "stroke='#000000' stroke-width='1.5' "
+                            "stroke-linecap='round' />\n"
+                        )
             for p1_, p2_ in zip(self.first_points, self.second_points):
                 p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
                 p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
-                f.write(f"<line x1='{p1[0]}' y1='{p1[1]}' x2='{p2[0]}' y2='{p2[1]}' "
-                        "stroke='#ACACAC' stroke-width='0.5' "
-                        "stroke-linecap='round' />\n")
+                f.write(
+                    f"<line x1='{p1[0]}' y1='{p1[1]}' x2='{p2[0]}' y2='{p2[1]}' "
+                    "stroke='#ACACAC' stroke-width='0.5' "
+                    "stroke-linecap='round' />\n"
+                )
             for p1_, p2_, w in zip(self.first_points, self.second_points, self.weights):
                 p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
                 p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
                 if w > 0:
-                    f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * w ** 0.5}' "
-                            "fill='red' />")
-                    f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * w ** 0.5}' "
-                            "fill='red' />")
+                    f.write(
+                        f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * w**0.5}' "
+                        "fill='red' />"
+                    )
+                    f.write(
+                        f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * w**0.5}' "
+                        "fill='red' />"
+                    )
                 else:
-                    f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * (-w) ** 0.5}' "
-                            "fill='blue' />")
-                    f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * (-w) ** 0.5}' "
-                            "fill='blue' />")
+                    f.write(
+                        f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * (-w) ** 0.5}' "
+                        "fill='blue' />"
+                    )
+                    f.write(
+                        f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * (-w) ** 0.5}' "
+                        "fill='blue' />"
+                    )
             f.write("</svg>")
 
     def tikz_image(self, filename: str):
@@ -578,9 +664,9 @@ class QRuleDouble(QRule):
         assert filename.endswith(".tex")
         assert not os.path.isfile(filename)
 
-        (
-            size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines
-        ) = self._get_image_config()
+        (size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines) = (
+            self._get_image_config()
+        )
 
         with open(filename, "w") as f:
             f.write(tikz_license())
@@ -593,75 +679,113 @@ class QRuleDouble(QRule):
                     for a_, b_ in zip(lines[:-1], lines[1:]):
                         a = to_2d(domain[a_], origin, axes)
                         b = to_2d(domain[b_], origin, axes)
-                        f.write(f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) "
-                                f"-- ({b[0]},{b[1]});\n")
+                        f.write(
+                            f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) "
+                            f"-- ({b[0]},{b[1]});\n"
+                        )
             for p1_, p2_ in zip(self.first_points, self.second_points):
                 p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
                 p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
-                f.write(f"\\draw[dashed,gray,line width=0.5pt] ({p1[0]},{p1[1]}) "
-                        f"-- ({p2[0]},{p2[1]});\n")
+                f.write(
+                    f"\\draw[dashed,gray,line width=0.5pt] ({p1[0]},{p1[1]}) "
+                    f"-- ({p2[0]},{p2[1]});\n"
+                )
             for p1_, p2_, w in zip(self.first_points, self.second_points, self.weights):
                 p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
                 p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
                 if w > 0:
-                    f.write(f"\\fill[red] ({p1[0]},{p1[1]}) circle ({9 * w ** 0.5});\n")
-                    f.write(f"\\fill[red] ({p2[0]},{p2[1]}) circle ({9 * w ** 0.5});\n")
+                    f.write(f"\\fill[red] ({p1[0]},{p1[1]}) circle ({9 * w**0.5});\n")
+                    f.write(f"\\fill[red] ({p2[0]},{p2[1]}) circle ({9 * w**0.5});\n")
                 else:
-                    f.write(f"\\fill[blue] ({p1[0]},{p1[1]}) circle ({9 * (-w) ** 0.5});\n")
-                    f.write(f"\\fill[blue] ({p2[0]},{p2[1]}) circle ({9 * (-w) ** 0.5});\n")
+                    f.write(
+                        f"\\fill[blue] ({p1[0]},{p1[1]}) circle ({9 * (-w) ** 0.5});\n"
+                    )
+                    f.write(
+                        f"\\fill[blue] ({p2[0]},{p2[1]}) circle ({9 * (-w) ** 0.5});\n"
+                    )
             f.write("\\end{tikzpicture}\n")
 
-    def save_html_table(self, filename):
+    def save_html_table(self, filename: str):
         """Save HTML table of points and weights to a file."""
         assert filename.endswith(".html")
         filename_root = filename[:-5]
         filename_root_local = html_local(filename_root)
 
         assert self._rule.startswith("--\n")
+        assert self.family is not None
         assert self.family._qr.endswith("\n")
         with open(f"{filename_root}.rule", "w") as f:
             f.write(f"--\n{self.family._qr}{self._rule[3:]}")
 
         with open(filename, "w") as f:
             f.write(self.barycentric_info())
-            f.write("<div class='small-note'>"
-                    f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>")
+            f.write(
+                "<div class='small-note'>"
+                f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>"
+            )
             with open(f"{filename_root}.csv", "w") as f2:
-                f2.write(",".join([f"point0[{i}]" for i, _ in enumerate(self.first_points[0])]))
+                f2.write(
+                    ",".join(
+                        [f"point0[{i}]" for i, _ in enumerate(self.first_points[0])]
+                    )
+                )
                 f2.write(",")
-                f2.write(",".join([f"point1[{i}]" for i, _ in enumerate(self.second_points[0])]))
+                f2.write(
+                    ",".join(
+                        [f"point1[{i}]" for i, _ in enumerate(self.second_points[0])]
+                    )
+                )
                 f2.write(",weight\n")
-                for p1, p2, w in zip(self.first_points, self.second_points, self.weights):
-                    f2.write(",".join(f"{i}" for i in p1) + "," + ",".join(
-                        f"{i}" for i in p2) + f",{w}\n")
-            f.write("<div class='small-note'>"
-                    f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>")
+                for p1, p2, w in zip(
+                    self.first_points, self.second_points, self.weights
+                ):
+                    f2.write(
+                        ",".join(f"{i}" for i in p1)
+                        + ","
+                        + ",".join(f"{i}" for i in p2)
+                        + f",{w}\n"
+                    )
+            f.write(
+                "<div class='small-note'>"
+                f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>"
+            )
             with open(f"{filename_root}.json", "w") as f2:
                 f2.write('{"points": [')
-                f2.write(", ".join(
-                    "[[" + ", ".join(
-                        f"{i}" for i in p1
-                    ) + "], [" + ", ".join(f"{i}" for i in p2) + "]]"
-                    for p1, p2 in zip(self.first_points, self.second_points)
-                ))
+                f2.write(
+                    ", ".join(
+                        "[["
+                        + ", ".join(f"{i}" for i in p1)
+                        + "], ["
+                        + ", ".join(f"{i}" for i in p2)
+                        + "]]"
+                        for p1, p2 in zip(self.first_points, self.second_points)
+                    )
+                )
                 f2.write('], "weights": [')
                 f2.write(", ".join(f"{w}" for w in self.weights))
-                f2.write(']}')
-            f.write("<div class='small-note'>"
-                    f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>")
+                f2.write("]}")
+            f.write(
+                "<div class='small-note'>"
+                f"<a href='{filename_root_local}.json'>&darr; Download as JSON</a></div>"
+            )
             f.write("<br />\n")
             f.write("<table class='points'>\n")
             f.write("<thead>")
-            f.write(f"<tr><td colspan='{len(self.first_points[0])}'>Point</td>"
-                    f"<td colspan='{len(self.second_points[0])}' class='left-border'>Point</td>"
-                    "<td>Weight</td></tr>")
+            f.write(
+                f"<tr><td colspan='{len(self.first_points[0])}'>Point</td>"
+                f"<td colspan='{len(self.second_points[0])}' class='left-border'>Point</td>"
+                "<td>Weight</td></tr>"
+            )
             f.write("</thead>\n")
             for n, (p1, p2, w) in enumerate(
                 zip(self.first_points, self.second_points, self.weights)
             ):
                 if n >= 200:
-                    f.write(self.first200(
-                        1 + len(self.first_points[0]) + len(self.second_points[0])))
+                    f.write(
+                        self.first200(
+                            1 + len(self.first_points[0]) + len(self.second_points[0])
+                        )
+                    )
                     break
                 f.write("<tr>")
                 for i in p1:
@@ -672,31 +796,65 @@ class QRuleDouble(QRule):
                 f.write(f"<td>{rounded(w)}</td></tr>\n")
             f.write("</table>\n")
 
-    def first_points_as_list(self, open: str = "[", close: str = "]") -> str:
+    def first_points_as_list(
+        self,
+        open: str = "[",
+        close: str = "]",
+        outer_joiner: str = ", ",
+        inner_joiner: str = ", ",
+    ) -> str:
         """Get a list of first points as a string."""
-        return open + ", ".join([
-            open + ", ".join([f"{c}" for c in p]) + close
-            for p in self.first_points
-        ]) + close
+        return (
+            open
+            + outer_joiner.join(
+                [
+                    open + inner_joiner.join([f"{c}" for c in p]) + close
+                    for p in self.first_points
+                ]
+            )
+            + close
+        )
 
-    def first_points_as_flat_list(self, open: str = "[", close: str = "]") -> str:
+    def first_points_as_flat_list(
+        self, open: str = "[", close: str = "]", joiner: str = ", "
+    ) -> str:
         """Get a list of flat first points as a string."""
-        return open + ", ".join([f"{c}" for p in self.first_points for c in p]) + close
+        return (
+            open + joiner.join([f"{c}" for p in self.first_points for c in p]) + close
+        )
 
-    def second_points_as_list(self, open: str = "[", close: str = "]") -> str:
+    def second_points_as_list(
+        self,
+        open: str = "[",
+        close: str = "]",
+        outer_joiner: str = ", ",
+        inner_joiner: str = ", ",
+    ) -> str:
         """Get a list of second points as a string."""
-        return open + ", ".join([
-            open + ", ".join([f"{c}" for c in p]) + close
-            for p in self.second_points
-        ]) + close
+        return (
+            open
+            + outer_joiner.join(
+                [
+                    open + inner_joiner.join([f"{c}" for c in p]) + close
+                    for p in self.second_points
+                ]
+            )
+            + close
+        )
 
-    def second_points_as_flat_list(self, open: str = "[", close: str = "]") -> str:
+    def second_points_as_flat_list(
+        self, open: str = "[", close: str = "]", joiner: str = ", "
+    ) -> str:
         """Get a list of flat second points as a string."""
-        return open + ", ".join([f"{c}" for p in self.second_points for c in p]) + close
+        return (
+            open + joiner.join([f"{c}" for p in self.second_points for c in p]) + close
+        )
 
-    def weights_as_list(self, open: str = "[", close: str = "]") -> str:
+    def weights_as_list(
+        self, open: str = "[", close: str = "]", joiner: str = ", "
+    ) -> str:
         """Get a list of flat points as a string."""
-        return open + ", ".join([f"{w}" for w in self.weights]) + close
+        return open + joiner.join([f"{w}" for w in self.weights]) + close
 
 
 class QRuleFamily:
@@ -751,7 +909,9 @@ class QRuleFamily:
             case "PascalCase":
                 return "".join([i[0].upper() + i[1:].lower() for i in parts])
             case "camelCase":
-                return parts[0].lower() + "".join([i[0].upper() + i[1:].lower() for i in parts[1:]])
+                return parts[0].lower() + "".join(
+                    [i[0].upper() + i[1:].lower() for i in parts[1:]]
+                )
             case "snake_case":
                 return "_".join([i.lower() for i in parts])
             case _:
@@ -851,13 +1011,15 @@ def load_rule(code: str) -> QRuleFamily:
                             points.append([float(i) for i in p.strip().split()])
                             weights.append(float(w))
 
-                        rules.append(QRuleSingle(
-                            metadata.get("domain"),
-                            metadata.get("order"),
-                            points,
-                            weights,
-                            content,
-                        ))
+                        rules.append(
+                            QRuleSingle(
+                                metadata.get("domain"),
+                                metadata.get("order"),
+                                points,
+                                weights,
+                                content,
+                            )
+                        )
                     case "double":
                         points1 = []
                         points2 = []
@@ -868,14 +1030,16 @@ def load_rule(code: str) -> QRuleFamily:
                             points2.append([float(i) for i in p2.strip().split()])
                             weights.append(float(w))
 
-                        rules.append(QRuleDouble(
-                            metadata.get("domain"),
-                            metadata.get("order"),
-                            points1,
-                            points2,
-                            weights,
-                            content,
-                        ))
+                        rules.append(
+                            QRuleDouble(
+                                metadata.get("domain"),
+                                metadata.get("order"),
+                                points1,
+                                points2,
+                                weights,
+                                content,
+                            )
+                        )
                     case _:
                         raise ValueError(f"Unsupported integral type: {itype}")
     rules.sort(key=lambda r: (dim(r.domain), sort_name(r.domain), r.order))

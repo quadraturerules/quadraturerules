@@ -1,7 +1,6 @@
 """Settings."""
 
 import os as _os
-import typing as _typing
 
 import yaml as _yaml
 from webtools import settings
@@ -15,7 +14,7 @@ pages_path = ""
 rules_path = ""
 html_path = ""
 
-github_token: _typing.Optional[str] = None
+github_token: str | None = None
 
 processes = 1
 
@@ -32,7 +31,7 @@ settings.repo = "quadraturerules/quadraturerules"
 settings.github_token = github_token
 
 
-def set_root_path(path):
+def set_root_path(path: str):
     """Set root path."""
     global root_path
     global website_path
@@ -73,19 +72,21 @@ def set_root_path(path):
         settings.html_path = html_path
 
 
-def set_html_path(path):
+def set_html_path(path: str):
     """Set HTML path."""
     global html_path
     html_path = path
     settings.html_path = path
 
 
-def set_github_token(token):
+def set_github_token(token: str):
     """Set GitHub token."""
     global github_token
     github_token = token
     settings.github_token = token
 
 
-if _os.path.isfile(_join(_os.path.dirname(_os.path.realpath(__file__)), "..", "..", "README.md")):
+if _os.path.isfile(
+    _join(_os.path.dirname(_os.path.realpath(__file__)), "..", "..", "README.md")
+):
     set_root_path(_join(_os.path.dirname(_os.path.realpath(__file__)), "..", ".."))

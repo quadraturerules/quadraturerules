@@ -1,0 +1,39 @@
+name: C library
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  c-library:
+    name: Build and test C library
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd python
+          python3 -m pip install .
+        name: Install qrtools
+
+      - run: |
+          cd library
+          python build.py c
+          cd c.build
+          gcc -c -Wall -Werror -fpic quadraturerules.c
+          gcc -shared -o libquadraturerules.so quadraturerules.o
+        name: Build C library
+
+      - run: |
+          cd library/c.build/test
+          gcc -L.. -Wall -o test test.c -lquadraturerules
+          LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.. ./test
+        name: Run C tests

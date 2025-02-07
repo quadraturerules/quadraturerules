@@ -1,0 +1,13 @@
+name = "TabulatedQuadratureRules"
+uuid = "3da39775-d94e-428b-a709-24e9ab7fe27d"
+authors = ["Matthew Scroggs"]
+version = "{{VERSION}}"
+
+[compat]
+julia = "1.6.7"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

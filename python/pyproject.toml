@@ -8,7 +8,7 @@ license = { file = "LICENSE" }
 authors = [
     { name = "Matthew Scroggs", email = "defelement@mscroggs.co.uk" }
 ]
-dependencies = ["PyGithub", "pytz", "website-build-tools", "ruff", "qr-generate"]
+dependencies = ["PyGithub", "pytz", "website-build-tools[f77]", "ruff", "qr-generate"]
 
 [project.optional-dependencies]
 optional = ["CairoSVG>=2.6.0"]
