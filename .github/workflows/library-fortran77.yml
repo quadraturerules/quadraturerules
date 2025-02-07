@@ -1,4 +1,4 @@
-name: Fortran 90 library
+name: Fortran 77 library
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   fortran-library:
-    name: Build and test Fortran 90 library
+    name: Build and test Fortran 77 library
     runs-on: ubuntu-22.04
     steps:
       - name: Set up Python
@@ -26,13 +26,13 @@ jobs:
 
       - run: |
           cd library
-          python build.py fortran90
-          cd fortran90.build
-          gfortran test.f90 -o test
+          python build.py fortran77
+          cd fortran77.build
+          gfortran test.f -o test -std=legacy
         name: Build Fortran library test
 
       - run: |
-          cd library/fortran90.build
+          cd library/fortran77.build
           ./test > output
           grep Test output
           if grep fail output

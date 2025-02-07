@@ -6,6 +6,7 @@ module quadraturerules
   implicit none
 
   public single_integral_quadrature
+  public double_integral_quadrature
   {{for D in domains}}
   public QR_{{D.PascalCaseName}}
   {{end for}}
@@ -27,13 +28,15 @@ contains
 
   subroutine single_integral_quadrature(rtype, domain, order, points, weights)
     {{for Q in rules}}
+    {{if Q.itype == single}}
     use {{Q.snake_case_name}}
+    {{end if}}
     {{end for}}
     implicit none
     integer, value :: rtype
     integer, value :: domain
     integer, value :: order
-    real, allocatable, intent(out) :: points(:,:)    
+    real, allocatable, intent(out) :: points(:,:)
     real, allocatable, intent(out) :: weights(:)
 
     {{for Q in rules}}
@@ -41,6 +44,31 @@ contains
     {{if Q.itype == single}}
     if (rtype == QR_{{Q.PascalCaseName}} .and. domain == QR_{{D.PascalCaseName}}) then
       call {{Q.abbrv_name}}_{{D.abbrv_name}}(order, points, weights)
+    end if
+    {{end if}}
+    {{end for}}
+    {{end for}}
+  end subroutine
+
+  subroutine double_integral_quadrature(rtype, domain, order, first_points, second_points, weights)
+    {{for Q in rules}}
+    {{if Q.itype == double}}
+    use {{Q.snake_case_name}}
+    {{end if}}
+    {{end for}}
+    implicit none
+    integer, value :: rtype
+    integer, value :: domain
+    integer, value :: order
+    real, allocatable, intent(out) :: first_points(:,:)
+    real, allocatable, intent(out) :: second_points(:,:)
+    real, allocatable, intent(out) :: weights(:)
+
+    {{for Q in rules}}
+    {{for D in domains}}
+    {{if Q.itype == double}}
+    if (rtype == QR_{{Q.PascalCaseName}} .and. domain == QR_{{D.PascalCaseName}}) then
+      call {{Q.abbrv_name}}_{{D.abbrv_name}}(order, first_points, second_points, weights)
     end if
     {{end if}}
     {{end for}}

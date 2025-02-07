@@ -1,0 +1,71 @@
+--
+template: Q in rules
+filename: {{Q.snake_case_name}}.f
+--
+      {{if Q.itype == single}}
+      SUBROUTINE {{Q.abbrv_name}}(dtype, order, pts, wts, npts, ptdim)
+      INTEGER dtype
+      INTEGER order
+      INTEGER ptdim
+      INTEGER npts
+      REAL pts
+      DIMENSION pts(0:ptdim, 0:npts)
+      REAL wts
+      DIMENSION wts(0:npts)
+
+      {{for D in domains}}
+      {{for R in Q.rules}}
+      {{if R.domain == D.name}}
+      IF (dtype .EQ. {{D.index}} .AND. order .EQ. {{R.order}}) THEN
+      {{for p in R.points}}
+      {{for c in p}}
+      pts({{c.index}},{{p.index}}) = {{c}}
+      {{end for}}
+      {{end for}}
+      {{for w in R.weights}}
+      wts({{w.index}}) = {{w}}
+      {{end for}}
+      END IF
+      {{end if}}
+      {{end for}}
+      {{end for}}
+      END
+      {{end if}}
+
+      {{if Q.itype == double}}
+      SUBROUTINE {{Q.abbrv_name}}(dtype, order, p1, p2, wts, npts, p1d, p2d)
+      INTEGER dtype
+      INTEGER order
+      INTEGER p1d
+      INTEGER p2d
+      INTEGER npts
+      REAL p1
+      DIMENSION p1(0:p1d, 0:npts)
+      REAL p2
+      DIMENSION p2(0:p2d, 0:npts)
+      REAL wts
+      DIMENSION wts(0:npts)
+
+      {{for D in domains}}
+      {{for R in Q.rules}}
+      {{if R.domain == D.name}}
+      IF (dtype .EQ. {{D.index}} .AND. order .EQ. {{R.order}}) THEN
+      {{for p in R.first_points}}
+      {{for c in p}}
+      p1({{c.index}},{{p.index}}) = {{c}}
+      {{end for}}
+      {{end for}}
+      {{for p in R.second_points}}
+      {{for c in p}}
+      p2({{c.index}},{{p.index}}) = {{c}}
+      {{end for}}
+      {{end for}}
+      {{for w in R.weights}}
+      wts({{w.index}}) = {{w}}
+      {{end for}}
+      END IF
+      {{end if}}
+      {{end for}}
+      {{end for}}
+      END
+      {{end if}}
