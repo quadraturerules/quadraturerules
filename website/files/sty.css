@@ -33,7 +33,7 @@ a.toggler {font-size:80%}
 h2 {margin-top:50px}
 h1, h2, h3, h4, h5, h6 {font-family: 'Convergence', sans-serif;font-weight:400;color:var(--blue)}
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {text-decoration:none}
-body, p {font-family:sans}
+body, p {font-family:sans-serif}
 p {text-align:justify}
 
 
