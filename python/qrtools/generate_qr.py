@@ -11,7 +11,6 @@ abbrv_names: typing.Dict[str, str] = {}
 
 def get_abbrv_name(long_name: str) -> str:
     """Get an abbreviated name."""
-    global abbrv_names
     if long_name not in abbrv_names:
         n = long_name.lower()
         short_name = ""
