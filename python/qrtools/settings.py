@@ -40,7 +40,6 @@ def set_root_path(path: str):
     global pages_path
     global rules_path
     global html_path
-    global site_data
 
     root_path = path
     website_path = _join(root_path, "website")
