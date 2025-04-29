@@ -1,0 +1,17 @@
+name: closed Newton--Cotes
+integral-type: single
+integrand: f(x)
+notes:
+  - Order 1 closed Newton--Cotes is the trapezium rule
+  - Order 2 closed Newton--Cotes is Simpson's rule
+  - Order 3 closed Newton--Cotes is Simpson's 3/8 rule
+  - Order 4 closed Newton--Cotes is Boole's rule
+references:
+  - title: The Newton--Cotes formulae of integration
+    author:
+      - Whittaker, Edmund
+      - Robinson, G.
+    booktitle: "The Calculus of Observations: A Treatise on Numerical Mathematics"
+    year: 1924
+    pagestart: 152
+    pageend: 156
