@@ -44,7 +44,7 @@ using quadraturerules;
 auto [points, weights] = single_integral_quadrature(
     QuadratureRule::XiaoGimbutas,
     Domain::Triangle,
-    3,
+    3
 );
 ```
 
