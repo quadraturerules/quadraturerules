@@ -246,7 +246,7 @@ jobs:
         name: Make tar.gz of source
       - uses: actions/upload-artifact@v4
         with:
-          name: fotran90_source
+          name: fortran90_source
           path: library/fortran90.build/quadraturerules-fortran90-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
@@ -275,8 +275,8 @@ jobs:
           cd library
           python3 build.py fortran77
           cd fortran77.build
-          python3 -m fotran77punchcards quadraturerules.f quadraturerules.png --width 400 --row-size 8
-          python3 -m fotran77punchcards test.f test.png --width 400 --row-size 8
+          python3 -m fortran77punchcards quadraturerules.f quadraturerules.png --width 400 --row-size 8
+          python3 -m fortran77punchcards test.f test.png --width 400 --row-size 8
         name: Build Fortran 77 library
       - run: |
           cd library/fortran77.build
@@ -284,7 +284,7 @@ jobs:
         name: Make tar.gz of source
       - uses: actions/upload-artifact@v4
         with:
-          name: fotran77_source
+          name: fortran77_source
           path: library/fortran77.build/quadraturerules-fortran77-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
