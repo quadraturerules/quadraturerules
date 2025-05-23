@@ -7,6 +7,7 @@ def test_numbering():
     folder = join(
         os.path.dirname(os.path.realpath(__file__)),
         "..",
+        "..",
         "rules",
     )
     qr_files = []
@@ -28,12 +29,14 @@ def test_version():
     folder = join(
         os.path.dirname(os.path.realpath(__file__)),
         "..",
+        "..",
         "rules",
     )
     v = max(int(file[1:-3]) for file in os.listdir(folder) if file.endswith(".qr"))
 
     with open(join(
         os.path.dirname(os.path.realpath(__file__)),
+        "..",
         "..",
         "VERSION",
     )) as f:

@@ -21,21 +21,17 @@ jobs:
 
       - run: |
           cd python
-          python3 -m pip install .[optional]
+          python3 -m pip install .[optional,test,lint]
         name: Install qrtools
 
-      - run: python3 -m pip install flake8 mypy pydocstyle isort
-        name: Install linting tools
       - run: |
           python3 -m flake8 python
-          python3 -m flake8 test
           python3 -m flake8 library/build.py
           cd website
           python3 -m flake8 .
         name: Flake8 checks
       - run: |
           python3 -m pydocstyle python
-          python3 -m pydocstyle test
           python3 -m pydocstyle library/build.py
           cd website
           python3 -m pydocstyle .
@@ -47,8 +43,7 @@ jobs:
           python3 -m mypy --install-types --non-interactive .
         name: mypy checks
       - run: |
-          python3 -m isort python
-          python3 -m isort --check test
+          python3 -m isort --check python
           python3 -m isort --check library/build.py
           cd website
           python3 -m isort --check .
@@ -117,10 +112,9 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           cd python
-          python3 -m pip install .[optional]
+          python3 -m pip install .[optional,test]
         name: Install qrtools
 
       - run: |
-          python3 -m pip install pytest
-          python3 -m pytest test
+          python3 -m pytest python/test
         name: Run tests with pytest
