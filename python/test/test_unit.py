@@ -8,6 +8,7 @@ from webtools.tools import join
 folder = join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
+    "..",
     "rules",
 )
 rules = []
