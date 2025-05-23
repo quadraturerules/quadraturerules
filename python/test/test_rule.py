@@ -31,3 +31,10 @@ def test_cell_has_unit_volume(family, rule):
     with open(join(folder, family, rule)) as f:
         volume = sum(float(p.split(" | ")[1]) for p in f.read().split("--")[2].strip().split("\n"))
     assert np.isclose(volume, 1.0)
+
+
+@pytest.mark.parametrize(("family", "rule"), rules)
+def test_no_standard_form(family, rule):
+    with open(join(folder, family, rule)) as f:
+        for p in f.read().split("--")[2].strip().split("\n"):
+            assert "e" not in p
