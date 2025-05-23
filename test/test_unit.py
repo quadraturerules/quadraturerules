@@ -1,8 +1,8 @@
-import numpy as np
 import os
+
+import numpy as np
 import pytest
 import yaml
-
 from webtools.tools import join
 
 folder = join(
