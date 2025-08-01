@@ -53,7 +53,7 @@ jobs:
         run: |
           curl -X POST \
             -H 'Accept: application/vnd.github+json' \
-            -H 'Authorisation: Bearer ${{ secrets.JULIA_REPO_TOKEN }}' \
+            -H 'Authorisation: token ${{ secrets.JULIA_REPO_TOKEN }}' \
             https://api.github.com/repos/quadraturerules/TabulatedQuadratureRules.jl/releases \
             -d '{"tag_name": "${{ needs.check-version.outputs.tag }}",
                  "target_commitish": "main",
