@@ -20,7 +20,7 @@ pub fn {{Q.snake_case_name}}(
             {{R.order}} => Ok((vec!{{R.points_as_flat_list}}, vec!{{R.weights_as_list}})),
             {{end if}}
             {{end for}}
-            _ => Err("Invalid order: {order}"),
+            _ => Err(format!("Invalid order: {order}")),
         }
         {{end for}}
     }
@@ -40,7 +40,7 @@ pub fn {{Q.snake_case_name}}(
             {{R.order}} => Ok((vec!{{R.first_points_as_flat_list}}, vec!{{R.second_points_as_flat_list}}, vec!{{R.weights_as_list}})),
             {{end if}}
             {{end for}}
-            _ => Err("Invalid order: {order}"),
+            _ => Err(format!("Invalid order: {order}")),
         }
         {{end for}}
     }
