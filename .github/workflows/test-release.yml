@@ -16,6 +16,31 @@ jobs:
       id-token: write
       contents: write
 
+    steps:
+    - name: Pull
+      run: git clone https://github.com/quadraturerules/quadraturerules.git .
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
+    - name: Get latest tag
+      id: release_tag
+      run: echo -n "tag=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_OUTPUT
+    - name: Get version
+      id: version_tag
+      run: echo -n "tag=v$(cat VERSION)" >> $GITHUB_OUTPUT
+
+    - name: Compare version numbers
+      run: |
+        if [ "${{ steps.release_tag.outputs.tag }}" = "${{ steps.version_tag.outputs.tag }}" ]; then
+           echo "release=no" >> $GITHUB_OUTPUT
+        else
+           echo "release=yes" >> $GITHUB_OUTPUT
+        fi
+      id: release
+
+
   julia-library:
     name: Release Julia library
     runs-on: ubuntu-22.04
