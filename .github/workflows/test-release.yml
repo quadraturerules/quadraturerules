@@ -51,9 +51,11 @@ jobs:
     steps:
       - name: make release
         run: |
-          curl -H 'Authorisation: ${{ secrets.JULIA_REPO_TOKEN }}' --data '{
-            "tag_name": "${{ needs.check-version.outputs.tag }}", "target_commitish": "main", "name": "${{ needs.check-version.outputs.tag }}",
-            "body": "Release of version ${{ needs.check-version.outputs.tag }}",
-            "draft": false,
-            "prerelease": false
-          }' https://api.github.com/repos/quadraturerules/TabulatedQuadratureRules.jl/releases
+          curl -H 'Authorisation: ${{ secrets.JULIA_REPO_TOKEN }}' \
+            https://api.github.com/repos/quadraturerules/TabulatedQuadratureRules.jl/releases \
+            -d '{"tag_name": "${{ needs.check-version.outputs.tag }}",
+                 "target_commitish": "main",
+                 "name": "${{ needs.check-version.outputs.tag }}",
+                 "body": "Release of version ${{ needs.check-version.outputs.tag }}",
+                 "draft": false,
+                 "prerelease": false}'
