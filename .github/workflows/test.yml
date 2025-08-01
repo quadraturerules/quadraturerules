@@ -1,0 +1,34 @@
+name: Test make new release
+
+on:
+  push:
+    branches: ["julia-release"]
+
+jobs:
+  check-version:
+    name: Check version number for changes
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version_tag.outputs.tag }}
+      release: ${{ steps.release.outputs.release }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    permissions:
+      id-token: write
+      contents: write
+
+  julia-library:
+    name: Release Julia library
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+    needs:
+      - check-version
+    steps:
+      - name: make release
+        run: |
+          curl --data '{
+            "tag_name": "${{ needs.check-version.outputs.tag }}", "target_commitish": "main", "name": "${{ needs.check-version.outputs.tag }}",
+            "body": "Release of version ${{ needs.check-version.outputs.tag }}",
+            "draft": false,
+            "prerelease": false
+          }' https://api.github.com/repos/quadraturerules/TabulatedQuadratureRules.jl/$REPOSITORY/releases?access_token=${{ secrets.JULIA_REPO_TOKEN }}

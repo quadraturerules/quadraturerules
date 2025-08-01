@@ -142,11 +142,17 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add .
           git commit -a -m "Update Julia source"
-      - name: git push
+      - name: git push and make release
         run: |
           cd QR.jl
-          git remote set-url origin https://x-access-token:${{ secrets.JULIA_REPO_TOKEN }}@github.com/quadraturerules/QuadratureRulesDotOrg.jl
+          git remote set-url origin https://x-access-token:${{ secrets.JULIA_REPO_TOKEN }}@github.com/quadraturerules/TabulatedQuadratureRules.jl
           git push
+          curl --data '{
+            "tag_name": "${{ needs.check-version.outputs.tag }}", "target_commitish": "main", "name": "${{ needs.check-version.outputs.tag }}",
+            "body": "Release of version ${{ needs.check-version.outputs.tag }}",
+            "draft": false,
+            "prerelease": false
+          }' https://api.github.com/repos/quadraturerules/TabulatedQuadratureRules.jl/$REPOSITORY/releases?access_token=${{ secrets.JULIA_REPO_TOKEN }}
 
   cpp-library:
     name: Build C++ source for release
