@@ -38,7 +38,7 @@ pub fn single_integral_quadrature(
         QuadratureRule::{{Q.PascalCaseName}} => rules::{{Q.snake_case_name}}(domain, order),
         {{end if}}
         {{end for}}
-        _ => Err(format!("Unsupported rule for single integral: {rtype}")),
+        _ => Err(&format!("Unsupported rule for single integral: {rtype}")),
     }
 }
 
@@ -54,7 +54,7 @@ pub fn double_integral_quadrature(
         QuadratureRule::{{Q.PascalCaseName}} => rules::{{Q.snake_case_name}}(domain, order),
         {{end if}}
         {{end for}}
-        _ => Err(format!("Unsupported rule for single integral: {rtype}")),
+        _ => Err(&format!("Unsupported rule for single integral: {rtype}")),
     }
 }
 
