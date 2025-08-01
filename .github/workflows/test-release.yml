@@ -56,4 +56,4 @@ jobs:
             "body": "Release of version ${{ needs.check-version.outputs.tag }}",
             "draft": false,
             "prerelease": false
-          }' https://api.github.com/repos/quadraturerules/TabulatedQuadratureRules.jl/$REPOSITORY/releases
+          }' https://api.github.com/repos/quadraturerules/TabulatedQuadratureRules.jl/releases
