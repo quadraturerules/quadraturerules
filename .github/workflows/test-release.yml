@@ -57,4 +57,4 @@ jobs:
       - name: Install PyGitHub
         run: python3 -m pip install PyGitHub
       - name: Make release
-        run: python3 .github/scripts/julia_release.py ${{ needs.check-version.outputs.tag }} ${{ secrets.JULIA_REPO_TOKEN }}
+        run: python3 .github/scripts/julia_release.py ${{ secrets.JULIA_REPO_TOKEN }} ${{ needs.check-version.outputs.tag }}
