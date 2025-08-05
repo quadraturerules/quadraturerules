@@ -3,8 +3,9 @@ alt-names:
   - Gauss
 integral-type: single
 integrand: f(x)
-notes:
-  - If \(f(x)\) is a degree \(2n-1\) polynomial, then an order \(n\) Gauss--Legendre rule will integrate it exactly.
+exact:
+  - type: polynomial
+    degree: 2n-1
 references:
   - title: Methodus nova integralium valores per approximationem inveniendi
     author:

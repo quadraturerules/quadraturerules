@@ -868,6 +868,7 @@ class QRuleFamily:
         itype: str,
         integrand: str,
         notes: typing.List[str],
+        exact: typing.List[typing.Dict[str, typing.Any]],
         references: typing.List[typing.Dict[str, typing.Any]],
         rules: typing.List[QRule],
         qr: str,
@@ -881,6 +882,7 @@ class QRuleFamily:
         self.itype = itype
         self.integrand = integrand
         self._notes = notes
+        self._exact = exact
         self._references = references
         for r in rules:
             r.family = self
@@ -952,11 +954,31 @@ class QRuleFamily:
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
-    def notes(self, format: str = "HTML"):
+    def exact_notes(self, format: str = "HTML") -> typing.List[str]:
+        """Convert exact to notes."""
+        out = []
+        for e in self._exact:
+            match e["type"]:
+                case "polynomial":
+                    match format:
+                        case "HTML":
+                            out.append(
+                                f"If \(f(x)\) is a degree \({e['degree']}\) polynomial, "
+                                f"then an order \(n\) {self.name(format)} rule will "
+                                "integrate it exactly."
+                            )
+                        case _:
+                            raise ValueError(f"Unsupported format: {format}")
+                case _:
+                    raise ValueError(f"Unsupported function type: {e['type']}")
+        return out
+
+    def notes(self, format: str = "HTML") -> str:
         """Get notes."""
+        notes = self._notes + self.exact_notes(format)
         match format:
             case "HTML":
-                return to_html("<br />".join(self._notes))
+                return to_html("<br />".join(notes))
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
@@ -1051,6 +1073,7 @@ def load_rule(code: str) -> QRuleFamily:
         itype,
         data["integrand"],
         data["notes"] if "notes" in data else [],
+        data["exact"] if "exact" in data else [],
         data["references"] if "references" in data else [],
         rules,
         qr,
