@@ -28,11 +28,10 @@ jobs:
           cd python
           python3 -m ruff format --check .
           python3 -m ruff check .
-          python3 -m ruff format --check ../library/build
-          python3 -m ruff check ../library/build
-          cd ../website
-          python3 -m ruff format --check .
-          python3 -m ruff check .
+          python3 -m ruff format --check ../library/build.py
+          python3 -m ruff check ../library/build.py
+          python3 -m ruff format --check ../website
+          python3 -m ruff check ../website
         name: Flake8 checks
       - run: |
           python3 -m pydocstyle python
