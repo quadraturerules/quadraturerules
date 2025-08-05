@@ -37,7 +37,7 @@ qpy_map = {
         for qfolder in os.listdir(folder)
         if os.path.isdir(join(folder, qfolder))
         for qfile in os.listdir(join(folder, qfolder))
-        if qfile.endswith(".rule") and qpy_map[qfile[:-5]] is not None
+        if qfile.endswith(".rule") and qpy_map[qfolder] is not None
     ],
 )
 def test_against_quadpy(qfolder, qfile):
