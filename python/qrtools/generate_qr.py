@@ -33,7 +33,7 @@ class RuleFamily(Substitutor):
         self.family = family
 
     def __str__(self):
-        """String."""
+        """Format as string."""
         return self.family.name()
 
     def substitute(self, code: str, variable: str, bracketed: bool = True) -> str:

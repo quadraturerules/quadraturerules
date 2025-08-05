@@ -897,8 +897,8 @@ class QRuleFamily:
                     match format:
                         case "HTML":
                             out.append(
-                                f"If \(f(x)\) is a degree \({e['degree']}\) polynomial, "
-                                f"then an order \(n\) {self.name(format)} rule will "
+                                f"If \\(f(x)\\) is a degree \\({e['degree']}\\) polynomial, "
+                                f"then an order \\(n\\) {self.name(format)} rule will "
                                 "integrate it exactly."
                             )
                         case _:
