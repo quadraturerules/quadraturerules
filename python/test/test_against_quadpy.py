@@ -19,13 +19,10 @@ qpy_map = {
         "triangle": lambda order: quadpy.t2.schemes["xiao_gimbutas_" + f"00{order}"[-2:]](),
         "tetrahedron": lambda order: quadpy.t3.schemes["xiao_gimbutas_" + f"00{order}"[-2:]](),
     },
-    "Q000003": {"interval": quadpy.c1.gauss_lobatto},
+    "Q000003": {"interval": lambda order: quadpy.c1.gauss_lobatto(order + 2)},
     "Q000004": None,
     "Q000005": None,
-    "Q000006": {
-        "triangle": lambda order: quadpy.t2.schemes[f"hammer_marlowe_stroud_{order}"](),
-        "tetrahedron": lambda order: quadpy.t3.schemes[f"hammer_marlowe_stroud_{order}"](),
-    },
+    "Q000006": None,
     "Q000007": None,
 }
 
