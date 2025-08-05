@@ -86,10 +86,6 @@ def test_against_quadpy(qfolder, qfile):
                 order.append(i)
                 break
         else:
-            print(f"{p} not found in {qpy_scheme.points.T}")
             raise ValueError("Points do not match")
-    print(wts * 2)
-    for i, j in enumerate(order):
-        print(wts[j], qpy_scheme.weights[i])
     for i, j in enumerate(order):
         assert np.isclose(wts[i] * volume, qpy_scheme.weights[j]), "Weights do not match"

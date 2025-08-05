@@ -76,9 +76,11 @@ def functions(e, degree, domain):
             elif domain in ["triangle", "quadrilateral"]:
                 return [x[0] ** (d - i) * x[1] ** i for i in range(d + 1)]
             elif domain in ["tetrahedron", "hexahedron"]:
-                return [x[0] ** (d - i - j) * x[1] ** i * x[2] ** j
-                        for i in range(d + 1)
-                        for j in range(d + 1 - i)]
+                return [
+                    x[0] ** (d - i - j) * x[1] ** i * x[2] ** j
+                    for i in range(d + 1)
+                    for j in range(d + 1 - i)
+                ]
             else:
                 raise ValueError(f"Unsupported domain: {domain}")
         case _:
@@ -137,7 +139,7 @@ def test_exact(family, rule):
             volume = 1
         case "tetrahedron":
             mapped_pts = [i[1:] for i in pts]
-            volume = 1 / 3
+            volume = 1 / 6
         case "hexahedron":
             mapped_pts = [[i[1], i[2], i[4]] for i in pts]
             volume = 1
@@ -146,20 +148,7 @@ def test_exact(family, rule):
 
     for e in family_info["exact"]:
         for f in functions(e, int(info["order"]), info["domain"]):
-            for p, w in zip(pts, wts):
-                print(w, f, p)
-            print(
-                [w * subs(f, p) for p, w in zip(pts, wts)]
-            )
-            print(
-                volume * integral(f, info["domain"]),
-                sum(w * subs(f, p) for p, w in zip(pts, wts))
-            )
-            print(
-                type(volume), type(integral(f, info["domain"])),
-                type(sum(w * subs(f, p) for p, w in zip(pts, wts)))
-            )
             assert np.isclose(
-                volume * integral(f, info["domain"]),
-                sum(w * subs(f, p) for p, w in zip(pts, wts))
+                integral(f, info["domain"]),
+                volume * sum(w * subs(f, p) for p, w in zip(mapped_pts, wts)),
             )
