@@ -6,4 +6,4 @@ integral-type: single
 integrand: f(x)
 exact:
   - type: polynomial
-    degree: 2n-1
+    degree: 2n+1
