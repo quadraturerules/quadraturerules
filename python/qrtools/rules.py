@@ -68,9 +68,7 @@ def to_2d(point: PointND, origin: Point2D, axes: typing.List[Point2D]) -> Point2
 
 def from_barycentric(point: PointND, domain: typing.List[PointND]) -> PointND:
     """Map from barycentric coordinates to a point on a domain."""
-    return tuple(
-        sum(p * d[i] for p, d in zip(point, domain)) for i in range(len(domain[0]))
-    )
+    return tuple(sum(p * d[i] for p, d in zip(point, domain)) for i in range(len(domain[0])))
 
 
 class QRule:
@@ -129,9 +127,7 @@ class QRule:
                 try:
                     from cairosvg import svg2png
                 except ImportError:
-                    raise ImportError(
-                        "CairoSVG is needed for plotting PNGs (pip install CairoSVG)"
-                    )
+                    raise ImportError("CairoSVG is needed for plotting PNGs (pip install CairoSVG)")
                 svg = filename[:-4] + ".svg"
                 self.image(svg)
                 with open(svg) as f:
@@ -357,14 +353,10 @@ class QRuleSingle(QRule):
             for p_, w in zip(self.points, self.weights):
                 p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
                 if w > 0:
-                    f.write(
-                        f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w**0.5}' "
-                        "fill='red' />\n"
-                    )
+                    f.write(f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * w**0.5}' fill='red' />\n")
                 else:
                     f.write(
-                        f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' "
-                        "fill='blue' />\n"
+                        f"<circle cx='{p[0]}' cy='{p[1]}' r='{9 * (-w) ** 0.5}' fill='blue' />\n"
                     )
             f.write("</svg>\n")
 
@@ -382,17 +374,13 @@ class QRuleSingle(QRule):
                 for a_, b_ in zip(lines[:-1], lines[1:]):
                     a = to_2d(domain[a_], origin, axes)
                     b = to_2d(domain[b_], origin, axes)
-                    f.write(
-                        f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) -- ({b[0]},{b[1]});\n"
-                    )
+                    f.write(f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) -- ({b[0]},{b[1]});\n")
             for p_, w in zip(self.points, self.weights):
                 p = to_2d(from_barycentric(tuple(p_), domain), origin, axes)
                 if w > 0:
                     f.write(f"\\fill[red] ({p[0]},{p[1]}) circle ({9 * w**0.5});\n")
                 else:
-                    f.write(
-                        f"\\fill[blue] ({p[0]},{p[1]}) circle ({9 * (-w) ** 0.5});\n"
-                    )
+                    f.write(f"\\fill[blue] ({p[0]},{p[1]}) circle ({9 * (-w) ** 0.5});\n")
             f.write("\\end{tikzpicture}\n")
 
     def save_html_table(self, filename: str):
@@ -414,9 +402,7 @@ class QRuleSingle(QRule):
                 f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>"
             )
             with open(f"{filename_root}.csv", "w") as f2:
-                f2.write(
-                    ",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])])
-                )
+                f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
                 f2.write(",weight\n")
                 for p, w in zip(self.points, self.weights):
                     f2.write(",".join(f"{i}" for i in p) + f",{w}\n")
@@ -426,11 +412,7 @@ class QRuleSingle(QRule):
             )
             with open(f"{filename_root}.json", "w") as f2:
                 f2.write('{"points": [')
-                f2.write(
-                    ", ".join(
-                        "[" + ", ".join(f"{i}" for i in p) + "]" for p in self.points
-                    )
-                )
+                f2.write(", ".join("[" + ", ".join(f"{i}" for i in p) + "]" for p in self.points))
                 f2.write('], "weights": [')
                 f2.write(", ".join(f"{w}" for w in self.weights))
                 f2.write("]}")
@@ -441,9 +423,7 @@ class QRuleSingle(QRule):
             f.write("<br />\n")
             f.write("<table class='points'>\n")
             f.write("<thead>")
-            f.write(
-                f"<tr><td colspan='{len(self.points[0])}'>Point</td><td>Weight</td></tr>"
-            )
+            f.write(f"<tr><td colspan='{len(self.points[0])}'>Point</td><td>Weight</td></tr>")
             f.write("</thead>\n")
             for n, (p, w) in enumerate(zip(self.points, self.weights)):
                 if n >= 200:
@@ -466,23 +446,16 @@ class QRuleSingle(QRule):
         return (
             open
             + outer_joiner.join(
-                [
-                    open + inner_joiner.join([f"{c}" for c in p]) + close
-                    for p in self.points
-                ]
+                [open + inner_joiner.join([f"{c}" for c in p]) + close for p in self.points]
             )
             + close
         )
 
-    def points_as_flat_list(
-        self, open: str = "[", close: str = "]", joiner: str = ", "
-    ) -> str:
+    def points_as_flat_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat points as a string."""
         return open + joiner.join([f"{c}" for p in self.points for c in p]) + close
 
-    def weights_as_list(
-        self, open: str = "[", close: str = "]", joiner: str = ", "
-    ) -> str:
+    def weights_as_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat points as a string."""
         return open + joiner.join([f"{w}" for w in self.weights]) + close
 
@@ -640,22 +613,14 @@ class QRuleDouble(QRule):
                 p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
                 p2 = to_2d(from_barycentric(tuple(p2_), domain2), origin2, axes2)
                 if w > 0:
-                    f.write(
-                        f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * w**0.5}' "
-                        "fill='red' />"
-                    )
-                    f.write(
-                        f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * w**0.5}' "
-                        "fill='red' />"
-                    )
+                    f.write(f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * w**0.5}' fill='red' />")
+                    f.write(f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * w**0.5}' fill='red' />")
                 else:
                     f.write(
-                        f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * (-w) ** 0.5}' "
-                        "fill='blue' />"
+                        f"<circle cx='{p1[0]}' cy='{p1[1]}' r='{9 * (-w) ** 0.5}' fill='blue' />"
                     )
                     f.write(
-                        f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * (-w) ** 0.5}' "
-                        "fill='blue' />"
+                        f"<circle cx='{p2[0]}' cy='{p2[1]}' r='{9 * (-w) ** 0.5}' fill='blue' />"
                     )
             f.write("</svg>")
 
@@ -680,8 +645,7 @@ class QRuleDouble(QRule):
                         a = to_2d(domain[a_], origin, axes)
                         b = to_2d(domain[b_], origin, axes)
                         f.write(
-                            f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) "
-                            f"-- ({b[0]},{b[1]});\n"
+                            f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) -- ({b[0]},{b[1]});\n"
                         )
             for p1_, p2_ in zip(self.first_points, self.second_points):
                 p1 = to_2d(from_barycentric(tuple(p1_), domain1), origin1, axes1)
@@ -697,12 +661,8 @@ class QRuleDouble(QRule):
                     f.write(f"\\fill[red] ({p1[0]},{p1[1]}) circle ({9 * w**0.5});\n")
                     f.write(f"\\fill[red] ({p2[0]},{p2[1]}) circle ({9 * w**0.5});\n")
                 else:
-                    f.write(
-                        f"\\fill[blue] ({p1[0]},{p1[1]}) circle ({9 * (-w) ** 0.5});\n"
-                    )
-                    f.write(
-                        f"\\fill[blue] ({p2[0]},{p2[1]}) circle ({9 * (-w) ** 0.5});\n"
-                    )
+                    f.write(f"\\fill[blue] ({p1[0]},{p1[1]}) circle ({9 * (-w) ** 0.5});\n")
+                    f.write(f"\\fill[blue] ({p2[0]},{p2[1]}) circle ({9 * (-w) ** 0.5});\n")
             f.write("\\end{tikzpicture}\n")
 
     def save_html_table(self, filename: str):
@@ -724,21 +684,11 @@ class QRuleDouble(QRule):
                 f"<a href='{filename_root_local}.rule'>&darr; Download as .rule</a></div>"
             )
             with open(f"{filename_root}.csv", "w") as f2:
-                f2.write(
-                    ",".join(
-                        [f"point0[{i}]" for i, _ in enumerate(self.first_points[0])]
-                    )
-                )
+                f2.write(",".join([f"point0[{i}]" for i, _ in enumerate(self.first_points[0])]))
                 f2.write(",")
-                f2.write(
-                    ",".join(
-                        [f"point1[{i}]" for i, _ in enumerate(self.second_points[0])]
-                    )
-                )
+                f2.write(",".join([f"point1[{i}]" for i, _ in enumerate(self.second_points[0])]))
                 f2.write(",weight\n")
-                for p1, p2, w in zip(
-                    self.first_points, self.second_points, self.weights
-                ):
+                for p1, p2, w in zip(self.first_points, self.second_points, self.weights):
                     f2.write(
                         ",".join(f"{i}" for i in p1)
                         + ","
@@ -782,9 +732,7 @@ class QRuleDouble(QRule):
             ):
                 if n >= 200:
                     f.write(
-                        self.first200(
-                            1 + len(self.first_points[0]) + len(self.second_points[0])
-                        )
+                        self.first200(1 + len(self.first_points[0]) + len(self.second_points[0]))
                     )
                     break
                 f.write("<tr>")
@@ -807,10 +755,7 @@ class QRuleDouble(QRule):
         return (
             open
             + outer_joiner.join(
-                [
-                    open + inner_joiner.join([f"{c}" for c in p]) + close
-                    for p in self.first_points
-                ]
+                [open + inner_joiner.join([f"{c}" for c in p]) + close for p in self.first_points]
             )
             + close
         )
@@ -819,9 +764,7 @@ class QRuleDouble(QRule):
         self, open: str = "[", close: str = "]", joiner: str = ", "
     ) -> str:
         """Get a list of flat first points as a string."""
-        return (
-            open + joiner.join([f"{c}" for p in self.first_points for c in p]) + close
-        )
+        return open + joiner.join([f"{c}" for p in self.first_points for c in p]) + close
 
     def second_points_as_list(
         self,
@@ -834,10 +777,7 @@ class QRuleDouble(QRule):
         return (
             open
             + outer_joiner.join(
-                [
-                    open + inner_joiner.join([f"{c}" for c in p]) + close
-                    for p in self.second_points
-                ]
+                [open + inner_joiner.join([f"{c}" for c in p]) + close for p in self.second_points]
             )
             + close
         )
@@ -846,13 +786,9 @@ class QRuleDouble(QRule):
         self, open: str = "[", close: str = "]", joiner: str = ", "
     ) -> str:
         """Get a list of flat second points as a string."""
-        return (
-            open + joiner.join([f"{c}" for p in self.second_points for c in p]) + close
-        )
+        return open + joiner.join([f"{c}" for p in self.second_points for c in p]) + close
 
-    def weights_as_list(
-        self, open: str = "[", close: str = "]", joiner: str = ", "
-    ) -> str:
+    def weights_as_list(self, open: str = "[", close: str = "]", joiner: str = ", ") -> str:
         """Get a list of flat points as a string."""
         return open + joiner.join([f"{w}" for w in self.weights]) + close
 
@@ -868,6 +804,7 @@ class QRuleFamily:
         itype: str,
         integrand: str,
         notes: typing.List[str],
+        exact: typing.List[typing.Dict[str, typing.Any]],
         references: typing.List[typing.Dict[str, typing.Any]],
         rules: typing.List[QRule],
         qr: str,
@@ -881,6 +818,7 @@ class QRuleFamily:
         self.itype = itype
         self.integrand = integrand
         self._notes = notes
+        self._exact = exact
         self._references = references
         for r in rules:
             r.family = self
@@ -909,9 +847,7 @@ class QRuleFamily:
             case "PascalCase":
                 return "".join([i[0].upper() + i[1:].lower() for i in parts])
             case "camelCase":
-                return parts[0].lower() + "".join(
-                    [i[0].upper() + i[1:].lower() for i in parts[1:]]
-                )
+                return parts[0].lower() + "".join([i[0].upper() + i[1:].lower() for i in parts[1:]])
             case "snake_case":
                 return "_".join([i.lower() for i in parts])
             case _:
@@ -952,11 +888,31 @@ class QRuleFamily:
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
-    def notes(self, format: str = "HTML"):
+    def exact_notes(self, format: str = "HTML") -> typing.List[str]:
+        """Convert exact to notes."""
+        out = []
+        for e in self._exact:
+            match e["type"]:
+                case "polynomial":
+                    match format:
+                        case "HTML":
+                            out.append(
+                                f"If \\(f(x)\\) is a degree \\({e['degree']}\\) polynomial, "
+                                f"then an order \\(n\\) {self.name(format)} rule will "
+                                "integrate it exactly."
+                            )
+                        case _:
+                            raise ValueError(f"Unsupported format: {format}")
+                case _:
+                    raise ValueError(f"Unsupported function type: {e['type']}")
+        return out
+
+    def notes(self, format: str = "HTML") -> str:
         """Get notes."""
+        notes = self._notes + self.exact_notes(format)
         match format:
             case "HTML":
-                return to_html("<br />".join(self._notes))
+                return to_html("<br />".join(notes))
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
@@ -1051,6 +1007,7 @@ def load_rule(code: str) -> QRuleFamily:
         itype,
         data["integrand"],
         data["notes"] if "notes" in data else [],
+        data["exact"] if "exact" in data else [],
         data["references"] if "references" in data else [],
         rules,
         qr,

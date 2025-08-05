@@ -34,10 +34,12 @@ def test_version():
     )
     v = max(int(file[1:-3]) for file in os.listdir(folder) if file.endswith(".qr"))
 
-    with open(join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "..",
-        "..",
-        "VERSION",
-    )) as f:
+    with open(
+        join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "..",
+            "..",
+            "VERSION",
+        )
+    ) as f:
         assert int(f.read().split(".")[1]) == v

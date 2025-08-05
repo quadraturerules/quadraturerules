@@ -30,6 +30,7 @@ The entries in this yaml file are:
 <tr><td>`alt&#8209;names`</td><td></td><td>Alternative names of the rule.</td></tr>
 <tr><td>`integral&#8209;type`</td><td></td><td>The type of the integral (default: `single`).</td></tr>
 <tr><td>`integrand`</td><td>{{tick}}</td><td>The integrand that the quadrature rule can be used to approximate.</td></tr>
+<tr><td>`exact`</td><td></td><td>Functions that are integrated exactly by this quadrature rule.</td></tr>
 <tr><td>`notes`</td><td></td><td>Notes about the quadrature rule.</td></tr>
 <tr><td>`references`</td><td></td><td>References to where the rule is defined.</td></tr>
 </table>

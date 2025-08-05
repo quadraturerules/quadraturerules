@@ -33,7 +33,7 @@ class RuleFamily(Substitutor):
         self.family = family
 
     def __str__(self):
-        """String."""
+        """Format as string."""
         return self.family.name()
 
     def substitute(self, code: str, variable: str, bracketed: bool = True) -> str:
@@ -173,9 +173,7 @@ class Rule(Substitutor):
     ) -> typing.Dict[str, typing.Generator[Substitutor, None, None]]:
         """Get list of loop targets."""
         out: typing.Dict[str, typing.Generator[Substitutor, None, None]] = {
-            f"{variable}.weights": (
-                IndexedFloat(w, i) for i, w in enumerate(self.rule.weights)
-            )
+            f"{variable}.weights": (IndexedFloat(w, i) for i, w in enumerate(self.rule.weights))
         }
         if isinstance(self.rule, rules.QRuleSingle):
             out[f"{variable}.flat_points"] = (
@@ -183,9 +181,7 @@ class Rule(Substitutor):
                 for i, p in enumerate(self.rule.points)
                 for j, c in enumerate(p)
             )
-            out[f"{variable}.points"] = (
-                IndexedArray(p, i) for i, p in enumerate(self.rule.points)
-            )
+            out[f"{variable}.points"] = (IndexedArray(p, i) for i, p in enumerate(self.rule.points))
         if isinstance(self.rule, rules.QRuleDouble):
             out[f"{variable}.first_points"] = (
                 IndexedArray(p, i) for i, p in enumerate(self.rule.first_points)
