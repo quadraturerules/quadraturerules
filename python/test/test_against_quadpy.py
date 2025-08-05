@@ -36,23 +36,15 @@ def test_against_quadpy(qfolder, qfile):
     qpy_map = {
         "Q000001": {"interval": quadpy.c1.gauss_legendre},
         "Q000002": {
-            "triangle": lambda order: quadpy.t2.schemes[
-                "xiao_gimbutas_" + f"00{order}"[-2:]
-            ](),
-            "tetrahedron": lambda order: quadpy.t3.schemes[
-                "xiao_gimbutas_" + f"00{order}"[-2:]
-            ](),
+            "triangle": lambda order: quadpy.t2.schemes["xiao_gimbutas_" + f"00{order}"[-2:]](),
+            "tetrahedron": lambda order: quadpy.t3.schemes["xiao_gimbutas_" + f"00{order}"[-2:]](),
         },
         "Q000003": {"interval": quadpy.c1.gauss_lobatto},
         "Q000004": None,
         "Q000005": None,
         "Q000006": {
-            "triangle": lambda order: quadpy.t2.schemes[
-                f"hammer_marlowe_stroud_{order}"
-            ](),
-            "tetrahedron": lambda order: quadpy.t3.schemes[
-                f"hammer_marlowe_stroud_{order}"
-            ](),
+            "triangle": lambda order: quadpy.t2.schemes[f"hammer_marlowe_stroud_{order}"](),
+            "tetrahedron": lambda order: quadpy.t3.schemes[f"hammer_marlowe_stroud_{order}"](),
         },
         "Q000007": None,
     }
@@ -100,6 +92,4 @@ def test_against_quadpy(qfolder, qfile):
     for i, j in enumerate(order):
         print(wts[j], qpy_scheme.weights[i])
     for i, j in enumerate(order):
-        assert np.isclose(wts[i] * volume, qpy_scheme.weights[j]), (
-            "Weights do not match"
-        )
+        assert np.isclose(wts[i] * volume, qpy_scheme.weights[j]), "Weights do not match"

@@ -25,11 +25,12 @@ jobs:
         name: Install qrtools
 
       - run: |
-          python3 -m ruff format --check python
-          python3 -m ruff check python
-          python3 -m ruff format --check library/build
-          python3 -m ruff check library/build
-          cd website
+          cd python
+          python3 -m ruff format --check .
+          python3 -m ruff check .
+          python3 -m ruff format --check ../library/build
+          python3 -m ruff check ../library/build
+          cd ../website
           python3 -m ruff format --check .
           python3 -m ruff check .
         name: Flake8 checks

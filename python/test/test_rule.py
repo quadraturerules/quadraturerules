@@ -29,10 +29,7 @@ def test_cell_has_unit_volume(family, rule):
         pytest.xfail()
 
     with open(join(folder, family, rule)) as f:
-        volume = sum(
-            float(p.split(" | ")[1])
-            for p in f.read().split("--")[2].strip().split("\n")
-        )
+        volume = sum(float(p.split(" | ")[1]) for p in f.read().split("--")[2].strip().split("\n"))
     assert np.isclose(volume, 1.0)
 
 
