@@ -21,3 +21,5 @@ qr.create_git_tag_and_release(
     branch.commit.sha,
     "commit",
 )
+
+branch.commit.create_comment("@JuliaRegistrator register")
