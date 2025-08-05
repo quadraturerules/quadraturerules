@@ -32,7 +32,7 @@ jobs:
           python3 -m ruff check ../library/build.py
           python3 -m ruff format --check ../website
           python3 -m ruff check ../website
-        name: Flake8 checks
+        name: ruff checks
       - run: |
           python3 -m pydocstyle python
           python3 -m pydocstyle library/build.py

@@ -3,7 +3,7 @@ name = "qrtools"
 version = "0.1.0"
 description = "tools for building quadraturerules.org"
 readme = "README.md"
-requires-python = ">=3.8.0"
+requires-python = ">=3.10.0"
 license = { file = "LICENSE" }
 authors = [
     { name = "Matthew Scroggs", email = "defelement@mscroggs.co.uk" }
