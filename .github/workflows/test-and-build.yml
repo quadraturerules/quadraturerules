@@ -25,10 +25,13 @@ jobs:
         name: Install qrtools
 
       - run: |
-          python3 -m flake8 python
-          python3 -m flake8 library/build.py
+          python3 -m ruff format --check python
+          python3 -m ruff check python
+          python3 -m ruff format --check library/build
+          python3 -m ruff check library/build
           cd website
-          python3 -m flake8 .
+          python3 -m ruff format --check .
+          python3 -m ruff check .
         name: Flake8 checks
       - run: |
           python3 -m pydocstyle python
@@ -42,12 +45,6 @@ jobs:
           cd ../website
           python3 -m mypy --install-types --non-interactive .
         name: mypy checks
-      - run: |
-          python3 -m isort --check python
-          python3 -m isort --check library/build.py
-          cd website
-          python3 -m isort --check .
-        name: isort checks
 
   build-website:
     name: Build quadraturerules.org
