@@ -10,6 +10,8 @@ if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 endif()
 
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+
 # Source files
 add_library(quadraturerules)
 

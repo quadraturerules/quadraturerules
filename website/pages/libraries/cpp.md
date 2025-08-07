@@ -5,9 +5,9 @@ The source code of the quadraturerules C++ library can be downloaded from the
 It can be installed by running:
 
 ```bash
-wget https://github.com/quadraturerules/quadraturerules/releases/download/{{VERSION}}/quadraturerules-cpp-{{VERSION}}.tar.gz
+wget https://github.com/quadraturerules/quadraturerules/releases/download/v{{VERSION}}/quadraturerules-cpp-v{{VERSION}}.tar.gz
 mkdir src
-tar -xvf quadraturerules-cpp-{{VERSION}}.tar.gz -C src
+tar -xvf quadraturerules-cpp-v{{VERSION}}.tar.gz -C src
 mkdir build
 cd build
 cmake ../src
@@ -44,7 +44,7 @@ using quadraturerules;
 auto [points, weights] = single_integral_quadrature(
     QuadratureRule::XiaoGimbutas,
     Domain::Triangle,
-    3,
+    3
 );
 ```
 

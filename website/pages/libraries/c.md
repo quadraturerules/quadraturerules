@@ -5,9 +5,9 @@ The source code of the quadraturerules C library can be downloaded from the
 It can be built by running:
 
 ```bash
-wget https://github.com/quadraturerules/quadraturerules/releases/download/{{VERSION}}/quadraturerules-c-{{VERSION}}.tar.gz
+wget https://github.com/quadraturerules/quadraturerules/releases/download/v{{VERSION}}/quadraturerules-c-v{{VERSION}}.tar.gz
 mkdir src
-tar -xvf quadraturerules-c-{{VERSION}}.tar.gz -C src
+tar -xvf quadraturerules-c-v{{VERSION}}.tar.gz -C src
 cd src
 gcc -c -Wall -Werror -fpic quadraturerules.c
 gcc -shared -o libquadraturerules.so quadraturerules.o

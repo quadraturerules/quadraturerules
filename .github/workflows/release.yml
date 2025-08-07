@@ -62,7 +62,7 @@ jobs:
 
       - run: |
           cd library
-          python build.py python
+          python3 build.py python
         name: Build Python library
       - run: |
           cd library/python.build
@@ -98,7 +98,7 @@ jobs:
 
       - run: |
           cd library
-          python build.py rust
+          python3 build.py rust
         name: Build Rust library
       - uses: katyo/publish-crates@v2
         with:
@@ -128,7 +128,7 @@ jobs:
 
       - run: |
           cd library
-          python build.py julia
+          python3 build.py julia
         name: Build Rust library
 
       - name: Clone Julia source repo
@@ -145,8 +145,12 @@ jobs:
       - name: git push
         run: |
           cd QR.jl
-          git remote set-url origin https://x-access-token:${{ secrets.JULIA_REPO_TOKEN }}@github.com/quadraturerules/QuadratureRulesDotOrg.jl
+          git remote set-url origin https://x-access-token:${{ secrets.JULIA_REPO_TOKEN }}@github.com/quadraturerules/TabulatedQuadratureRules.jl
           git push
+      - name: Make release
+        run: |
+          python3 -m pip install PyGitHub
+          python3 .github/scripts/julia_release.py ${{ secrets.JULIA_REPO_TOKEN }} ${{ needs.check-version.outputs.tag }}
 
   cpp-library:
     name: Build C++ source for release
@@ -170,7 +174,7 @@ jobs:
 
       - run: |
           cd library
-          python build.py cpp
+          python3 build.py cpp
         name: Build C++ library
       - run: |
           cd library/cpp.build
@@ -204,7 +208,7 @@ jobs:
 
       - run: |
           cd library
-          python build.py c
+          python3 build.py c
         name: Build C library
       - run: |
           cd library/c.build
@@ -238,7 +242,7 @@ jobs:
 
       - run: |
           cd library
-          python build.py fortran90
+          python3 build.py fortran90
         name: Build Fortran 90 library
       - run: |
           cd library/fortran90.build
@@ -246,7 +250,7 @@ jobs:
         name: Make tar.gz of source
       - uses: actions/upload-artifact@v4
         with:
-          name: fotran90_source
+          name: fortran90_source
           path: library/fortran90.build/quadraturerules-fortran90-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 
@@ -266,16 +270,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: |
+          python3 -m pip install fortran77punchcards
           cd python
           python3 -m pip install .
-        name: Install qrtools
+        name: Install qrtools and fortran77punchcards
 
       - run: |
           cd library
-          python build.py fortran77
+          python3 build.py fortran77
           cd fortran77.build
-          python -m fotran77punchcards quadraturerules.f quadraturerules.png --width 400 --row-size 8
-          python -m fotran77punchcards test.f test.png --width 400 --row-size 8
+          python3 -m fortran77punchcards quadraturerules.f quadraturerules.png --width 400 --row-size 8
+          python3 -m fortran77punchcards test.f test.png --width 400 --row-size 8
         name: Build Fortran 77 library
       - run: |
           cd library/fortran77.build
@@ -283,7 +288,7 @@ jobs:
         name: Make tar.gz of source
       - uses: actions/upload-artifact@v4
         with:
-          name: fotran77_source
+          name: fortran77_source
           path: library/fortran77.build/quadraturerules-fortran77-${{ needs.check-version.outputs.tag }}.tar.gz
           retention-days: 1
 

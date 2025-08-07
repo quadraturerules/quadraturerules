@@ -21,21 +21,20 @@ jobs:
 
       - run: |
           cd python
-          python3 -m pip install .[optional]
+          python3 -m pip install .[optional,test,lint]
         name: Install qrtools
 
-      - run: python3 -m pip install flake8 mypy pydocstyle isort
-        name: Install linting tools
       - run: |
-          python3 -m flake8 python
-          python3 -m flake8 test
-          python3 -m flake8 library/build.py
-          cd website
-          python3 -m flake8 .
-        name: Flake8 checks
+          cd python
+          python3 -m ruff format --check .
+          python3 -m ruff check .
+          python3 -m ruff format --check ../library/build.py
+          python3 -m ruff check ../library/build.py
+          python3 -m ruff format --check ../website
+          python3 -m ruff check ../website
+        name: ruff checks
       - run: |
           python3 -m pydocstyle python
-          python3 -m pydocstyle test
           python3 -m pydocstyle library/build.py
           cd website
           python3 -m pydocstyle .
@@ -46,13 +45,6 @@ jobs:
           cd ../website
           python3 -m mypy --install-types --non-interactive .
         name: mypy checks
-      - run: |
-          python3 -m isort python
-          python3 -m isort --check test
-          python3 -m isort --check library/build.py
-          cd website
-          python3 -m isort --check .
-        name: isort checks
 
   build-website:
     name: Build quadraturerules.org
@@ -117,10 +109,9 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           cd python
-          python3 -m pip install .[optional]
+          python3 -m pip install .[optional,test]
         name: Install qrtools
 
       - run: |
-          python3 -m pip install pytest
-          python3 -m pytest test
+          python3 -m pytest python/test
         name: Run tests with pytest
