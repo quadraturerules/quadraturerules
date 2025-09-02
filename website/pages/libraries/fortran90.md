@@ -42,3 +42,5 @@ python build.py fortran90
 ```
 
 This will create a directory called fortran90.build containing the Fortran 90 source code.
+
+If you prefer an older version of fortran, there is also a [FORTRAN 77 library](fortran77.md) available.
