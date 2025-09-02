@@ -24,6 +24,8 @@ qpy_map = {
     "Q000005": None,
     "Q000006": None,
     "Q000007": None,
+    "Q000008": None,
+    "Q000009": None,
 }
 
 
