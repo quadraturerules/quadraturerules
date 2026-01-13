@@ -69,9 +69,6 @@ def test_against_quadpy(qfolder, qfile):
         case _:
             raise NotImplementedError()
 
-    print(mapped_pts)
-    print(qpy_scheme.points)
-
     order = []
     for p in mapped_pts:
         for i, q in enumerate(qpy_scheme.points.T):
