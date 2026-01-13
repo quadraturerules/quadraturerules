@@ -1,0 +1,21 @@
+name: Clenshaw--Curtis
+integral-type: single
+integrand: f(x)
+references:
+  - title: A method for numerical integration on an automatic computer
+    author:
+      - Clenshaw, Charles W.
+      - Curtis, A. R.
+    journal: Numerische Mathematik
+    issue: 2
+    year: 1960
+    pagestart: 197
+    pageend: 205
+  - title: On the infinite sequences arising in the theories of harmonic analysis, of interpolation, and of mechanical quadratures
+    author:
+      - Fej&eacute;r, Leopold
+    journal: Bulletin of the American Mathematical Society
+    issue: 39
+    year: 1933
+    pagestart: 521
+    pageend: 534

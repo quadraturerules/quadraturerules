@@ -26,6 +26,7 @@ qpy_map = {
     "Q000007": None,
     "Q000008": None,
     "Q000009": None,
+    "Q000010": {"interval": lambda order: quadpy.c1.clenshaw_curtis(order + 2)},
 }
 
 
@@ -67,6 +68,9 @@ def test_against_quadpy(qfolder, qfile):
             volume = 1
         case _:
             raise NotImplementedError()
+
+    print(mapped_pts)
+    print(qpy_scheme.points)
 
     order = []
     for p in mapped_pts:
