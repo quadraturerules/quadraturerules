@@ -1,0 +1,9 @@
+name: Chebyshev--Gauss type 1
+integral-type: single
+integrand: f(x)
+references:
+  - title: TODO
+    author:
+      - TODO
+    journal: TODO
+    year: TODO
