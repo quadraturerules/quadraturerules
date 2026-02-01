@@ -1,6 +1,6 @@
 name: Chebyshev--Gauss type 1
 integral-type: single
-integrand: f(x)
+integrand: f(x) / sqrt((1+p[0])*(1+p[1]))
 references:
   - title: TODO
     author:

@@ -6,14 +6,22 @@ readme = "README.md"
 requires-python = ">=3.10.0"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Matthew Scroggs", email = "defelement@mscroggs.co.uk" }
+    { name = "Matthew Scroggs", email = "quadrature@mscroggs.co.uk" }
 ]
-dependencies = ["PyGithub", "pytz", "website-build-tools[f77]", "ruff", "qr-generate"]
+dependencies = [
+    "PyGithub",
+    "pytz",
+    "qr-generate",
+    "ruff",
+    "website-build-tools[f77]",
+    "typing_extensions; python_version < '3.11'"
+]
 
 [project.optional-dependencies]
 optional = ["CairoSVG>=2.6.0"]
 test = ["numpy", "pytest", "legacy-quadpy"]
 lint = ["ruff", "mypy", "pydocstyle"]
+
 [project.urls]
 homepage = "https://github.com/quadraturerules/quadraturerules"
 repository = "https://github.com/quadraturerules/quadraturerules"

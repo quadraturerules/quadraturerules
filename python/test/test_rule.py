@@ -1,11 +1,13 @@
 import re
 import os
+import math
 
 import numpy as np
 import pytest
 import sympy
 import yaml
 from webtools.tools import join
+from qrtools.integrand import parse_integrand
 
 x = [
     sympy.Symbol("x"),
@@ -29,17 +31,31 @@ for file in os.listdir(folder):
             if not rule.startswith("."):
                 rules.append((family, rule))
 
+target_volume = [
+    (parse_integrand("f(x)"), 1.0),
+    (parse_integrand("f(x)/sqrt((1+x)*(1-x))"), math.pi / 2),
+    (parse_integrand("f(x)*sqrt((1+x)*(1-x))"), math.pi / 4),
+]
+
 
 @pytest.mark.parametrize(("family", "rule"), rules)
 def test_cell_has_unit_volume(family, rule):
     with open(join(folder, f"{family}.qr")) as f:
         info = yaml.load(f, yaml.FullLoader)
-    if info["integrand"] != "f(x)":
+    target = None
+    with open(join(folder, family, rule)) as f:
+        domain = f.read().split("domain: ")[1].split("\n")[0]
+    integrand = parse_integrand(info["integrand"]).set_domain(domain)
+
+    if integrand == parse_integrand("f(x,y)"):
         pytest.xfail()
 
+    for i, j in target_volume:
+        if integrand == i:
+            target = j
     with open(join(folder, family, rule)) as f:
         volume = sum(float(p.split(" | ")[1]) for p in f.read().split("--")[2].strip().split("\n"))
-    assert np.isclose(volume, 1.0)
+    assert np.isclose(volume, target)
 
 
 @pytest.mark.parametrize(("family", "rule"), rules)
