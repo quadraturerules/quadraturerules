@@ -1,10 +1,12 @@
 """Integrands."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Callable
+
 try:
-    from typing import Self
+    from typing import Self  # type: ignore
 except ImportError:
     from typing_extensions import Self
 import math
@@ -18,7 +20,7 @@ class Integrand(ABC):
         """Convert to LaTeX."""
 
     @abstractmethod
-    def eval(self, **inputs: dict[str, float | Callable]) -> float:
+    def eval(self, **inputs: float | Callable) -> float:
         """Evaluate for a set of inputs."""
 
     @abstractmethod
@@ -30,14 +32,13 @@ class Integrand(ABC):
         """Check if self and other are equal."""
 
     def __eq__(self, other) -> bool:
-        return type(self) == type(other) and self._eq(other)
+        return type(self) is type(other) and self._eq(other)
 
     # Bracketness level
     #
     # Higher values will be bracketed more often. If 0,
     # this item will never be bracketed in LaTeX
     bracketness = 0
-
 
 
 class Integer(Integrand):
@@ -49,7 +50,7 @@ class Integer(Integrand):
     def as_latex(self) -> str:
         return str(self.i)
 
-    def eval(self, **inputs: dict[str, float | Callable]) -> float:
+    def eval(self, **inputs: float | Callable) -> float:
         return self.i
 
     def _eq(self, other: Self) -> bool:
@@ -68,8 +69,10 @@ class Variable(Integrand):
     def as_latex(self) -> str:
         return self.symbol
 
-    def eval(self, **inputs: dict[str, float | Callable]) -> float:
-        return inputs[self.symbol]
+    def eval(self, **inputs: float | Callable) -> float:
+        value = inputs[self.symbol]
+        assert isinstance(value, float)
+        return value
 
     def _eq(self, other: Self) -> bool:
         return self.symbol == other.symbol
@@ -90,19 +93,24 @@ class Variable(Integrand):
 
 class Function(Integrand):
     """A function with one or more inputs."""
-    def __init__(self, name: str, *inputs: list[Integrand]):
+
+    def __init__(self, name: str, *inputs: Integrand):
         self.name = name
         self.inputs = inputs
 
     def as_latex(self) -> str:
         return "f(x)"
 
-    def eval(self, **inputs: dict[str, float | Callable]) -> float:
-        return inputs[self.name](*[i.eval(**inputs) for i in self.inputs])
+    def eval(self, **inputs: float | Callable) -> float:
+        f = inputs[self.name]
+        assert not isinstance(f, float)
+        return f(*[i.eval(**inputs) for i in self.inputs])
 
     def _eq(self, other: Self) -> bool:
-        return self.name == other.name and len(self.inputs) == len(other.inputs) and all(
-            [i == j for i, j in zip(self.inputs, other.inputs)]
+        return (
+            self.name == other.name
+            and len(self.inputs) == len(other.inputs)
+            and all([i == j for i, j in zip(self.inputs, other.inputs)])
         )
 
     def set_domain(self, domain: str) -> Integrand:
@@ -116,29 +124,29 @@ class BinaryOperator(Integrand):
         self,
         a: Integrand,
         b: Integrand,
-        latex_template: str,
-        fun: Callable,
-        a_bracketness: int | None = None,
-        b_bracketness: int | None = None,
     ):
         self.a = a
         self.b = b
-        self.latex_template = latex_template
-        self.f = fun
-        self.a_bracketness = self.bracketness if a_bracketness is None else a_bracketness
-        self.b_bracketness = self.bracketness if b_bracketness is None else b_bracketness
+        if self.a_bracketness is None:
+            self.a_bracketness = self.bracketness
+        if self.b_bracketness is None:
+            self.b_bracketness = self.bracketness
 
     def as_latex(self) -> str:
         a = self.a.as_latex()
         b = self.b.as_latex()
+        assert self.a_bracketness is not None
         if self.a.bracketness > self.a_bracketness:
             a = f"({a})"
+        assert self.b_bracketness is not None
         if self.b.bracketness > self.b_bracketness:
             b = f"({b})"
+        assert self.latex_template is not None
         return self.latex_template.replace("<a>", a).replace("<b>", b)
 
-    def eval(self, **inputs: dict[str, float | Callable]) -> float:
-        return self.f(self.a.eval(**inputs), self.b.eval(**inputs))
+    def eval(self, **inputs: float | Callable) -> float:
+        assert self.fun is not None
+        return self.fun(self.a.eval(**inputs), self.b.eval(**inputs))
 
     def _eq(self, other: Self) -> bool:
         return self.a == other.a and self.b == other.b
@@ -146,33 +154,41 @@ class BinaryOperator(Integrand):
     def set_domain(self, domain: str) -> Integrand:
         return self.__class__(self.a.set_domain(domain), self.b.set_domain(domain))
 
-    character = None
+    @abstractmethod
+    def fun(self, x: float, y: float) -> float:
+        pass
+
+    character: str | None = None
+    latex_template: str | None = None
+    a_bracketness: int | None = None
+    b_bracketness: int | None = None
 
 
 class CommutativeBinaryOperator(BinaryOperator):
     """A commitative binary operator."""
 
     def _eq(self, other: Self) -> bool:
-        return (
-            self.a == other.a and self.b == other.b
-        ) or (
+        return (self.a == other.a and self.b == other.b) or (
             self.a == other.b and self.b == other.a
         )
 
 
 class Subtract(BinaryOperator):
     """Subtraction."""
-    def __init__(self, a: Integrand, b: Integrand):
-        super().__init__(a, b, "<a>-<b>", lambda x, y: x - y)
+
+    def fun(self, x: float, y: float) -> float:
+        return x - y
 
     bracketness = 50
     character = "-"
+    latex_template = "<a>-<b>"
 
 
 class Add(CommutativeBinaryOperator):
     """Addition."""
-    def __init__(self, a: Integrand, b: Integrand):
-        super().__init__(a, b, "<a>+<b>", lambda x, y: x + y)
+
+    def fun(self, x: float, y: float) -> float:
+        return x + y
 
     def set_domain(self, domain: str) -> Integrand:
         a = self.a.set_domain(domain)
@@ -183,57 +199,65 @@ class Add(CommutativeBinaryOperator):
 
     bracketness = 40
     character = "+"
+    latex_template = "<a>+<b>"
 
 
 class Divide(BinaryOperator):
     """Division."""
-    def __init__(self, a: Integrand, b: Integrand):
-        super().__init__(a, b, "\\frac{<a>}{<b>}", lambda x, y: x / y)
+
+    def fun(self, x: float, y: float) -> float:
+        return x / y
 
     bracketness = 30
     character = "/"
+    latex_template = "\\frac{<a>}{<b>}"
 
 
 class Multiply(CommutativeBinaryOperator):
     """Muliplication."""
-    def __init__(self, a: Integrand, b: Integrand):
-        super().__init__(a, b, "<a><b>", lambda x, y: x * y)
+
+    def fun(self, x: float, y: float) -> float:
+        return x * y
 
     bracketness = 20
     character = "*"
+    latex_template = "<a><b>"
 
 
 class Raise(BinaryOperator):
     """Raise to a power."""
-    def __init__(self, a: Integrand, b: Integrand):
-        super().__init__(a, b, "<a>^{<b>}", lambda x, y: x ** y, b_bracketness=1000)
+
+    def fun(self, x: float, y: float) -> float:
+        return x**y
 
     bracketness = 10
     character = "^"
+    latex_template = "<a>^{<b>}"
+    b_bracketness = 1000
 
 
 class UnaryOperator(Integrand):
     """A unary operator."""
+
     def __init__(
         self,
         a: Integrand,
-        latex_template: str,
-        fun: Callable,
         a_bracketness: int | None = None,
     ):
         self.a = a
-        self.f = fun
-        self.latex_template = latex_template
-        self.a_bracketness = self.bracketness if a_bracketness is None else a_bracketness
+        if self.a_bracketness is None:
+            self.a_bracketness = self.bracketness
 
     def as_latex(self) -> str:
         a = self.a.as_latex()
+        assert self.a_bracketness is not None
         if self.a.bracketness > self.a_bracketness:
             a = f"({a})"
+        assert self.latex_template is not None
         return self.latex_template.replace("<a>", a)
 
-    def eval(self, **inputs: dict[str, float | Callable]) -> float:
-        return self.f(self.a.eval(**inputs))
+    def eval(self, **inputs: float | Callable) -> float:
+        return self.fun(self.a.eval(**inputs))
 
     def _eq(self, other: Self) -> bool:
         return self.a == other.a
@@ -241,40 +265,61 @@ class UnaryOperator(Integrand):
     def set_domain(self, domain: str) -> Integrand:
         return self.__class__(self.a.set_domain(domain))
 
+    @abstractmethod
+    def fun(self, x: float) -> float:
+        pass
+
     bracketness = 0
-    character = None
+    character: str | None = None
+    latex_template: str | None = None
+    a_bracketness: int | None = None
+
 
 class Negate(UnaryOperator):
     """A function with one or more inputs."""
 
-    def __init__(self, a: Integrand):
-        super().__init__(a, "-<a>", lambda x: -x)
+    def fun(self, x: float) -> float:
+        return -x
 
     character = "-"
+    latex_template = "-<a>"
 
 
 class Sqrt(UnaryOperator):
     """Square root."""
 
-    def __init__(self, a: Integrand):
-        super().__init__(a, "\\sqrt{<a>}", lambda x: math.sqrt(x))
+    def fun(self, x: float) -> float:
+        return math.sqrt(x)
 
     character = "sqrt"
+    latex_template = "\\sqrt{<a>}"
+
 
 binary_operators = [
-    op for op in globals().values()
+    op
+    for op in globals().values()
     if isinstance(op, type) and issubclass(op, BinaryOperator) and op != BinaryOperator
 ]
 binary_operators.sort(key=lambda c: -c.bracketness)
 
 unary_operators = {
-    op.character: op for op in globals().values()
-    if isinstance(op, type) and issubclass(op, UnaryOperator) and op != UnaryOperator and len(op.character) == 1
+    op.character: op
+    for op in globals().values()
+    if isinstance(op, type)
+    and issubclass(op, UnaryOperator)
+    and op != UnaryOperator
+    and op.character is not None
+    and len(op.character) == 1
 }
 
-functions = {
-    op.character: op for op in globals().values()
-    if isinstance(op, type) and issubclass(op, UnaryOperator) and op != UnaryOperator and len(op.character) > 1
+unary_functions = {
+    op.character: op
+    for op in globals().values()
+    if isinstance(op, type)
+    and issubclass(op, UnaryOperator)
+    and op != UnaryOperator
+    and op.character is not None
+    and len(op.character) > 1
 }
 
 
@@ -285,7 +330,7 @@ def parse_integrand(function: str) -> Integrand:
         for i, c in enumerate(function):
             if c == op.character:
                 pre = function[:i]
-                post = function[i + 1:]
+                post = function[i + 1 :]
                 if len(pre) > 0 and len(post) > 0 and pre.count("(") == pre.count(")"):
                     return op(parse_integrand(pre), parse_integrand(post))
     if function[0] in unary_operators:
@@ -293,7 +338,7 @@ def parse_integrand(function: str) -> Integrand:
 
     if function[0] == "(" and function[-1] == ")":
         for i, _ in enumerate(function[1:-1]):
-            if function[1:1+i].count(")") > function[1:1+i].count("("):
+            if function[1 : 1 + i].count(")") > function[1 : 1 + i].count("("):
                 raise ValueError(f"Invalid integrand: {function}")
         return parse_integrand(function[1:-1])
 
@@ -303,8 +348,10 @@ def parse_integrand(function: str) -> Integrand:
         for i, _ in enumerate(inputs):
             if inputs[:i].count(")") > inputs[:i].count("("):
                 raise ValueError(f"Invalid integrand: {function}")
-        if name in functions:
-            return functions[name](*[parse_integrand(i) for i in inputs.split(",")])
+        if name in unary_functions:
+            args = [parse_integrand(i) for i in inputs.split(",")]
+            assert len(args) == 1
+            return unary_functions[name](args[0])
         return Function(name, *[parse_integrand(i) for i in inputs.split(",")])
 
     try:
