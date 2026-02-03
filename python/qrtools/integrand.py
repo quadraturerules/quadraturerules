@@ -32,6 +32,7 @@ class Integrand(ABC):
         """Check if self and other are equal."""
 
     def __eq__(self, other) -> bool:
+        """Check for equality."""
         return type(self) is type(other) and self._eq(other)
 
     # Bracketness level
@@ -45,18 +46,22 @@ class Integer(Integrand):
     """An integer."""
 
     def __init__(self, i: int):
+        """Initialise."""
         self.i = i
 
     def as_latex(self) -> str:
+        """Convert to LaTeX."""
         return str(self.i)
 
     def eval(self, **inputs: float | Callable) -> float:
+        """Evaluate for a set of inputs."""
         return self.i
 
     def _eq(self, other: Self) -> bool:
         return self.i == other.i
 
     def set_domain(self, domain: str) -> Integrand:
+        """Set the domain for the integrand."""
         return self
 
 
@@ -64,12 +69,15 @@ class Variable(Integrand):
     """A variable."""
 
     def __init__(self, symbol: str):
+        """Initialise."""
         self.symbol = symbol
 
     def as_latex(self) -> str:
+        """Convert to LaTeX."""
         return self.symbol
 
     def eval(self, **inputs: float | Callable) -> float:
+        """Evaluate for a set of inputs."""
         value = inputs[self.symbol]
         assert isinstance(value, float)
         return value
@@ -78,6 +86,7 @@ class Variable(Integrand):
         return self.symbol == other.symbol
 
     def set_domain(self, domain: str) -> Integrand:
+        """Set the domain for the integrand."""
         if self.symbol.startswith("p["):
             assert self.symbol.endswith("]")
             n = int(self.symbol[2:-1])
@@ -95,13 +104,16 @@ class Function(Integrand):
     """A function with one or more inputs."""
 
     def __init__(self, name: str, *inputs: Integrand):
+        """Initialise."""
         self.name = name
         self.inputs = inputs
 
     def as_latex(self) -> str:
+        """Convert to LaTeX."""
         return "f(x)"
 
     def eval(self, **inputs: float | Callable) -> float:
+        """Evaluate for a set of inputs."""
         f = inputs[self.name]
         assert not isinstance(f, float)
         return f(*[i.eval(**inputs) for i in self.inputs])
@@ -114,6 +126,7 @@ class Function(Integrand):
         )
 
     def set_domain(self, domain: str) -> Integrand:
+        """Set the domain for the integrand."""
         return Function(self.name, *[i.set_domain(domain) for i in self.inputs])
 
 
@@ -125,6 +138,7 @@ class BinaryOperator(Integrand):
         a: Integrand,
         b: Integrand,
     ):
+        """Initialise."""
         self.a = a
         self.b = b
         if self.a_bracketness is None:
@@ -133,6 +147,7 @@ class BinaryOperator(Integrand):
             self.b_bracketness = self.bracketness
 
     def as_latex(self) -> str:
+        """Convert to LaTeX."""
         a = self.a.as_latex()
         b = self.b.as_latex()
         assert self.a_bracketness is not None
@@ -145,6 +160,7 @@ class BinaryOperator(Integrand):
         return self.latex_template.replace("<a>", a).replace("<b>", b)
 
     def eval(self, **inputs: float | Callable) -> float:
+        """Evaluate for a set of inputs."""
         assert self.fun is not None
         return self.fun(self.a.eval(**inputs), self.b.eval(**inputs))
 
@@ -152,10 +168,12 @@ class BinaryOperator(Integrand):
         return self.a == other.a and self.b == other.b
 
     def set_domain(self, domain: str) -> Integrand:
+        """Set the domain for the integrand."""
         return self.__class__(self.a.set_domain(domain), self.b.set_domain(domain))
 
     @abstractmethod
     def fun(self, x: float, y: float) -> float:
+        """Evaluate this operator."""
         pass
 
     character: str | None = None
@@ -177,6 +195,7 @@ class Subtract(BinaryOperator):
     """Subtraction."""
 
     def fun(self, x: float, y: float) -> float:
+        """Evaluate this operator."""
         return x - y
 
     bracketness = 50
@@ -188,9 +207,11 @@ class Add(CommutativeBinaryOperator):
     """Addition."""
 
     def fun(self, x: float, y: float) -> float:
+        """Evaluate this operator."""
         return x + y
 
     def set_domain(self, domain: str) -> Integrand:
+        """Set the domain for the integrand."""
         a = self.a.set_domain(domain)
         b = self.b.set_domain(domain)
         if isinstance(b, Negate):
@@ -206,6 +227,7 @@ class Divide(BinaryOperator):
     """Division."""
 
     def fun(self, x: float, y: float) -> float:
+        """Evaluate this operator."""
         return x / y
 
     bracketness = 30
@@ -217,6 +239,7 @@ class Multiply(CommutativeBinaryOperator):
     """Muliplication."""
 
     def fun(self, x: float, y: float) -> float:
+        """Evaluate this operator."""
         return x * y
 
     bracketness = 20
@@ -228,6 +251,7 @@ class Raise(BinaryOperator):
     """Raise to a power."""
 
     def fun(self, x: float, y: float) -> float:
+        """Evaluate this operator."""
         return x**y
 
     bracketness = 10
@@ -244,11 +268,13 @@ class UnaryOperator(Integrand):
         a: Integrand,
         a_bracketness: int | None = None,
     ):
+        """Initialise."""
         self.a = a
         if self.a_bracketness is None:
             self.a_bracketness = self.bracketness
 
     def as_latex(self) -> str:
+        """Convert to LaTeX."""
         a = self.a.as_latex()
         assert self.a_bracketness is not None
         if self.a.bracketness > self.a_bracketness:
@@ -257,16 +283,19 @@ class UnaryOperator(Integrand):
         return self.latex_template.replace("<a>", a)
 
     def eval(self, **inputs: float | Callable) -> float:
+        """Evaluate for a set of inputs."""
         return self.fun(self.a.eval(**inputs))
 
     def _eq(self, other: Self) -> bool:
         return self.a == other.a
 
     def set_domain(self, domain: str) -> Integrand:
+        """Set the domain for the integrand."""
         return self.__class__(self.a.set_domain(domain))
 
     @abstractmethod
     def fun(self, x: float) -> float:
+        """Evaluate this operator."""
         pass
 
     bracketness = 0
@@ -279,6 +308,7 @@ class Negate(UnaryOperator):
     """A function with one or more inputs."""
 
     def fun(self, x: float) -> float:
+        """Evaluate this operator."""
         return -x
 
     character = "-"
@@ -289,6 +319,7 @@ class Sqrt(UnaryOperator):
     """Square root."""
 
     def fun(self, x: float) -> float:
+        """Evaluate this operator."""
         return math.sqrt(x)
 
     character = "sqrt"
@@ -324,6 +355,7 @@ unary_functions = {
 
 
 def parse_integrand(function: str) -> Integrand:
+    """Parse a string as an integrand."""
     function = function.replace(" ", "")
 
     for op in binary_operators:

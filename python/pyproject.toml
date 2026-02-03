@@ -19,7 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 optional = ["CairoSVG>=2.6.0"]
-test = ["numpy", "pytest", "legacy-quadpy"]
+test = ["numpy", "pytest", "legacy-quadpy", "sympy"]
 lint = ["ruff", "mypy", "pydocstyle"]
 
 [project.urls]
