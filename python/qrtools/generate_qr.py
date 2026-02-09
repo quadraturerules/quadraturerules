@@ -223,8 +223,9 @@ class Domain(Substitutor):
                 ),
                 (
                     f"{variable}.camelCaseName",
-                    lambda: parts[0].lower()
-                    + "".join(i[0].upper() + i[1:].lower() for i in parts[1:]),
+                    lambda: (
+                        parts[0].lower() + "".join(i[0].upper() + i[1:].lower() for i in parts[1:])
+                    ),
                 ),
                 (
                     f"{variable}.snake_case_name",
