@@ -6,6 +6,7 @@ import typing
 
 import yaml
 from qrtools import settings
+from qrtools.integrand import parse_integrand
 from webtools.citations import make_bibtex, markup_citation
 from webtools.tools import html_local
 
@@ -816,7 +817,7 @@ class QRuleFamily:
         self._alt_names = alt_names
         self._name = name
         self.itype = itype
-        self.integrand = integrand
+        self.integrand = parse_integrand(integrand)
         self._notes = notes
         self._exact = exact
         self._references = references
@@ -875,7 +876,7 @@ class QRuleFamily:
                         i += "\\int\\int"
                     case _:
                         raise ValueError(f"Unsupported integral type: {self.itype}")
-                i += f" {self.integrand}"
+                i += f" {self.integrand.as_latex()}"
                 match self.itype:
                     case "single":
                         i += "\\,\\mathrm{d}x"

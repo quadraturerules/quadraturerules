@@ -26,6 +26,8 @@ qpy_map = {
     "Q000007": None,
     "Q000008": None,
     "Q000009": None,
+    "Q000011": {"interval": lambda order: quadpy.c1.chebyshev_gauss_1(order + 1)},
+    "Q000012": {"interval": lambda order: quadpy.c1.chebyshev_gauss_2(order + 1)},
 }
 
 
