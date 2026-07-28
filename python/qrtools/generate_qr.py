@@ -238,8 +238,6 @@ class Domain(Substitutor):
             bracketed,
         )
 
-    def loop_targets(
-        self, variable: str
-    ) -> dict[str, typing.Generator[Substitutor, None, None]]:
+    def loop_targets(self, variable: str) -> dict[str, typing.Generator[Substitutor, None, None]]:
         """Get list of loop targets."""
         return {}

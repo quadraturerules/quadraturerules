@@ -406,7 +406,10 @@ class QRuleSingle(QRule):
             with open(f"{filename_root}.csv", "w") as f2:
                 f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
                 f2.write(",weight\n")
-                f2.writelines(",".join(f"{i}" for i in p) + f",{w}\n" for p, w in zip(self.points, self.weights))
+                f2.writelines(
+                    ",".join(f"{i}" for i in p) + f",{w}\n"
+                    for p, w in zip(self.points, self.weights)
+                )
             f.write(
                 "<div class='small-note'>"
                 f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>"
@@ -688,10 +691,10 @@ class QRuleDouble(QRule):
                 f2.write(",")
                 f2.write(",".join([f"point1[{i}]" for i, _ in enumerate(self.second_points[0])]))
                 f2.write(",weight\n")
-                f2.writelines(",".join(f"{i}" for i in p1)
-                        + ","
-                        + ",".join(f"{i}" for i in p2)
-                        + f",{w}\n" for p1, p2, w in zip(self.first_points, self.second_points, self.weights))
+                f2.writelines(
+                    ",".join(f"{i}" for i in p1) + "," + ",".join(f"{i}" for i in p2) + f",{w}\n"
+                    for p1, p2, w in zip(self.first_points, self.second_points, self.weights)
+                )
             f.write(
                 "<div class='small-note'>"
                 f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>"

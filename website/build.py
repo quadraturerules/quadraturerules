@@ -3,7 +3,7 @@
 import argparse
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 from qrtools import settings
 from qrtools.rules import dim, load_rule, to_html
@@ -11,7 +11,8 @@ from webtools.html import make_html_page
 from webtools.markup import heading, heading_with_self_ref, markup
 from webtools.tools import html_local, join, parse_metadata
 
-start_all = datetime.now()
+tz = timezone.utc
+start_all = datetime.now(tz=tz)
 path = os.path.dirname(os.path.realpath(__file__))
 settings.set_root_path(join(path, ".."))
 
@@ -33,7 +34,9 @@ parser.add_argument(
 sitemap = {}
 
 
-def write_html_page(path: str, title: str, content: str, include_in_sitemap: bool = True):
+def write_html_page(
+    path: str, title: str, content: str, include_in_sitemap: bool = True
+):
     """Write a HTML page.
 
     Args:
@@ -86,7 +89,7 @@ rules_for_index = []
 # Make rule pages
 for file in os.listdir(settings.rules_path):
     if file.endswith(".qr"):
-        start = datetime.now()
+        start = datetime.now(tz=tz)
         rule = file[:-3]
         print(f"{rule}.html", end="", flush=True)
         q = load_rule(rule)
@@ -119,7 +122,9 @@ for file in os.listdir(settings.rules_path):
                 "h1",
                 f"{q.html_name} on {'an' if domain[0] in 'aeiou' else 'a'} {domain}",
             )
-            domain_content += f"<a class='more' href='/{q.code}'>&larr; Back to {q.html_name}</a>"
+            domain_content += (
+                f"<a class='more' href='/{q.code}'>&larr; Back to {q.html_name}</a>"
+            )
             for i, r in enumerate(rulelist):
                 r.save_html_table(join(rpath, f"{r.title('filename')}.html"))
                 rule_content = ""
@@ -201,7 +206,7 @@ for file in os.listdir(settings.rules_path):
         content += "<div id='point-detail-dummy'></div>"
 
         write_html_page(join(rpath, "index.html"), f"{rule}: {q.html_name}", content)
-        end = datetime.now()
+        end = datetime.now(tz=tz)
         print(f" (completed in {(end - start).total_seconds():.2f}s)")
 
 
@@ -213,7 +218,7 @@ def make_pages(sub_dir=""):
             os.mkdir(join(settings.html_path, sub_dir, file))
             make_pages(join(sub_dir, file))
         elif file.endswith(".md"):
-            start = datetime.now()
+            start = datetime.now(tz=tz)
             fname = file[:-3]
             print(f"{sub_dir}/{fname}.html", end="", flush=True)
             with open(join(settings.pages_path, sub_dir, file)) as f:
@@ -242,7 +247,9 @@ def make_pages(sub_dir=""):
                             )
                             break
                     else:
-                        raise ValueError(f"Invalid domain or order: {i['domain']}, {i['order']}")
+                        raise ValueError(
+                            f"Invalid domain or order: {i['domain']}, {i['order']}"
+                        )
                     img += (
                         "<div>"
                         f"An order {i['order']} <a href='/{i['rule']}'>{q.html_name}</a>"
@@ -257,7 +264,7 @@ def make_pages(sub_dir=""):
                 metadata["title"],
                 content,
             )
-            end = datetime.now()
+            end = datetime.now(tz=tz)
             print(f" (completed in {(end - start).total_seconds():.2f}s)")
 
 
@@ -293,16 +300,20 @@ write_html_page(
 )
 
 # Lists per domain
-domains = list(set(domain for q in rules for domain in q.rules_by_domain))
+domains = list({domain for q in rules for domain in q.rules_by_domain})
 domains.sort(key=lambda r: (dim(r), r))
 content = heading("h1", "List of quadrature rules (by domain)")
 for domain in domains:
-    content += heading("h2", f"<a href='/rules-{domain}.html'>{domain[0].upper()}{domain[1:]}</a>")
+    content += heading(
+        "h2", f"<a href='/rules-{domain}.html'>{domain[0].upper()}{domain[1:]}</a>"
+    )
     sub_content = heading(
         "h1",
         f"List of quadrature rules on {'an' if domain[0] in 'aeiou' else 'a'} {domain}",
     )
-    sub_content += "<a class='more' href='/rules-domain.html'>&larr; Back to all domains</a>"
+    sub_content += (
+        "<a class='more' href='/rules-domain.html'>&larr; Back to all domains</a>"
+    )
     content += "<ul>"
     sub_content += "<ul>"
     for q in rules:
@@ -323,12 +334,14 @@ write_html_page(
 )
 
 # Lists per integral
-integrals = list(set(q.integral() for q in rules))
+integrals = list({q.integral() for q in rules})
 content = heading("h1", "List of quadrature rules (by integral)")
 for n, i in enumerate(integrals):
     content += heading("h2", f"<a href='/rules-integral{n}.html'>{i}</a>")
     sub_content = heading("h1", f"List of quadrature rules for {i}")
-    sub_content += "<a class='more' href='/rules-integral.html'>&larr; Back to all integrals</a>"
+    sub_content += (
+        "<a class='more' href='/rules-integral.html'>&larr; Back to all integrals</a>"
+    )
     content += "<ul>"
     sub_content += "<ul>"
     for q in rules:
@@ -388,5 +401,5 @@ content = heading("h1", "List of all pages") + list_pages("")
 with open(join(settings.html_path, "sitemap.html"), "w") as f:
     f.write(make_html_page(content))
 
-end_all = datetime.now()
+end_all = datetime.now(tz=tz)
 print(f"Total time: {(end_all - start_all).total_seconds():.2f}s")
