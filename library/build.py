@@ -3,14 +3,14 @@
 import argparse
 import os
 import re
-import typing
-from datetime import datetime
+from datetime import datetime, timezone
 
 import generate
 from qrtools import generate_qr, rules, settings
 from webtools.tools import join
 
-start_all = datetime.now()
+tz = timezone.utc
+start_all = datetime.now(tz=tz)
 path = os.path.dirname(os.path.realpath(__file__))
 settings.set_root_path(join(path, ".."))
 
@@ -48,7 +48,7 @@ for file in os.listdir(settings.rules_path):
         all_rules.append(rules.load_rule(file[:-3]))
 all_rules.sort(key=lambda r: r.name())
 
-domains = list(set(i.domain for r in all_rules for i in r.rules))
+domains = list({i.domain for r in all_rules for i in r.rules})
 domains.sort(key=lambda d: (rules.dim(d), rules.sort_name(d)))
 
 
@@ -58,7 +58,7 @@ def load_library_file(m):
         return "#" + f.read()
 
 
-loop_targets: typing.Dict[str, typing.List[generate.substitute.Substitutor]] = {
+loop_targets: dict[str, list[generate.substitute.Substitutor]] = {
     "rules": [generate_qr.RuleFamily(r) for r in all_rules],
     "domains": [generate_qr.Domain(d, i) for i, d in enumerate(domains)],
 }
@@ -87,5 +87,5 @@ if lib == "python":
 if lib == "rust":
     os.system(f"cd {target_dir} && cargo fmt")
 
-end_all = datetime.now()
+end_all = datetime.now(tz=tz)
 print(f"Total time: {(end_all - start_all).total_seconds():.2f}s")
