@@ -15,9 +15,7 @@ path = os.path.dirname(os.path.realpath(__file__))
 settings.set_root_path(join(path, ".."))
 
 parser = argparse.ArgumentParser(description="Build quadraturerules library")
-parser.add_argument(
-    "library", metavar="library", nargs=1, default=None, help="Library to build"
-)
+parser.add_argument("library", metavar="library", nargs=1, default=None, help="Library to build")
 
 args = parser.parse_args()
 lib = args.library[0]
