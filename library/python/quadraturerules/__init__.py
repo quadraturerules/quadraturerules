@@ -1,9 +1,9 @@
 """Quadrature rules."""
 
 from enum import Enum as _Enum
-import typing as _typing
-import numpy.typing as _npt
+
 import numpy as _np
+import numpy.typing as _npt
 
 from quadraturerules import rules
 from quadraturerules.domain import Domain
@@ -21,7 +21,7 @@ def single_integral_quadrature(
     rtype: QuadratureRule,
     domain: Domain,
     order: int,
-) -> _typing.Tuple[_npt.NDArray[_np.float64], _npt.NDArray[_np.float64]]:
+) -> tuple[_npt.NDArray[_np.float64], _npt.NDArray[_np.float64]]:
     """Get a quadrature rule for a single integral."""
     match rtype:
         {{for Q in rules}}
@@ -38,7 +38,7 @@ def double_integral_quadrature(
     rtype: QuadratureRule,
     domain: Domain,
     order: int,
-) -> _typing.Tuple[_npt.NDArray[_np.float64], _npt.NDArray[_np.float64], _npt.NDArray[_np.float64]]:
+) -> tuple[_npt.NDArray[_np.float64], _npt.NDArray[_np.float64], _npt.NDArray[_np.float64]]:
     """Get a quadrature rule for a double integral."""
     match rtype:
         {{for Q in rules}}

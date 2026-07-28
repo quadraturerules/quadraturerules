@@ -79,7 +79,7 @@ generate.folder.generate(
 
 # Linting
 if lib == "python":
-    os.system(f"cd {target_dir} && ruff format .")
+    os.system(f"cd {target_dir} && ruff format . && ruff check --fix .")
 if lib == "rust":
     os.system(f"cd {target_dir} && cargo fmt")
 
