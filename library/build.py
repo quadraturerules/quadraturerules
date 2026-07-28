@@ -38,9 +38,7 @@ with open(join(path, "..", "LICENSE")) as f:
     license = "\n".join(f.read().split("\n")[2:])
 with open(join(path, "..", "README.md")) as f:
     readme = f.read()
-readme = re.sub(
-    r"\(website/pages/([^\)]+)\.md\)", r"(https://quadraturerules.org/\1.html)", readme
-)
+readme = re.sub(r"\(website/pages/([^\)]+)\.md\)", r"(https://quadraturerules.org/\1.html)", readme)
 
 all_rules = []
 for file in os.listdir(settings.rules_path):
