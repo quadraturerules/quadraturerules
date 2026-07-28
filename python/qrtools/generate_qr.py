@@ -4,9 +4,10 @@ import re
 import typing
 
 from generate.substitute import IndexedArray, IndexedFloat, Substitutor, replace
+
 from qrtools import rules
 
-abbrv_names: typing.Dict[str, str] = {}
+abbrv_names: dict[str, str] = {}
 
 
 def get_abbrv_name(long_name: str) -> str:
@@ -56,7 +57,7 @@ class RuleFamily(Substitutor):
     def loop_targets(
         self,
         variable: str,
-    ) -> typing.Dict[str, typing.Generator[Substitutor, None, None]]:
+    ) -> dict[str, typing.Generator[Substitutor, None, None]]:
         """Get list of loop targets."""
         return {f"{variable}.rules": (Rule(r) for r in self.family.rules)}
 
@@ -170,9 +171,9 @@ class Rule(Substitutor):
     def loop_targets(
         self,
         variable: str,
-    ) -> typing.Dict[str, typing.Generator[Substitutor, None, None]]:
+    ) -> dict[str, typing.Generator[Substitutor, None, None]]:
         """Get list of loop targets."""
-        out: typing.Dict[str, typing.Generator[Substitutor, None, None]] = {
+        out: dict[str, typing.Generator[Substitutor, None, None]] = {
             f"{variable}.weights": (IndexedFloat(w, i) for i, w in enumerate(self.rule.weights))
         }
         if isinstance(self.rule, rules.QRuleSingle):
@@ -239,6 +240,6 @@ class Domain(Substitutor):
 
     def loop_targets(
         self, variable: str
-    ) -> typing.Dict[str, typing.Generator[Substitutor, None, None]]:
+    ) -> dict[str, typing.Generator[Substitutor, None, None]]:
         """Get list of loop targets."""
         return {}
