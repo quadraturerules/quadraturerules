@@ -1,5 +1,5 @@
-import os
 import math
+import os
 import re
 
 import numpy as np
@@ -7,6 +7,7 @@ import pytest
 import sympy
 import yaml
 from webtools.tools import join
+
 from qrtools.integrand import parse_integrand
 
 x = [

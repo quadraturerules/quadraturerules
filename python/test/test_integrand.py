@@ -1,6 +1,7 @@
-import pytest
-from qrtools.integrand import parse_integrand
 import numpy as np
+import pytest
+
+from qrtools.integrand import parse_integrand
 
 
 def test_function_1():

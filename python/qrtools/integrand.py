@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Callable
+from collections.abc import Callable
 
 try:
     from typing import Self  # type: ignore
@@ -122,7 +122,7 @@ class Function(Integrand):
         return (
             self.name == other.name
             and len(self.inputs) == len(other.inputs)
-            and all([i == j for i, j in zip(self.inputs, other.inputs)])
+            and all(i == j for i, j in zip(self.inputs, other.inputs))
         )
 
     def set_domain(self, domain: str) -> Integrand:
@@ -174,7 +174,6 @@ class BinaryOperator(Integrand):
     @abstractmethod
     def fun(self, x: float, y: float) -> float:
         """Evaluate this operator."""
-        pass
 
     character: str | None = None
     latex_template: str | None = None
@@ -296,7 +295,6 @@ class UnaryOperator(Integrand):
     @abstractmethod
     def fun(self, x: float) -> float:
         """Evaluate this operator."""
-        pass
 
     bracketness = 0
     character: str | None = None
