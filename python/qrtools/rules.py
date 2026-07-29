@@ -3,14 +3,16 @@
 import os
 import re
 import typing
+from itertools import pairwise
 
 import yaml
-from qrtools import settings
 from webtools.citations import make_bibtex, markup_citation
 from webtools.tools import html_local
 
-PointND = typing.Tuple[float, ...]
-Point2D = typing.Tuple[float, float]
+from qrtools import settings
+
+PointND = tuple[float, ...]
+Point2D = tuple[float, float]
 
 
 def sort_name(domain: str | None) -> str:
@@ -58,7 +60,7 @@ def to_html(content: str) -> str:
     return content
 
 
-def to_2d(point: PointND, origin: Point2D, axes: typing.List[Point2D]) -> Point2D:
+def to_2d(point: PointND, origin: Point2D, axes: list[Point2D]) -> Point2D:
     """Map a point on a domain to a 2D point in an SVG."""
     return (
         origin[0] + sum(a[0] * p for a, p in zip(axes, point)),
@@ -66,7 +68,7 @@ def to_2d(point: PointND, origin: Point2D, axes: typing.List[Point2D]) -> Point2
     )
 
 
-def from_barycentric(point: PointND, domain: typing.List[PointND]) -> PointND:
+def from_barycentric(point: PointND, domain: list[PointND]) -> PointND:
     """Map from barycentric coordinates to a point on a domain."""
     return tuple(sum(p * d[i] for p, d in zip(point, domain)) for i in range(len(domain[0])))
 
@@ -226,8 +228,8 @@ class QRuleSingle(QRule):
         self,
         domain: str | None,
         order: int | None,
-        points: typing.List[typing.List[float]],
-        weights: typing.List[float],
+        points: list[list[float]],
+        weights: list[float],
         rule: str,
     ):
         """Create."""
@@ -237,18 +239,18 @@ class QRuleSingle(QRule):
 
     def _get_image_config(
         self,
-    ) -> typing.Tuple[
-        typing.Tuple[int, int],
-        typing.List[PointND],
-        typing.List[typing.List[int]],
+    ) -> tuple[
+        tuple[int, int],
+        list[PointND],
+        list[list[int]],
         Point2D,
-        typing.List[Point2D],
+        list[Point2D],
     ]:
         """Get image size, domain, domain lines, origin and axes."""
         match self.domain:
             case "interval":
                 size = (220, 20)
-                domain: typing.List[PointND] = [(0.0,), (1.0,)]
+                domain: list[PointND] = [(0.0,), (1.0,)]
                 domain_lines = [[0, 1]]
                 origin = (10.0, 10.0)
                 axes = [(200.0, 0.0)]
@@ -342,7 +344,7 @@ class QRuleSingle(QRule):
             )
             f.write(svg_license(f"{self.family.name()} order {self.order}"))
             for lines in domain_lines:
-                for a_, b_ in zip(lines[:-1], lines[1:]):
+                for a_, b_ in pairwise(lines):
                     a = to_2d(domain[a_], origin, axes)
                     b = to_2d(domain[b_], origin, axes)
                     f.write(
@@ -365,13 +367,13 @@ class QRuleSingle(QRule):
         assert filename.endswith(".tex")
         assert not os.path.isfile(filename)
 
-        size, domain, domain_lines, origin, axes = self._get_image_config()
+        _size, domain, domain_lines, origin, axes = self._get_image_config()
 
         with open(filename, "w") as f:
             f.write(tikz_license())
             f.write("\\begin{tikzpicture}[line cap=round,line join=round]\n")
             for lines in domain_lines:
-                for a_, b_ in zip(lines[:-1], lines[1:]):
+                for a_, b_ in pairwise(lines):
                     a = to_2d(domain[a_], origin, axes)
                     b = to_2d(domain[b_], origin, axes)
                     f.write(f"\\draw[black,line width=1pt] ({a[0]},{a[1]}) -- ({b[0]},{b[1]});\n")
@@ -404,8 +406,10 @@ class QRuleSingle(QRule):
             with open(f"{filename_root}.csv", "w") as f2:
                 f2.write(",".join([f"point[{i}]" for i, _ in enumerate(self.points[0])]))
                 f2.write(",weight\n")
-                for p, w in zip(self.points, self.weights):
-                    f2.write(",".join(f"{i}" for i in p) + f",{w}\n")
+                f2.writelines(
+                    ",".join(f"{i}" for i in p) + f",{w}\n"
+                    for p, w in zip(self.points, self.weights)
+                )
             f.write(
                 "<div class='small-note'>"
                 f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>"
@@ -430,8 +434,7 @@ class QRuleSingle(QRule):
                     f.write(self.first200(1 + len(self.points[0])))
                     break
                 f.write("<tr>")
-                for i in p:
-                    f.write(f"<td>{rounded(i)}</td>")
+                f.writelines(f"<td>{rounded(i)}</td>" for i in p)
                 f.write(f"<td>{rounded(w)}</td></tr>\n")
             f.write("</table>\n")
 
@@ -467,9 +470,9 @@ class QRuleDouble(QRule):
         self,
         domain: str | None,
         order: int | None,
-        first_points: typing.List[typing.List[float]],
-        second_points: typing.List[typing.List[float]],
-        weights: typing.List[float],
+        first_points: list[list[float]],
+        second_points: list[list[float]],
+        weights: list[float],
         rule: str,
     ):
         """Create."""
@@ -480,27 +483,27 @@ class QRuleDouble(QRule):
 
     def _get_image_config(
         self,
-    ) -> typing.Tuple[
-        typing.Tuple[int, int],
-        typing.List[PointND],
+    ) -> tuple[
+        tuple[int, int],
+        list[PointND],
         Point2D,
-        typing.List[Point2D],
-        typing.List[PointND],
+        list[Point2D],
+        list[PointND],
         Point2D,
-        typing.List[Point2D],
-        typing.List[typing.List[typing.List[int]]],
+        list[Point2D],
+        list[list[list[int]]],
     ]:
         """Get image size, domain, domain lines, origin and axes."""
         match self.domain:
             case "triangle":
                 size = (220, 194)
-                domain1: typing.List[PointND] = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
+                domain1: list[PointND] = [(0.0, 0.0), (1.0, 0.0), (0.0, 1.0)]
                 origin1 = (10.0, 184.0)
                 axes1 = [(200.0, 0.0), (100.0, -173.2)]
                 domain2 = domain1
                 origin2 = origin1
                 axes2 = axes1
-                domain_lines: typing.List[typing.List[typing.List[int]]] = [
+                domain_lines: list[list[list[int]]] = [
                     [[0, 1, 2, 0]],
                     [],
                 ]
@@ -593,7 +596,7 @@ class QRuleDouble(QRule):
                 (domain2, origin2, axes2, domain_lines[1]),
             ]:
                 for lines in dlines:
-                    for a_, b_ in zip(lines[:-1], lines[1:]):
+                    for a_, b_ in pairwise(lines):
                         a = to_2d(domain[a_], origin, axes)
                         b = to_2d(domain[b_], origin, axes)
                         f.write(
@@ -629,7 +632,7 @@ class QRuleDouble(QRule):
         assert filename.endswith(".tex")
         assert not os.path.isfile(filename)
 
-        (size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines) = (
+        _size, domain1, origin1, axes1, domain2, origin2, axes2, domain_lines = (
             self._get_image_config()
         )
 
@@ -641,7 +644,7 @@ class QRuleDouble(QRule):
                 (domain2, origin2, axes2, domain_lines[1]),
             ]:
                 for lines in dlines:
-                    for a_, b_ in zip(lines[:-1], lines[1:]):
+                    for a_, b_ in pairwise(lines):
                         a = to_2d(domain[a_], origin, axes)
                         b = to_2d(domain[b_], origin, axes)
                         f.write(
@@ -688,13 +691,10 @@ class QRuleDouble(QRule):
                 f2.write(",")
                 f2.write(",".join([f"point1[{i}]" for i, _ in enumerate(self.second_points[0])]))
                 f2.write(",weight\n")
-                for p1, p2, w in zip(self.first_points, self.second_points, self.weights):
-                    f2.write(
-                        ",".join(f"{i}" for i in p1)
-                        + ","
-                        + ",".join(f"{i}" for i in p2)
-                        + f",{w}\n"
-                    )
+                f2.writelines(
+                    ",".join(f"{i}" for i in p1) + "," + ",".join(f"{i}" for i in p2) + f",{w}\n"
+                    for p1, p2, w in zip(self.first_points, self.second_points, self.weights)
+                )
             f.write(
                 "<div class='small-note'>"
                 f"<a href='{filename_root_local}.csv'>&darr; Download as CSV</a></div>"
@@ -736,11 +736,9 @@ class QRuleDouble(QRule):
                     )
                     break
                 f.write("<tr>")
-                for i in p1:
-                    f.write(f"<td>{rounded(i)}</td>")
+                f.writelines(f"<td>{rounded(i)}</td>" for i in p1)
                 f.write(f"<td class='left-border'>{rounded(p2[0])}</td>")
-                for i in p2[1:]:
-                    f.write(f"<td>{rounded(i)}</td>")
+                f.writelines(f"<td>{rounded(i)}</td>" for i in p2[1:])
                 f.write(f"<td>{rounded(w)}</td></tr>\n")
             f.write("</table>\n")
 
@@ -800,13 +798,13 @@ class QRuleFamily:
         self,
         code: str,
         name: str,
-        alt_names: typing.List[str],
+        alt_names: list[str],
         itype: str,
         integrand: str,
-        notes: typing.List[str],
-        exact: typing.List[typing.Dict[str, typing.Any]],
-        references: typing.List[typing.Dict[str, typing.Any]],
-        rules: typing.List[QRule],
+        notes: list[str],
+        exact: list[dict[str, typing.Any]],
+        references: list[dict[str, typing.Any]],
+        rules: list[QRule],
         qr: str,
     ):
         """Create."""
@@ -826,9 +824,9 @@ class QRuleFamily:
         self._qr = qr
 
     @property
-    def rules_by_domain(self) -> typing.Dict[str, typing.List[QRule]]:
+    def rules_by_domain(self) -> dict[str, list[QRule]]:
         """Get the rules sorted by domain."""
-        rules: typing.Dict[str, typing.List[QRule]] = {}
+        rules: dict[str, list[QRule]] = {}
         for r in self.rules:
             assert r.domain is not None
             if r.domain not in rules:
@@ -888,7 +886,7 @@ class QRuleFamily:
             case _:
                 raise ValueError(f"Unsupported format: {format}")
 
-    def exact_notes(self, format: str = "HTML") -> typing.List[str]:
+    def exact_notes(self, format: str = "HTML") -> list[str]:
         """Convert exact to notes."""
         out = []
         for e in self._exact:
@@ -944,9 +942,9 @@ def load_rule(code: str) -> QRuleFamily:
         qr = f.read()
     data = yaml.safe_load(qr)
 
-    itype = data["integral-type"] if "integral-type" in data else "single"
+    itype = data.get("integral-type", "single")
 
-    rules: typing.List[QRule] = []
+    rules: list[QRule] = []
     pt_dir = os.path.join(settings.rules_path, f"{code}")
     for pt_file in os.listdir(pt_dir):
         if pt_file.endswith(".rule"):
@@ -1003,12 +1001,12 @@ def load_rule(code: str) -> QRuleFamily:
     r = QRuleFamily(
         code,
         data["name"],
-        data["alt-names"] if "alt-names" in data else [],
+        data.get("alt-names", []),
         itype,
         data["integrand"],
-        data["notes"] if "notes" in data else [],
-        data["exact"] if "exact" in data else [],
-        data["references"] if "references" in data else [],
+        data.get("notes", []),
+        data.get("exact", []),
+        data.get("references", []),
         rules,
         qr,
     )

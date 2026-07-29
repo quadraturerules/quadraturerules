@@ -1,10 +1,10 @@
-import numpy as np
 import os
+
+import numpy as np
 import pytest
+import quadpy
 import yaml
 from webtools.tools import join
-
-import quadpy
 
 folder = join(
     os.path.dirname(os.path.realpath(__file__)),

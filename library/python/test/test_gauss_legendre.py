@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from quadraturerules import Domain, QuadratureRule, single_integral_quadrature
 
 
