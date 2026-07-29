@@ -1,0 +1,16 @@
+name: Chebyshev--Gauss type 1
+integral-type: single
+integrand: f(x) / sqrt((1+p[0])*(1+p[1]))
+references:
+  - title: Numerical interpolation, differentation and integration
+    author:
+      - Davis, Philip J.
+      - Polonsky, Ivan
+    year: 1972
+    booktitle: Handbook of Mathematical Functions with Formulas, Graphs and Mathematical Tables
+    edition: Tenth printing
+    editors:
+      - Abramowitz, M.
+      - Stegun, I. A.
+    pagestart: 875
+    pageend: 899
