@@ -1,6 +1,6 @@
 # Quadrature rules
 
-[The online encylopedia of quadrature rules](https://quadraturerules.org) is a reference website that lists a number of quadrature rules.
+[The online encylopedia of quadrature rules](https://quadraturerules.org) is a reference website that lists quadrature rules on a range of domains.
 
 Quadrature rules are sets of points and weights that are used to approximate integrals. If $\{p_0,\dots,p_{n-1}\}\subset\mathbb{R}^d$ and $\{w_0,\dots,w_{n-1}\}\subset\mathbb{R}$
 are the points and weights (repectively) of the quadrature rule for a single integral, then:

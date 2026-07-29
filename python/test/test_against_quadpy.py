@@ -1,10 +1,10 @@
-import numpy as np
 import os
+
+import numpy as np
 import pytest
+import quadpy
 import yaml
 from webtools.tools import join
-
-import quadpy
 
 folder = join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -26,6 +26,7 @@ qpy_map = {
     "Q000007": None,
     "Q000008": None,
     "Q000009": None,
+    "Q000010": {"interval": lambda order: quadpy.c1.clenshaw_curtis(order + 2)},
     "Q000011": {"interval": lambda order: quadpy.c1.chebyshev_gauss_1(order + 1)},
     "Q000012": {"interval": lambda order: quadpy.c1.chebyshev_gauss_2(order + 1)},
 }

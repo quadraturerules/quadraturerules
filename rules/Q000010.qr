@@ -1,0 +1,13 @@
+name: Clenshaw--Curtis
+integral-type: single
+integrand: f(x)
+references:
+  - title: A method for numerical integration on an automatic computer
+    author:
+      - Clenshaw, Charles W.
+      - Curtis, A. R.
+    journal: Numerische Mathematik
+    issue: 2
+    year: 1960
+    pagestart: 197
+    pageend: 205
