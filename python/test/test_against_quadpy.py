@@ -26,6 +26,7 @@ qpy_map = {
     "Q000007": None,
     "Q000008": None,
     "Q000009": None,
+    "Q000010": {"interval": lambda order: quadpy.c1.clenshaw_curtis(order + 2)},
 }
 
 
