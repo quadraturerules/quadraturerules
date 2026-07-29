@@ -5,15 +5,15 @@ filename: {{Q.snake_case_name}}.py
 """{{Q.name}} quadrature rule."""
 import numpy as np
 import numpy.typing as npt
+
 from quadraturerules.domain import Domain
-import typing
 
 
 {{if Q.itype == single}}
 def {{Q.snake_case_name}}(
     domain: Domain,
     order: int,
-) -> typing.Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Get a {{Q.name}} quadrature rule."""
     match domain:
         {{for D in domains}}
@@ -33,7 +33,7 @@ def {{Q.snake_case_name}}(
 def {{Q.snake_case_name}}(
     domain: Domain,
     order: int,
-) -> typing.Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Get a {{Q.name}} quadrature rule."""
     match domain:
         {{for D in domains}}

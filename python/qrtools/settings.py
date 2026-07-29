@@ -1,6 +1,7 @@
 """Settings."""
 
 import os as _os
+import typing as _typing
 
 import yaml as _yaml
 from webtools import settings
@@ -18,7 +19,7 @@ github_token: str | None = None
 
 processes = 1
 
-site_data = {}
+site_data: dict[str, _typing.Any] = {}
 
 settings.owners = ["mscroggs"]
 settings.url = "https://quadraturerules.org"
