@@ -6,8 +6,9 @@ import re
 from datetime import datetime, timezone
 
 import generate
-from qrtools import generate_qr, rules, settings
 from webtools.tools import join
+
+from qrtools import generate_qr, rules, settings
 
 tz = timezone.utc
 start_all = datetime.now(tz=tz)
