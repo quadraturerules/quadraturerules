@@ -22,6 +22,7 @@ The online encylopedia of quadrature rules website can then be built by running:
 cd website
 python3 build.py
 ```
+
 ## Libraries
 
 All of the quadrature rules included in the online encylopedia of quadrature rules are included in the quadraturerules library, which is available in the following languages:
