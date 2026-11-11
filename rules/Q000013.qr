@@ -1,0 +1,19 @@
+name: Kubitz
+alt-names:
+  - Cubature Atlas minimal point count (PI)
+integral-type: single
+integrand: f(x)
+exact:
+  - type: polynomial
+    degree: n
+notes:
+  - All weights are positive and all points lie in the closed domain (PI). For each order, the rule has the smallest number of points found by the numerical search of the Cubature Atlas; several improve on the smallest previously published point counts.
+  - Every rule was checked against all monomials up to its order and carries a floating-point Newton--Kantorovich certificate showing that an exact rule with positive weights exists within a radius below 1e-10 of the given points and weights (for rules with points on the boundary of the domain, the exact points are located up to this radius).
+  - The search, the computations and the certificates were carried out by an AI (Claude, Anthropic), commissioned and directed by Jörg Kubitz. Rule ids, certificates and the search code are available in the Cubature Atlas.
+references:
+  - title: "Cubature Atlas: best known quadrature and cubature rules with positive weights"
+    author:
+      - Kubitz, Jörg
+    year: 2026
+    doi: 10.5281/zenodo.24037245
+    url: https://jukzi.github.io/cubature_atlas/

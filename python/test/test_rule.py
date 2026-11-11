@@ -152,13 +152,16 @@ def test_exact(family, rule):
             mapped_pts = [i[1:] for i in pts]
             volume = 0.5
         case "quadrilateral":
-            mapped_pts = [[i[1], i[2]] for i in pts]
+            mapped_pts = [[i[1] + i[3], i[2] + i[3]] for i in pts]
             volume = 1
         case "tetrahedron":
             mapped_pts = [i[1:] for i in pts]
             volume = 1 / 6
         case "hexahedron":
-            mapped_pts = [[i[1], i[2], i[4]] for i in pts]
+            mapped_pts = [
+                [i[1] + i[3] + i[5] + i[7], i[2] + i[3] + i[6] + i[7], i[4] + i[5] + i[6] + i[7]]
+                for i in pts
+            ]
             volume = 1
         case _:
             raise ValueError(f"Unsupported domain: {info['domain']}")
